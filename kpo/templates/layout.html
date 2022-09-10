@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+<hr>
+<hr>
+<hr>
+
+
+    {% if title %}
+      <title>KPO - {{ title }}</title>
+    {% else %}
+      <title>KPO</title>
+    {% endif %}
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="/">{{ current_user.name }}</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              {% if current_user.is_authenticated %}
+                <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
+                <a class="nav-item nav-link" href="{{ url_for('invoices.invoice_list') }}">Invoice</a>
+                <!-- dodati invoice -->
+              {% else %}
+                <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
+                <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>
+              {% endif %}
+            </div>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+              {% if current_user.is_authenticated %}
+                {% if current_user.authorization == 's_admin' %}
+                  <a class="nav-item nav-link" href="{{ url_for('companys.company_list') }}">Company</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">User</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                {% elif current_user.authorization == 'c_admin'%}
+                  <a class="nav-item nav-link" href="{{ url_for('companys.company_list') }}">Company</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">User</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                {% else %}
+                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">User</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                {% endif %}
+              {% else %}
+                <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+        </div>
+        <div class="col-md-4">
+          <div class="content-section">
+            <h3>You can put any text here</h3>
+            <p class='text-muted'>You can put any information here you'd like.
+              <ul class="list-group">
+                <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: </li>
+                <li class="list-group-item list-group-item-light">na današnji dan: </li>
+                <li class="list-group-item list-group-item-light">na sutrašnju dan: </li>
+                <li class="list-group-item list-group-item-light">u narednih 7 dana: </li>
+                <li class="list-group-item list-group-item-light">u narednih 15 dana: </li>
+                <li class="list-group-item list-group-item-light">u narednih mesec dana: </li>
+                <li class="list-group-item list-group-item-light">u naredna 3 meseca: </li>
+              </ul>
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

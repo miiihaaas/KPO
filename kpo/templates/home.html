@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if current_user.is_authenticated %}
+  <h1>{{ current_user.user_company.companyname }}</h1>
+  <h1>{{ form.end_day.strftime("%d.%m.%Y") }}</h1>
+  <hr>
+  <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</h3>
+  <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(form.razlika[0] - 2000000) }} din</h3>
+  <h3>Fakturisano u predhodnih godinu dana: {{ '{:,.2f}'.format(form.limit - form.razlika[1] + 2000000) }} din</h3>
+  <hr>
+
+  <table id="data" border="1" class="table table-striped">
+    <thead>
+      <tr id="header">
+        <th>Do limita za PDV [8,000,000.00]</th>
+        <th>[din]</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>na današnji dan:</td>
+        <td>{{ '{:,.2f}'.format(form.razlika[1]) }}</td>
+      </tr>
+      <tr>
+        <td>na sutrašnju dan:</td>
+        <td>{{ '{:,.2f}'.format(form.razlika[2]) }}</td>
+      </tr>
+      <tr>
+        <td>u narednih 7 dana:</td>
+        <td>{{ '{:,.2f}'.format(form.razlika[3]) }}</td>
+      </tr>
+      <tr>
+        <td>u narednih 15 dana:</td>
+        <td>{{ '{:,.2f}'.format(form.razlika[4]) }}</td>
+      </tr>
+      <tr>
+        <td>u narednih mesec dana:</td>
+        <td>{{ '{:,.2f}'.format(form.razlika[5]) }}</td>
+      </tr>
+      <tr>
+        <td>u naredna 3 meseca:</td>
+        <td>{{ '{:,.2f}'.format(form.razlika[6]) }}</td>
+      </tr>
+    </tbody>
+  </table>
+{% endif %}
+
+{% endblock content%}

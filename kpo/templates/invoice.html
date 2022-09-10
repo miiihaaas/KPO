@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Edit Invoice</legend>
+            <div class="form-group">
+                {{ form.date.label(class="form-control-label") }}
+
+                {% if form.date.errors %}
+                    {{ form.date(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.date.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.date(class="form-control form-control-lg", type="datetime-local") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.invoice_number.label(class="form-control-label") }}
+
+                {% if form.invoice_number.errors %}
+                    {{ form.invoice_number(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.invoice_number.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.invoice_number(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.customer.label(class="form-control-label") }}
+
+                {% if form.customer.errors %}
+                    {{ form.customer(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.customer.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.customer(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.service.label(class="form-control-label") }}
+
+                {% if form.service.errors %}
+                    {{ form.service(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.service.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.service(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.amount.label(class="form-control-label") }}
+
+                {% if form.amount.errors %}
+                    {{ form.amount(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.amount.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.amount(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            {% if current_user.authorization == 's_admin'%}
+              <div class="form-group">
+                  {{ form.company_id.label(class="form-control-label") }}
+
+                  {% if form.company_id.errors %}
+                      {{ form.company_id(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.company_id.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.company_id(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+            {% else %}
+              {{ form.company_id(class="sr-only form-control form-control-lg") }}
+            {% endif %}
+            {% if current_user.authorization == 's_admin'%}
+              <div class="form-group">
+                  {{ form.user_id.label(class="form-control-label") }}
+
+                  {% if form.user_id.errors %}
+                      {{ form.user_id(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.user_id.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.user_id(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+            {% else %}
+              {{ form.user_id(class="sr-only form-control form-control-lg") }}
+            {% endif %}
+        </fieldset>
+        <div class="form-check">
+          {{ form.cancelled(class="form-check-input") }}
+          {{ form.cancelled.label(class="form-check-label") }}
+        </div>
+        <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info") }}
+        {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
+          <div>
+            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Delete</button>
+          </div>
+        {% endif %}
+        </div>
+  </form>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="DeleteModalLabel">Delete Invoice?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="input_password">To delete invoice you need to confirm your password:</label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form  action="{{ url_for('invoices.delete_invoice', invoice_id=invoice.id) }}" method="post">
+          <input class="btn btn-danger" type="submit" value="Delete Invoice">
+          <input type="password" id="input_password" name="input_password" value="" placeholder="confirm your password to delete invoice">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content%}

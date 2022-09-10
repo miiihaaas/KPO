@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if current_user.authorization != 'c_user' %}
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Add New Invoice</a>
+{% endif %}
+<table id="data" border="1" class="table table-striped">
+  {% if current_user.authorization == 's_admin' %}
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Br Fakture</th>
+        <th>Kupac</th>
+        <th>Usluga</th>
+        <th>Iznos [din]</th>
+        <th>Kompanija</th>
+        <th>Korinik</th>
+        <th>Storno</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in invoices %}
+        <tr>
+          <td>{{ invoice.date.strftime("%d.%m.%Y") }}</td>
+          <td><a class="mr-2" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
+          <td>{{ invoice.customer }}</td>
+          <td>{{ invoice.service }}</td>
+          <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
+          <td>{{ invoice.invoice_company.companyname }}</td>
+          <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
+          <td>{{ invoice.cancelled }}</td>
+      {% endfor %}
+    </tbody>
+  {% elif current_user.authorization == 'c_admin' %}
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Br Fakture</th>
+        <th>Kupac</th>
+        <th>Usluga</th>
+        <th>Iznos [din]</th>
+        <th>Storno</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in invoices %}
+        {% if invoice.invoice_company.id == current_user.user_company.id %}
+          <tr>
+            <td>{{ invoice.date.strftime("%d.%m.%Y") }}</td>
+            <td><a class="mr-2" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
+            <td>{{ invoice.customer }}</td>
+            <td>{{ invoice.service }}</td>
+            <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
+            <td>{{ invoice.cancelled }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  {% endif %}
+</table>
+{% endblock content%}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable();
+    });
+  </script>
+{% endblock %}
