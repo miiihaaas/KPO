@@ -32,31 +32,31 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               {% if current_user.is_authenticated %}
-                <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
-                <a class="nav-item nav-link" href="{{ url_for('invoices.invoice_list') }}">Invoice</a>
+                <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Početna</a>
+                <a class="nav-item nav-link" href="{{ url_for('invoices.invoice_list') }}">Fakture</a>
                 <!-- dodati invoice -->
               {% else %}
-                <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
-                <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>
+                <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Početna</a>
+                <a class="nav-item nav-link" href="{{ url_for('main.about') }}">O softveru</a>
               {% endif %}
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
                 {% if current_user.authorization == 's_admin' %}
-                  <a class="nav-item nav-link" href="{{ url_for('companys.company_list') }}">Company</a>
-                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">User</a>
-                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                  <a class="nav-item nav-link" href="{{ url_for('companys.company_list') }}">Kompanija</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">Korisnik</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Odjavi se</a>
                 {% elif current_user.authorization == 'c_admin'%}
-                  <a class="nav-item nav-link" href="{{ url_for('companys.company_list') }}">Company</a>
-                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">User</a>
-                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                  <a class="nav-item nav-link" href="{{ url_for('companys.company_list') }}">Kompanija</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">Korisnik</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Odjavi se</a>
                 {% else %}
-                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">User</a>
-                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.user_list') }}">Korisnik</a>
+                  <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Odjavi se</a>
                 {% endif %}
               {% else %}
-                <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Prijavi se</a>
               {% endif %}
             </div>
           </div>

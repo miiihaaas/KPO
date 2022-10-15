@@ -45,12 +45,6 @@ def home():
                     self.razlika = [0, 0, 0, 0, 0, 0, 0]
 
 
-# func.sum(func.IF(
-#             Invoice.paidtodate>0,
-#             Invoice.paidtodate
-#             )
-#         ).label("amount")
-
 
     if current_user.is_authenticated:
         form = DashboardData(current_user.user_company.id)
@@ -58,7 +52,7 @@ def home():
         print(f'nije ulogovan niko')
         return redirect(url_for('main.about'))
         flash('You have to be logged in to visit Home page' 'info')
-    return render_template('home.html', title='Home', form=form)
+    return render_template('home.html', title='Home', form=form), render_template('layot.html', title='Home', form=form)
 
     print(form.start_day)
 

@@ -1,6 +1,6 @@
 from cv2 import cv2
 from PIL import Image
-from pyzbar import pyzbar
+# from pyzbar import pyzbar
 from flask import Flask, Blueprint, render_template, Response , url_for, redirect
 
 
@@ -25,7 +25,7 @@ def capture_frames():
         ret, frame = camera.read()
     while ret:
         ret, frame = camera.read()
-        barcodes = pyzbar.decode(frame)
+        # barcodes = pyzbar.decode(frame)
         for barcode in barcodes:
             x, y , w, h = barcode.rect
             barcode_text = barcode.data.decode('utf-8')

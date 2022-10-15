@@ -29,8 +29,8 @@ def register_i():
         if current_user.authorization == 'c_admin':
             invoice = Invoice(date=form.date.data,
                                 invoice_number=form.invoice_number.data,
-                                customer=form.customer.data.upper(),
-                                service=form.service.data.upper(),
+                                customer=form.customer.data,
+                                service=form.service.data,
                                 amount=int(form.amount.data),
                                 company_id=current_user.user_company.id,
                                 user_id=current_user.id,
@@ -40,8 +40,8 @@ def register_i():
         elif current_user.authorization == 's_admin':
             invoice = Invoice(date=form.date.data,
                                 invoice_number=form.invoice_number.data,
-                                customer=form.customer.data.upper(),
-                                service=form.service.data.upper(),
+                                customer=form.customer.data,
+                                service=form.service.data,
                                 amount=int(form.amount.data),
                                 company_id=form.company_id.data,
                                 user_id=current_user.id,
@@ -73,8 +73,8 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
     if form.validate_on_submit():
         invoice.date = form.date.data
         invoice.invoice_number = form.invoice_number.data
-        invoice.customer = form.customer.data.upper()
-        invoice.service = form.service.data.upper()
+        invoice.customer = form.customer.data
+        invoice.service = form.service.data
         invoice.amount = form.amount.data
         if current_user.authorization == 'c_admin':
             invoice.company_id = int(current_user.company_id)
