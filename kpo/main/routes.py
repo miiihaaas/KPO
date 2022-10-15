@@ -52,7 +52,7 @@ def home():
         print(f'nije ulogovan niko')
         return redirect(url_for('main.about'))
         flash('You have to be logged in to visit Home page' 'info')
-    return render_template('home.html', title='Home', form=form), render_template('layot.html', title='Home', form=form)
+    return render_template('home.html', title='Home', form=form)
 
     print(form.start_day)
 
