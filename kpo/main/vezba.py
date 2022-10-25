@@ -1,28 +1,31 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
+# from kpo.models import Invoice
 
 
 class Data():
-    def __init__(self):
+    def __init__(self, company_id):
         self.limit = 6000000
-        self.start_day = date.today()
-        self.end_day = []
+        self.end_day = date.today()
+        self.start_day = [date(date.today().year, 1, 1)]
         self.razlika = []
+        self.company_id = company_id
         list = [0, 1, 7, 15, 30, 90] # broj dana za proračun do limita
         for item in list:
-            self.end_day.append(date.today() + relativedelta(days=item) + relativedelta(days=-365))
+            self.start_day.append(date.today() + relativedelta(days=item) + relativedelta(days=-365))
 
-    def razlika(self):
-        for value in range(6):
-            self.razlika.append(self.limit - Invoice.query.with_entities(
-                        func.sum(Invoice.amount).label("suma")
-                        ).filter(Invoice.date.between(self.start_day, self.end_day[value])).filter_by(
-                        company_id=2
-                        ).first()[0])
-        return self.razlika
+        for value in range(7):
+            try:
+                self.razlika.append(self.limit + 2000000 - Invoice.query.with_entities(
+                            func.sum(Invoice.amount).label("suma")
+                            ).filter(Invoice.date.between(self.start_day[value], self.end_day)).filter_by(
+                            company_id=self.company_id
+                            ).first()[0])
 
-form = Data()
-form.razlika()
+            except TypeError:
+                self.razlika = [0, 0, 0, 0, 0, 0, 0]
+
+form = Data(2)
 print(form.razlika)
 
 # class Sabiranje:

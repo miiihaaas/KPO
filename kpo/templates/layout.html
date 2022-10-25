@@ -65,7 +65,7 @@
     </header>
     <main role="main" class="container">
       <div class="row">
-        <div class="col-md-9">
+        <div class="">
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
@@ -77,22 +77,7 @@
           {% endwith %}
           {% block content %}{% endblock %}
         </div>
-        <div class="col-md-3">
-          <div class="content-section">
-            <h3>You can put any text here</h3>
-            <p class='text-muted'>You can put any information here you'd like.
-              <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: </li>
-                <li class="list-group-item list-group-item-light">na današnji dan: </li>
-                <li class="list-group-item list-group-item-light">na sutrašnju dan: </li>
-                <li class="list-group-item list-group-item-light">u narednih 7 dana: </li>
-                <li class="list-group-item list-group-item-light">u narednih 15 dana: </li>
-                <li class="list-group-item list-group-item-light">u narednih mesec dana: </li>
-                <li class="list-group-item list-group-item-light">u naredna 3 meseca: </li>
-              </ul>
-            </p>
-          </div>
-        </div>
+        
       </div>
     </main>
 

@@ -3,60 +3,81 @@
 {% if current_user.authorization != 'c_user' %}
   <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
 {% endif %}
-<table id="data" border="1" class="table table-striped">
-  {% if current_user.authorization == 's_admin' %}
-    <thead>
-      <tr>
-        <th>Datum</th>
-        <th>Br. Fakture</th>
-        <th>Klijent</th>
-        <th>Usluga</th>
-        <th>Iznos [din]</th>
-        <th>Kompanija</th>
-        <th>Korinik</th>
-        <th>Storno</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for invoice in invoices %}
-        <tr>
-          <td>{{ invoice.date }}</td>
-          <td><a class="mr-2  btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
-          <td>{{ invoice.customer }}</td>
-          <td>{{ invoice.service }}</td>
-          <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
-          <td>{{ invoice.invoice_company.companyname }}</td>
-          <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
-          <td>{{ invoice.cancelled }}</td>
-      {% endfor %}
-    </tbody>
-  {% elif current_user.authorization == 'c_admin' %}
-    <thead>
-      <tr>
-        <th>Datum</th>
-        <th>Br. Fakture</th>
-        <th>Klijent</th>
-        <th>Usluga</th>
-        <th>Iznos [din]</th>
-        <th>Storno</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for invoice in invoices %}
-        {% if invoice.invoice_company.id == current_user.user_company.id %}
+<div class="row">
+  <div class="col-md-8">
+    <table id="data" border="1" class="table table-striped ">
+      {% if current_user.authorization == 's_admin' %}
+        <thead>
           <tr>
-            <td>{{ invoice.date }}</td>
-            <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
-            <td>{{ invoice.customer }}</td>
-            <td>{{ invoice.service }}</td>
-            <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
-            <td>{{ invoice.cancelled }}</td>
+            <th>Datum</th>
+            <th>Br. Fakture</th>
+            <th>Klijent</th>
+            <th>Usluga</th>
+            <th>Iznos [din]</th>
+            <th>Kompanija</th>
+            <th>Korinik</th>
+            <th>Storno</th>
           </tr>
-        {% endif %}
-      {% endfor %}
-    </tbody>
-  {% endif %}
-</table>
+        </thead>
+        <tbody>
+          {% for invoice in invoices %}
+            <tr>
+              <td>{{ invoice.date }}</td>
+              <td><a class="mr-2  btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
+              <td>{{ invoice.customer }}</td>
+              <td>{{ invoice.service }}</td>
+              <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
+              <td>{{ invoice.invoice_company.companyname }}</td>
+              <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
+              <td>{{ invoice.cancelled }}</td>
+          {% endfor %}
+        </tbody>
+      {% elif current_user.authorization == 'c_admin' %}
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Br. Fakture</th>
+            <th>Klijent</th>
+            <th>Usluga</th>
+            <th>Iznos [din]</th>
+            <th>Storno</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for invoice in invoices %}
+            {% if invoice.invoice_company.id == current_user.user_company.id %}
+              <tr>
+                <td>{{ invoice.date }}</td>
+                <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
+                <td>{{ invoice.customer }}</td>
+                <td>{{ invoice.service }}</td>
+                <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
+                <td>{{ invoice.cancelled }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      {% endif %}
+    </table>
+  </div>
+  <div class="col-md-4">
+    <div class="content-section">
+      <h3>You can put any text here</h3>
+      <p class='text-muted'>Poslednja uneta faktura: 
+        <ul class="list-group">
+          <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</li>
+          <li class="list-group-item list-group-item-light">na današnji dan: {{ '{:,.2f}'.format(form.razlika[1]) }} din</li>
+          <li class="list-group-item list-group-item-light">na sutrašnju dan: {{ '{:,.2f}'.format(form.razlika[2]) }} din</li>
+          <li class="list-group-item list-group-item-light">u narednih 7 dana: {{ '{:,.2f}'.format(form.razlika[3]) }} din</li>
+          <li class="list-group-item list-group-item-light">u narednih 15 dana: {{ '{:,.2f}'.format(form.razlika[4]) }} din</li>
+          <li class="list-group-item list-group-item-light">u narednih mesec dana: {{ '{:,.2f}'.format(form.razlika[5]) }} din</li>
+          <li class="list-group-item list-group-item-light">u naredna 3 meseca: {{ '{:,.2f}'.format(form.razlika[6]) }} din</li>
+        </ul>
+      </p>
+    </div>
+  </div>
+</div>
+
 {% endblock content%}
 
 {% block scripts %}

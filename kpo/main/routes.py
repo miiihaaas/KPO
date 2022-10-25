@@ -46,6 +46,7 @@ def home():
 
 
 
+
     if current_user.is_authenticated:
         form = DashboardData(current_user.user_company.id)
     else:
