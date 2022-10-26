@@ -2,7 +2,7 @@
 {% block content %}
 {% if current_user.is_authenticated %}
   <h1>{{ current_user.user_company.companyname }}</h1>
-  <h1>{{ form.end_day.strftime("%d.%m.%Y") }}</h1>
+  <h1>{{ form.end_day.strftime("%d.%m.%Y.") }} </h1>
   <hr>
   <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</h3>
   <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(form.razlika[0] - 2000000) }} din</h3>
@@ -43,6 +43,8 @@
       </tr>
     </tbody>
   </table>
+  <br>
+  <a class="btn btn-info btn-lg m-1" href="{{ url_for('invoices.invoice_list') }}">Fakture</a>
 {% endif %}
 
 {% endblock content%}

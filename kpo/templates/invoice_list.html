@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if current_user.authorization != 'c_user' %}
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a> <a class="btn btn-danger btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje novog knjižog odobrenja</a>
 {% endif %}
 <div class="row">
   <div class="col-md-8">
@@ -16,7 +16,7 @@
             <th>Iznos [din]</th>
             <th>Kompanija</th>
             <th>Korinik</th>
-            <th>Storno</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -29,7 +29,7 @@
               <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
               <td>{{ invoice.invoice_company.companyname }}</td>
               <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
-              <td>{{ invoice.cancelled }}</td>
+              <td style="text-align: center">{% if invoice.cancelled %} Storno &#9940 {% else %} &#9989 {% endif %}</td>
           {% endfor %}
         </tbody>
       {% elif current_user.authorization == 'c_admin' %}
@@ -40,7 +40,7 @@
             <th>Klijent</th>
             <th>Usluga</th>
             <th>Iznos [din]</th>
-            <th>Storno</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -52,7 +52,7 @@
                 <td>{{ invoice.customer }}</td>
                 <td>{{ invoice.service }}</td>
                 <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
-                <td>{{ invoice.cancelled }}</td>
+                <td style="text-align: center">{% if invoice.cancelled %} Storno &#9940 {% else %} &#9989 {% endif %}</td>
               </tr>
             {% endif %}
           {% endfor %}
@@ -62,8 +62,8 @@
   </div>
   <div class="col-md-4">
     <div class="content-section">
-      <h3>You can put any text here</h3>
-      <p class='text-muted'>Poslednja uneta faktura: 
+      <h3>Korisni podaci</h3>
+      <p class='text-muted'>Poslednja uneta faktura: {{ form.last_input.invoice_number }}
         <ul class="list-group">
           <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</li>
           <li class="list-group-item list-group-item-light">na današnji dan: {{ '{:,.2f}'.format(form.razlika[1]) }} din</li>

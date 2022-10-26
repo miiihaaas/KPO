@@ -71,7 +71,7 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.amount(class="form-control form-control-lg") }}
+                    {{ form.amount(class="form-control form-control-lg", placeholder="0.00", type="number", step="0.01") }}
                 {% endif %}
             </div>
             {% if current_user.authorization == 's_admin'%}
@@ -111,16 +111,15 @@
               {{ form.user_id(class="sr-only form-control form-control-lg") }}
             {% endif %}
         </fieldset>
-        <div class="form-check">
+        <div class="form-check form-switch">
           {{ form.cancelled(class="form-check-input") }}
           {{ form.cancelled.label(class="form-check-label") }}
         </div>
+        <br>
         <div class="form-group">
         {{ form.submit(class="btn btn-outline-info") }}
         {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
-          <div>
-            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Delete</button>
-          </div>
+          <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrši fakturu</button>
         {% endif %}
         </div>
   </form>
@@ -130,19 +129,22 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="DeleteModalLabel">Delete Invoice?</h5>
+        <h5 class="modal-title" id="DeleteModalLabel">Da li zaista želite da obrišete fakturu {{ form.invoice_number.data }}?</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <label for="input_password">To delete invoice you need to confirm your password:</label>
+        <label for="input_password">Da bi ste izbrisali fakturu potrebno je da unesete lozinku:</label>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <form  action="{{ url_for('invoices.delete_invoice', invoice_id=invoice.id) }}" method="post">
-          <input class="btn btn-danger" type="submit" value="Delete Invoice">
-          <input type="password" id="input_password" name="input_password" value="" placeholder="confirm your password to delete invoice">
+          <input class="form-control form-control-lg" type="password" id="input_password" name="input_password" value="" placeholder="potvrdi lozinkom">
+          <br>
+          <div class="">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+            <input class="btn btn-danger" type="submit" value="Delete Invoice">
+          </div>
         </form>
       </div>
     </div>

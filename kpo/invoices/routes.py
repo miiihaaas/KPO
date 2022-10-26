@@ -4,7 +4,7 @@ from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort
 from sqlalchemy import func
 from kpo import app, db, bcrypt
-from kpo.invoices.forms import  RegistrationInvoiceForm, UpdateInvoiceForm
+from kpo.invoices.forms import  RegistrationInvoiceForm, UpdateInvoiceForm, DashboardData
 from kpo.models import Company, Invoice, User
 from flask_login import current_user, login_required
 
@@ -19,38 +19,10 @@ def invoice_list():
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         abort(403)
     invoices = Invoice.query.all()
-    class DashboardData():
-        def __init__(self, company_id):
-            self.limit = 6000000
-            self.end_day = date.today()
-            self.start_day = [date(date.today().year, 1, 1)]
-            self.razlika = []
-            self.company_id = company_id
-            list = [0, 1, 7, 15, 30, 90] # broj dana za proračun do limita
-            for item in list:
-                self.start_day.append(date.today() + relativedelta(days=item) + relativedelta(days=-365))
 
+# ovde je bila class DashboardData:
 
-            for value in range(7):
-                try:
-                    self.razlika.append(self.limit + 2000000 - Invoice.query.with_entities(
-                                func.sum(Invoice.amount).label("suma")
-                                ).filter(Invoice.date.between(self.start_day[value], self.end_day)).filter_by(
-                                company_id=self.company_id
-                                ).first()[0])
-
-                except TypeError:
-                    self.razlika = [0, 0, 0, 0, 0, 0, 0]
-
-
-
-
-    if current_user.is_authenticated:
-        form = DashboardData(current_user.user_company.id)
-    else:
-        print(f'nije ulogovan niko')
-        return redirect(url_for('main.about'))
-        flash('You have to be logged in to visit Home page' 'info')
+    form = DashboardData(current_user.user_company.id)
     return render_template('invoice_list.html', title='Invoices', invoices=invoices, form=form)
 
 
@@ -59,39 +31,10 @@ def register_i():
     if current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
         return redirect(url_for('main.home'))
 
-    class DashboardData():
-        def __init__(self, company_id):
-            self.limit = 6000000
-            self.end_day = date.today()
-            self.start_day = [date(date.today().year, 1, 1)]
-            self.razlika = []
-            self.company_id = company_id
-            list = [0, 1, 7, 15, 30, 90] # broj dana za proračun do limita
-            for item in list:
-                self.start_day.append(date.today() + relativedelta(days=item) + relativedelta(days=-365))
+    # ovde je bila class DashboardData:
 
-
-            for value in range(7):
-                try:
-                    self.razlika.append(self.limit + 2000000 - Invoice.query.with_entities(
-                                func.sum(Invoice.amount).label("suma")
-                                ).filter(Invoice.date.between(self.start_day[value], self.end_day)).filter_by(
-                                company_id=self.company_id
-                                ).first()[0])
-
-                except TypeError:
-                    self.razlika = [0, 0, 0, 0, 0, 0, 0]
-
-
-
-
-    if current_user.is_authenticated:
-        data = DashboardData(current_user.user_company.id)
-    else:
-        print(f'nije ulogovan niko')
-        return redirect(url_for('main.about'))
-        flash('You have to be logged in to visit Home page' 'info')
-
+    data = DashboardData(current_user.user_company.id)
+    print(data.last_input.invoice_number)
 
     form = RegistrationInvoiceForm()
     form.reset()
@@ -118,7 +61,7 @@ def register_i():
                                 cancelled=False) #form.user_id.data
             db.session.add(invoice)
             db.session.commit()
-        flash(f'Invoice: {form.invoice_number.data} has been created successfully!', 'success')
+        flash(f'Faktura: {form.invoice_number.data} has been created successfully!', 'success')
         return redirect(url_for('invoices.invoice_list'))
 
 
@@ -185,7 +128,7 @@ def delete_invoice(invoice_id):
     print(f'debug - {request.form.get("input_password")}')
     if not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):
         print('nije dobar password')
-        flash('Wrong password!', 'danger')
+        flash('Pogrešna lozinka', 'danger')
         return redirect(url_for('invoices.invoice_list'))
         abort(403)
     else:
@@ -196,10 +139,10 @@ def delete_invoice(invoice_id):
                 abort(403)
             db.session.delete(invoice)
             db.session.commit()
-            flash(f'Invoice {invoice.invoice_number} has been deleted', 'success' )
+            flash(f'Faktura {invoice.invoice_number} je obrisana', 'success' )
             return redirect(url_for('invoices.invoice_list'))
         else:
             db.session.delete(invoice)
             db.session.commit()
-            flash(f'Invoice: {invoice.invoice_number} has been deleted', 'success' )
+            flash(f'Faktura: {invoice.invoice_number} je obrisana', 'success' )
             return redirect(url_for('invoices.invoice_list'))

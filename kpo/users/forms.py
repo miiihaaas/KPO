@@ -15,12 +15,12 @@ class RegistrationUserForm(FlaskForm):
     authorization = SelectField('Nivo autorizacije', validators=[DataRequired()], choices = [('c_user', 'USER'),('c_admin', 'ADMIN')])
     gender = SelectField('Pol', validators=[DataRequired()], choices = [(0, 'SREDNJI'),(1, 'MUŠKI'),(2, 'ŽENSKI')])
     company_id = SelectField('Kompanija', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
-    submit = SubmitField('Registruj korisnika')
+    submit = SubmitField('Registrujte korisnika')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('That email is taken, please choose a different one')
+            raise ValidationError('Mejl je već registrovan u bazi podataka, izaberite drugi mejl')
 
     def reset(self):
         self.__init__()
@@ -34,7 +34,7 @@ class UpdateUserForm(FlaskForm):
     authorization = SelectField('Nivo autorizacije', validators=[DataRequired()], choices = [('c_user', 'USER'),('c_admin', 'ADMIN')])
     gender = SelectField('Pol', validators=[DataRequired()], choices=[(0, 'SREDNJI'), (1, 'MUŠKI'), (2, 'ŽENSKI')])
     company_id = SelectField('Kompanija', choices = [(c.id, c.companyname)for c in db.session.query(Company.id, Company.companyname).order_by('companyname').all()])
-    submit = SubmitField('Ažuriraj podatke')
+    submit = SubmitField('Ažurirajte podatke')
 
     def reset(self):
         self.__init__()
@@ -45,12 +45,12 @@ class LoginForm(FlaskForm):
     email = StringField('Mejl', validators=[DataRequired(), Email()])
     password = PasswordField('Lozinka', validators=[DataRequired()])
     remember = BooleanField('Zapamti me')
-    submit = SubmitField('Uloguj se')
+    submit = SubmitField('Ulogujte se')
 
 
 class RequestResetForm(FlaskForm):
     email = StringField('Mejl', validators=[DataRequired(), Email()])
-    submit = SubmitField('Zatraži resetovanje lozinke')
+    submit = SubmitField('Zatražite resetovanje lozinke')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
@@ -61,4 +61,4 @@ class RequestResetForm(FlaskForm):
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Lozinka', validators=[DataRequired()])
     confirm_password = PasswordField('Potvrđena lozinka', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Resetuj Lozinku')
+    submit = SubmitField('Resetujte lozinku')

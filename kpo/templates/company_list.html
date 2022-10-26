@@ -1,23 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if current_user.authorization == 's_admin' %}
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('companys.register_c') }}">Register New Company</a>
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('companys.register_c') }}">Registracija nove kompanije</a>
 {% endif %}
 <hr>
 <table id="data" border="1" class="table table-striped">
   <thead>
     <tr>
-      <th>Company Name</th>
-      <th>Address</th>
-      <th>City - State</th>
-      <th>Contacts</th>
+      <th>Naziv kompanije</th>
+      <th>Adresa</th>
+      <th>Mesto - Država</th>
+      <th>Kontakt</th>
     </tr>
   </thead>
   <tbody>
   {% if current_user.authorization == 's_admin' %}
     {% for company in companys %}
       <tr>
-        <td><a class="mr-2" href="{{ url_for('companys.company_profile', company_id=company.id) }}" title="Edit Company">{{ company.companyname }}</a></td>
+        <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('companys.company_profile', company_id=company.id) }}" title="Uređivanje podataka">{{ company.companyname }}</a></td>
         <td>{{ company.company_address }} {{ company.company_address_number }}</td>
         <td>{{ company.company_city }} {{ company.company_state }}</td>
         <td>{{ company.company_site }} / {{ company.company_mail }} / {{ company.company_phone }}</td>
@@ -27,7 +27,7 @@
     {% for company in companys %}
       {% if company.companyname == current_user.user_company.companyname %}
         <tr>
-          <td><a class="mr-2" href="{{ url_for('companys.company_profile', company_id=company.id) }}" title="Edit Company">{{ company.companyname }}</a></td>
+          <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('companys.company_profile', company_id=company.id) }}" title="Uređivanje podataka">{{ company.companyname }}</a></td>
           <td>{{ company.company_address }} {{ company.company_address_number }}</td>
           <td>{{ company.company_city }} {{ company.company_state }}</td>
           <td>{{ company.company_site }} / {{ company.company_mail }} / {{ company.company_phone }}</td>
@@ -42,7 +42,11 @@
 {% block scripts %}
   <script>
     $(document).ready(function () {
-      $('#data').DataTable();
+      $('#data').DataTable({
+        language: {
+          url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
+        }
+      });
     });
   </script>
 {% endblock %}

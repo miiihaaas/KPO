@@ -71,7 +71,7 @@ class Invoice(db.Model):
     invoice_number = db.Column(db.String(7), nullable=False)
     customer = db.Column(db.String(70), nullable=False)
     service = db.Column(db.String(70), nullable=True) #usluga
-    amount = db.Column(db.Integer, nullable=False)
+    amount = db.Column(db.Float, nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     cancelled = db.Column(db.Boolean(), default=False, nullable=False)

@@ -108,4 +108,4 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
         form.company_logo.data=company.company_logo
     image_file = url_for('static', filename='company_logos/' + company.company_logo)
     print(image_file)
-    return render_template('company.html', title='Edit Company', company=company, form=form, legend='Edit Company', image_file=image_file)
+    return render_template('company.html', title='Uređivanje podataka kompanije', company=company, form=form, legend='Uređivanje podataka kompanije', image_file=image_file)

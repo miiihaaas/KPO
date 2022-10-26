@@ -72,7 +72,7 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.amount(class="form-control form-control-lg") }}
+                        {{ form.amount(class="form-control form-control-lg", placeholder="0.00", type="number", step="0.01") }}
                     {% endif %}
                 </div>
                 {% if current_user.authorization == 's_admin'%}
@@ -114,8 +114,8 @@
               </div>
               <div class="col-md-4">
                 <div class="content-section">
-                  <h3>You can put any text here</h3>
-                  <p class='text-muted'>You can put any information here you'd like.
+                  <h3>Korisni podaci</h3>
+                  <p class='text-muted'> Poslednja uneta faktura: {{data.last_input.invoice_number}}
                     <ul class="list-group">
                       <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din</li>
                       <li class="list-group-item list-group-item-light">na današnji dan: {{ '{:,.2f}'.format(data.razlika[1]) }} din</li>

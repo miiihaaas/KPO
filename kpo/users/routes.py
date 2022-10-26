@@ -154,7 +154,7 @@ def logout():
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete ulogovani da bi ste pristupili ovoj stranici', 'danger')
         return redirect(url_for('users.login'))
     elif not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):
         print('nije dobar password')
@@ -167,12 +167,12 @@ def delete_user(user_id):
                 abort(403)
             db.session.delete(user)
             db.session.commit()
-            flash(f'User {user.name} {user.surname} has been deleted', 'success' )
+            flash(f'Profil korisnika {user.name} {user.surname} je izbrisan', 'success' )
             return redirect(url_for('users.user_list'))
         else:
             db.session.delete(user)
             db.session.commit()
-            flash(f'User {user.name} {user.surname} has been deleted', 'success' )
+            flash(f'profil korisnika {user.name} {user.surname} je izbrisan', 'success' )
             return redirect(url_for('users.user_list'))
 
 
@@ -197,7 +197,7 @@ def reset_request():
             send_reset_email(user)
             flash('An email has been sent with instructions to reset your password.', 'info')
             return redirect(url_for('users.login')) # ili samo 'login'
-        return render_template('reset_request.html', title='Reset Password', form=form)
+        return render_template('reset_request.html', title='Resetovanje lozinke', form=form)
 
 
 @users.route("/reset_password/<token>", methods=['GET', 'POST'])
@@ -216,4 +216,4 @@ def reset_token(token):
             flash(f'Your password has been updated!', 'success')
             return redirect(url_for('users.login')) # ili samo 'login'
 
-        return render_template('reset_token.html', title='Reset Password', form=form)
+        return render_template('reset_token.html', title='Resetovanje lozinke', form=form)
