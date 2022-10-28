@@ -1,138 +1,139 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="content-section">
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Dodavanje nove fakture</legend>
-            <div class="row">
-              <div class="col-md-8">
-                <div class="form-group">
-                    {{ form.date.label(class="form-control-label") }}
-                    {% if form.date.errors %}
-                        {{ form.date(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.date.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.date(class="form-control form-control-lg", type="datetime-local") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.invoice_number.label(class="form-control-label") }}
-                    {% if form.invoice_number.errors %}
-                        {{ form.invoice_number(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.invoice_number.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.invoice_number(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.customer.label(class="form-control-label") }}
-
-                    {% if form.customer.errors %}
-                        {{ form.customer(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.customer.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.customer(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.service.label(class="form-control-label") }}
-
-                    {% if form.service.errors %}
-                        {{ form.service(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.service.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.service(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.amount.label(class="form-control-label") }}
-
-                    {% if form.amount.errors %}
-                        {{ form.amount(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.amount.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.amount(class="form-control form-control-lg", placeholder="0.00", type="number", step="0.01") }}
-                    {% endif %}
-                </div>
-                {% if current_user.authorization == 's_admin'%}
-                  <div class="form-group">
-                      {{ form.company_id.label(class="form-control-label") }}
-
-                      {% if form.company_id.errors %}
-                          {{ form.company_id(class="form-control form-control-lg is-invalid") }}
-                          <div class="invalid-feedback">
-                              {% for error in form.company_id.errors %}
-                                  <span>{{ error }}</span>
-                              {% endfor %}
-                          </div>
-                      {% else %}
-                          {{ form.company_id(class="form-control form-control-lg") }}
-                      {% endif %}
-                  </div>
+  <form method="POST" action="">
+      {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Dodavanje nove fakture</legend>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group">
+                {{ form.date.label(class="form-control-label") }}
+                {% if form.date.errors %}
+                    {{ form.date(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.date.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
                 {% else %}
-                  {{ form.company_id(class="sr-only form-control form-control-lg") }}
+                    {{ form.date(class="form-control form-control-lg", type="datetime-local") }}
                 {% endif %}
-                {% if current_user.authorization == 's_admin'%}
-                  <div class="form-group">
-                      {{ form.user_id.label(class="form-control-label") }}
-
-                      {% if form.user_id.errors %}
-                          {{ form.user_id(class="form-control form-control-lg is-invalid") }}
-                          <div class="invalid-feedback">
-                              {% for error in form.user_id.errors %}
-                                  <span>{{ error }}</span>
-                              {% endfor %}
-                          </div>
-                      {% else %}
-                          {{ form.user_id(class="form-control form-control-lg") }}
-                      {% endif %}
-                  </div>
-                {% else %}
-                  {{ form.user_id(class="sr-only form-control form-control-lg") }}
-                {% endif %}
-              </div>
-              <div class="col-md-4">
-                <div class="content-section">
-                  <h3>Korisni podaci</h3>
-                  <p class='text-muted'> Poslednja uneta faktura: {{data.last_input.invoice_number}}
-                    <ul class="list-group">
-                      <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din</li>
-                      <li class="list-group-item list-group-item-light">na današnji dan: {{ '{:,.2f}'.format(data.razlika[1]) }} din</li>
-                      <li class="list-group-item list-group-item-light">na sutrašnju dan: {{ '{:,.2f}'.format(data.razlika[2]) }} din</li>
-                      <li class="list-group-item list-group-item-light">u narednih 7 dana: {{ '{:,.2f}'.format(data.razlika[3]) }} din</li>
-                      <li class="list-group-item list-group-item-light">u narednih 15 dana: {{ '{:,.2f}'.format(data.razlika[4]) }} din</li>
-                      <li class="list-group-item list-group-item-light">u narednih mesec dana: {{ '{:,.2f}'.format(data.razlika[5]) }} din</li>
-                      <li class="list-group-item list-group-item-light">u naredna 3 meseca: {{ '{:,.2f}'.format(data.razlika[6]) }} din</li>
-                    </ul>
-                  </p>
-                </div>
-              </div>
-
             </div>
+            <div class="form-group">
+                {{ form.invoice_number.label(class="form-control-label") }}
+                {% if form.invoice_number.errors %}
+                    {{ form.invoice_number(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.invoice_number.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.invoice_number(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.customer.label(class="form-control-label") }}
 
-        </fieldset>
-        <div class="form-group">
+                {% if form.customer.errors %}
+                    {{ form.customer(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.customer.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.customer(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.service.label(class="form-control-label") }}
+
+                {% if form.service.errors %}
+                    {{ form.service(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.service.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.service(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.amount.label(class="form-control-label") }}
+
+                {% if form.amount.errors %}
+                    {{ form.amount(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.amount.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.amount(class="form-control form-control-lg", placeholder="0.00", type="number", step="0.01") }}
+                {% endif %}
+            </div>
+            {% if current_user.authorization == 's_admin'%}
+              <div class="form-group">
+                  {{ form.company_id.label(class="form-control-label") }}
+
+                  {% if form.company_id.errors %}
+                      {{ form.company_id(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.company_id.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.company_id(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+            {% else %}
+              {{ form.company_id(class="sr-only form-control form-control-lg") }}
+            {% endif %}
+            {% if current_user.authorization == 's_admin'%}
+              <div class="form-group">
+                  {{ form.user_id.label(class="form-control-label") }}
+
+                  {% if form.user_id.errors %}
+                      {{ form.user_id(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.user_id.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.user_id(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+            {% else %}
+              {{ form.user_id(class="sr-only form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="col-md-4">
+            <div class="content-section">
+              <h3>Korisni podaci</h3>
+              <p class='text-muted'> Poslednja uneta faktura: {{data.last_input.invoice_number}}
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din</li>
+                  <li class="list-group-item list-group-item-light">na današnji dan: {{ '{:,.2f}'.format(data.razlika[1]) }} din</li>
+                  <li class="list-group-item list-group-item-light">na sutrašnju dan: {{ '{:,.2f}'.format(data.razlika[2]) }} din</li>
+                  <li class="list-group-item list-group-item-light">u narednih 7 dana: {{ '{:,.2f}'.format(data.razlika[3]) }} din</li>
+                  <li class="list-group-item list-group-item-light">u narednih 15 dana: {{ '{:,.2f}'.format(data.razlika[4]) }} din</li>
+                  <li class="list-group-item list-group-item-light">u narednih mesec dana: {{ '{:,.2f}'.format(data.razlika[5]) }} din</li>
+                  <li class="list-group-item list-group-item-light">u naredna 3 meseca: {{ '{:,.2f}'.format(data.razlika[6]) }} din</li>
+                </ul>
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+    </fieldset>
+    <div class="form-group">
+      <a class="btn btn-info" href="{{url_for('invoices.invoice_list')}}">&#8678; Nazad</a>
       {{ form.submit(class="btn btn-outline-info") }}
     </div>
   </form>

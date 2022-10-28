@@ -54,7 +54,7 @@ class DashboardData():
             try:
                 self.razlika.append(self.limit + 2000000 - Invoice.query.with_entities(
                             func.sum(Invoice.amount).label("suma")
-                            ).filter(Invoice.date.between(self.start_day[value], self.end_day)).filter_by(
+                            ).filter_by(cancelled=False).filter(Invoice.date.between(self.start_day[value], self.end_day)).filter_by(
                             company_id=self.company_id
                             ).first()[0])
 

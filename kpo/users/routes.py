@@ -189,15 +189,15 @@ If you did not make this request, please ignore this email and no changes will b
 
 @users.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
-        if current_user.is_authenticated:
-            return redirect(url_for('main.home'))
-        form = RequestResetForm()
-        if form.validate_on_submit():
-            user  = User.query.filter_by(email=form.email.data).first()
-            send_reset_email(user)
-            flash('An email has been sent with instructions to reset your password.', 'info')
-            return redirect(url_for('users.login')) # ili samo 'login'
-        return render_template('reset_request.html', title='Resetovanje lozinke', form=form)
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user  = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('users.login')) # ili samo 'login'
+    return render_template('reset_request.html', title='Resetovanje lozinke', form=form)
 
 
 @users.route("/reset_password/<token>", methods=['GET', 'POST'])

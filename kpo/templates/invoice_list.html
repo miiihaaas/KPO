@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if current_user.authorization != 'c_user' %}
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a> <a class="btn btn-danger btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje novog knjižog odobrenja</a>
+  <a class="btn btn-info btn-sm m-1" href="{{url_for('main.home')}}">&#8678; Nazad</a>
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
 {% endif %}
 <div class="row">
   <div class="col-md-8">
