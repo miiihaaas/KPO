@@ -5,7 +5,7 @@
   <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
 {% endif %}
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-9">
     <table id="data" border="1" class="table table-striped ">
       {% if current_user.authorization == 's_admin' %}
         <thead>
@@ -24,7 +24,7 @@
           {% for invoice in invoices %}
             <tr>
               <td>{{ invoice.date }}</td>
-              <td><a class="mr-2  btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
+              <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
               <td>{{ invoice.customer }}</td>
               <td>{{ invoice.service }}</td>
               <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
@@ -61,18 +61,18 @@
       {% endif %}
     </table>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="content-section">
       <h3>Korisni podaci</h3>
       <p class='text-muted'>Poslednja uneta faktura: {{ form.last_input.invoice_number }}
         <ul class="list-group">
-          <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</li>
-          <li class="list-group-item list-group-item-light">na današnji dan: {{ '{:,.2f}'.format(form.razlika[1]) }} din</li>
-          <li class="list-group-item list-group-item-light">na sutrašnju dan: {{ '{:,.2f}'.format(form.razlika[2]) }} din</li>
-          <li class="list-group-item list-group-item-light">u narednih 7 dana: {{ '{:,.2f}'.format(form.razlika[3]) }} din</li>
-          <li class="list-group-item list-group-item-light">u narednih 15 dana: {{ '{:,.2f}'.format(form.razlika[4]) }} din</li>
-          <li class="list-group-item list-group-item-light">u narednih mesec dana: {{ '{:,.2f}'.format(form.razlika[5]) }} din</li>
-          <li class="list-group-item list-group-item-light">u naredna 3 meseca: {{ '{:,.2f}'.format(form.razlika[6]) }} din</li>
+          <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(form.razlika[1]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(form.razlika[2]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(form.razlika[3]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(form.razlika[4]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(form.razlika[5]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(form.razlika[6]) }} din</small></li>
         </ul>
       </p>
     </div>
