@@ -13,7 +13,7 @@
             <th>Datum</th>
             <th>Br. Fakture</th>
             <th>Klijent</th>
-            <th>Usluga</th>
+            <th>Opis knjiženja</th>
             <th>Iznos [din]</th>
             <th>Kompanija</th>
             <th>Korinik</th>
@@ -39,7 +39,7 @@
             <th>Datum</th>
             <th>Br. Fakture</th>
             <th>Klijent</th>
-            <th>Usluga</th>
+            <th>Opis knjiženja</th>
             <th>Iznos [din]</th>
             <th>Status</th>
           </tr>
@@ -65,8 +65,9 @@
     <div class="content-section">
       <h3>Korisni podaci</h3>
       <p class='text-muted'>Poslednja uneta faktura: {{ form.last_input.invoice_number }}
+        <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</small></li>
         <ul class="list-group">
-          <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</small></li>
+          <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
           <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(form.razlika[1]) }} din</small></li>
           <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(form.razlika[2]) }} din</small></li>
           <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(form.razlika[3]) }} din</small></li>

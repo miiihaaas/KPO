@@ -28,17 +28,18 @@ def register_c():
         return redirect(url_for('main.home'))
     form = RegistrationCompanyForm()
     if form.validate_on_submit():
-        company = Company(companyname=form.companyname.data.upper(),
-                            company_address=form.company_address.data.upper(),
+        company = Company(companyname=form.companyname.data,
+                            company_address=form.company_address.data,
                             company_address_number=form.company_address_number.data,
                             company_zip_code=form.company_zip_code.data,
-                            company_city=form.company_city.data.upper(),
-                            company_state=form.company_state.data.upper(),
+                            company_city=form.company_city.data,
+                            company_state=form.company_state.data,
                             company_pib=form.company_pib.data,
                             company_mb=form.company_mb.data,
                             company_site=form.company_site.data,
                             company_mail=form.company_mail.data,
-                            company_phone=form.company_phone.data)
+                            company_phone=form.company_phone.data,
+                            company_logo='')
         db.session.add(company)
         db.session.commit()
         flash(f'Company {form.companyname.data} has been created successfully!', 'success')

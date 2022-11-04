@@ -34,7 +34,7 @@ def register_i():
     # ovde je bila class DashboardData:
 
     data = DashboardData(current_user.user_company.id)
-    print(data.last_input.invoice_number)
+    # print(data.last_input.invoice_number)
 
     form = RegistrationInvoiceForm()
     form.reset()

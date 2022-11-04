@@ -178,11 +178,11 @@ def delete_user(user_id):
 
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message('Password reset Request', sender='noreplay@putninalozi.com', recipients=[user.email])
-    msg.body = f''' To reset your password, visit the following link:
+    msg = Message('Zahtev za resetovanje lozinke', sender='noreplay@kpo.digital', recipients=[user.email])
+    msg.body = f'''Da biste resetovali lozinku, kliknite na sledeći link:
 {url_for('users.reset_token', token=token, _external=True)}
 
-If you did not make this request, please ignore this email and no changes will be made.
+Ako Vi niste napavili ovaj zahtev, molim Vas ignorišite ovaj mejl i neće biti napravljene nikakve izmene na Vašem nalogu.
     '''
     mail.send(msg)
 
@@ -195,9 +195,9 @@ def reset_request():
     if form.validate_on_submit():
         user  = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
-        flash('An email has been sent with instructions to reset your password.', 'info')
-        return redirect(url_for('users.login')) # ili samo 'login'
-    return render_template('reset_request.html', title='Resetovanje lozinke', form=form)
+        flash('Mejl je poslat na Vašu adresu sa instrukcijama za resetovanje lozinke. ', 'info')
+        return redirect(url_for('users.login'))
+    return render_template('reset_request.html', title='Resetovanje lozinke', form=form, legend='Resetovanje lozinke')
 
 
 @users.route("/reset_password/<token>", methods=['GET', 'POST'])
@@ -206,14 +206,14 @@ def reset_token(token):
             return redirect(url_for('main.home'))
         user = User.verify_reset_token(token)
         if user is None:
-            flash('That is an invalid or expired token', 'warning')
+            flash('Ovo je nevažeći ili istekli token.', 'warning')
             return redirect(url_for('users.reset_request'))
         form = ResetPasswordForm()
         if form.validate_on_submit():
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
             user.password = hashed_password
             db.session.commit()
-            flash(f'Your password has been updated!', 'success')
-            return redirect(url_for('users.login')) # ili samo 'login'
+            flash(f'Vaša lozinka je ažurirana!', 'success')
+            return redirect(url_for('users.login'))
 
         return render_template('reset_token.html', title='Resetovanje lozinke', form=form)

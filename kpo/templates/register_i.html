@@ -115,9 +115,10 @@
           <div class="col-md-4">
             <div class="content-section">
               <h3>Korisni podaci</h3>
-              <p class='text-muted'> Poslednja uneta faktura: {{data.last_input.invoice_number}}
+              <p class='text-muted'>Poslednja uneta faktura: {{data.last_input.invoice_number}}
+                <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din</li>
                 <ul class="list-group">
-                  <li class="list-group-item list-group-item-light">Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din</li>
+                  <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
                   <li class="list-group-item list-group-item-light">na današnji dan: {{ '{:,.2f}'.format(data.razlika[1]) }} din</li>
                   <li class="list-group-item list-group-item-light">na sutrašnju dan: {{ '{:,.2f}'.format(data.razlika[2]) }} din</li>
                   <li class="list-group-item list-group-item-light">u narednih 7 dana: {{ '{:,.2f}'.format(data.razlika[3]) }} din</li>

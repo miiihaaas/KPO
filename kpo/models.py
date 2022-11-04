@@ -68,7 +68,7 @@ class Customer(db.Model):
 class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
-    invoice_number = db.Column(db.String(7), nullable=False)
+    invoice_number = db.Column(db.String(12), nullable=False)
     customer = db.Column(db.String(70), nullable=False)
     service = db.Column(db.String(70), nullable=True) #usluga
     amount = db.Column(db.Float, nullable=False)

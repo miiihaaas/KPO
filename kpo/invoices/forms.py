@@ -10,9 +10,9 @@ from kpo.models import Company, User, Invoice
 
 class RegistrationInvoiceForm(FlaskForm):
     date = DateField('Datum: ', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=7, max=7)])
+    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=5, max=12)])
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
-    service = StringField('Usluga', validators=[Length(min=0, max=80)])
+    service = StringField('Opis knjiženja', validators=[Length(min=0, max=80)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])
     company_id = SelectField('Company ID', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()])
     user_id = SelectField('User ID', choices=[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
@@ -24,9 +24,9 @@ class RegistrationInvoiceForm(FlaskForm):
 
 class UpdateInvoiceForm(FlaskForm):
     date = DateField('Datum: ', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=7, max=7)])
+    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=5, max=12)])
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
-    service = StringField('Usluga', validators=[Length(min=0, max=50)])
+    service = StringField('Opis knjiženja', validators=[Length(min=0, max=50)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])
     company_id = SelectField('Company ID', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()])
     user_id = SelectField('User ID', choices=[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
@@ -49,7 +49,7 @@ class DashboardData():
         for item in list:
             self.start_day.append(date.today() + relativedelta(days=item) + relativedelta(days=-365))
 
-
+        print(f'iz dashborda kompanija id: {self.company_id}')
         for value in range(7):
             try:
                 self.razlika.append(self.limit + 2000000 - Invoice.query.with_entities(
@@ -57,6 +57,8 @@ class DashboardData():
                             ).filter_by(cancelled=False).filter(Invoice.date.between(self.start_day[value], self.end_day)).filter_by(
                             company_id=self.company_id
                             ).first()[0])
+                print(f'uspešno: {self.razlika}')
 
             except TypeError:
                 self.razlika = [0, 0, 0, 0, 0, 0, 0]
+                print(f'error: {self.razlika}')
