@@ -70,7 +70,7 @@ class Invoice(db.Model):
     date = db.Column(db.Date, nullable=False)
     invoice_number = db.Column(db.String(12), nullable=False)
     customer = db.Column(db.String(70), nullable=False)
-    service = db.Column(db.String(70), nullable=True) #usluga
+    service = db.Column(db.String(400), nullable=True) #usluga
     amount = db.Column(db.Float, nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)

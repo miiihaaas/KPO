@@ -20,8 +20,6 @@ def invoice_list():
         abort(403)
     invoices = Invoice.query.all()
 
-# ovde je bila class DashboardData:
-
     form = DashboardData(current_user.user_company.id)
     return render_template('invoice_list.html', title='Invoices', invoices=invoices, form=form)
 
@@ -44,7 +42,7 @@ def register_i():
                                 invoice_number=form.invoice_number.data,
                                 customer=form.customer.data,
                                 service=form.service.data,
-                                amount=int(form.amount.data),
+                                amount=form.amount.data,
                                 company_id=current_user.user_company.id,
                                 user_id=current_user.id,
                                 cancelled=False)

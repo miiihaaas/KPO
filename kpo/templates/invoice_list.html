@@ -4,6 +4,36 @@
   <a class="btn btn-info btn-sm m-1" href="{{url_for('main.home')}}">&#8678; Nazad</a>
   <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
 {% endif %}
+<div id="accordionZero">
+  <br>
+  <div class="accordion" id="accordionZero">
+    <div class="accordion-item">
+      <div class="accordion-header" id="headingZero">
+        <button type="button" class="accordion-button" data-toggle="collapse" data-target="#collapseZero" aria-expanded="false" aria-controls="collapseZero">
+          <h3>Izvoz KPO knjige</h3>
+        </button>
+      </div>
+
+      <div id="collapseZero" class="collapse" aria-labelledby="headingZero" data-parent="#accordionZero">
+        <div class="card-body">
+          <div class="row">
+            <div class="col form-group">
+              start date
+            </div>
+            <div class="col form-box">
+              end date
+            </div>
+          </div>
+          <br>
+          <div class="form-group">
+            <a href="#" class="btn btn-info btn-lg m-1">Izvezite &#9782;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
 <div class="row">
   <div class="col-md-9">
     <table id="data" border="1" class="table table-striped ">
