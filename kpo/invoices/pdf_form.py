@@ -84,17 +84,15 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
             # Država
             self.cell(8, 3, f'                         {company_state}', ln=True, align='L')
             # linija
+            pdf.set_font('times','B', 16)
+            pdf.cell(0, 30, f'Izvoz KPO podataka za period: {start} - {end} ', ln=True, align='L')
             pdf.line(10, 30, 200, 30)
         def footer(self):
             pass
     pdf=PDF()
     pdf.alias_nb_pages()
+    # pdf.set_top_margin(0)
     pdf.add_page()
-    pdf.set_font('times','B', 16)
-    pdf.cell(0, 30, f'izvoz KPO podataka', ln=True, align='C')
-    pdf.set_font('times','B', 12)
-    pdf.cell(50, 10, f'Od: {start}', ln=False, align='L')
-    pdf.cell(50, 10, f'Do: {end}', ln=True, align='L')
 
     ukupno = 0
     pdf.set_font('times','B', 10)
@@ -106,14 +104,14 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
     for invoice in filtered_invoices:
         if invoice.cancelled == False:
             ukupno = ukupno + invoice.amount
-            pdf.set_font('times','B', 10)
-            pdf.cell(20, 5, f'{replace_serbian_characters(invoice.date)}', border=1, ln=False, align='C')
-            pdf.cell(20, 5, f'{replace_serbian_characters(invoice.invoice_number)}', border=1, ln=False, align='C')
-            pdf.cell(50, 5, f'{replace_serbian_characters(invoice.customer)}', border=1, ln=False, align='L')
-            pdf.cell(80, 5, f'{replace_serbian_characters(invoice.service)}', border=1, ln=False, align='L')
-            pdf.cell(20, 5, f'{replace_serbian_characters(invoice.amount)}', border=1, ln=True, align='R')
+            pdf.set_font('times','', 10)
+            pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.date)}', border='T', new_y='LAST', align='C')
+            pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.invoice_number)}', border='T', new_y='LAST', align='C')
+            pdf.multi_cell(50, 5, f'{replace_serbian_characters(invoice.customer)}', border='T', new_y='LAST', align='L')
+            pdf.multi_cell(80, 5, f'{replace_serbian_characters(invoice.service)}', border='T', new_y='LAST', align='L')
+            pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.amount)}', border='B', new_x='LMARGIN', new_y='NEXT', align='R')
 
-    pdf.cell(0, 5, f'Ukupno: {round(ukupno,2)} rsd', align='R')
+    pdf.cell(0, 5, f'Ukupno: {round(ukupno,2)} rsd', border='T', align='R')
 
     path = "kpo/static/pdf_forms/"
     pdf.output(path + file_name)
