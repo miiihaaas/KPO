@@ -87,6 +87,12 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
             pdf.set_font('times','B', 16)
             pdf.cell(0, 30, f'Izvoz KPO podataka za period: {start} - {end} ', ln=True, align='L')
             pdf.line(10, 30, 200, 30)
+            pdf.set_font('times','B', 10)
+            pdf.cell(20, 5, f'Datum', border=1, ln=False, align='C')
+            pdf.cell(20, 5, f'Br. fakture', border=1, ln=False, align='C')
+            pdf.cell(50, 5, f'Klijent', border=1, ln=False, align='C')
+            pdf.cell(80, 5, f'Opis Knjizenja', border=1, ln=False, align='C')
+            pdf.cell(20, 5, f'Iznos [rsd]', border=1, ln=True, align='R')
         def footer(self):
             pass
     pdf=PDF()
@@ -95,12 +101,7 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
     pdf.add_page()
 
     ukupno = 0
-    pdf.set_font('times','B', 10)
-    pdf.cell(20, 5, f'Datum', border=1, ln=False, align='C')
-    pdf.cell(20, 5, f'Br. fakture', border=1, ln=False, align='C')
-    pdf.cell(50, 5, f'Klijent', border=1, ln=False, align='C')
-    pdf.cell(80, 5, f'Opis Knjizenja', border=1, ln=False, align='C')
-    pdf.cell(20, 5, f'Iznos [rsd]', border=1, ln=True, align='R')
+
     for invoice in filtered_invoices:
         if invoice.cancelled == False:
             ukupno = ukupno + invoice.amount
