@@ -1,114 +1,119 @@
 {% extends "layout.html" %}
 {% block content %}
-{% if current_user.authorization != 'c_user' %}
-  <a class="btn btn-info btn-sm m-1" href="{{url_for('main.home')}}">&#8678; Nazad</a>
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
-{% endif %}
-<div id="accordionZero">
-  <br>
-  <div class="accordion" id="accordionZero">
-    <div class="accordion-item">
-      <div class="accordion-header" id="headingZero">
-        <button type="button" class="accordion-button" data-toggle="collapse" data-target="#collapseZero" aria-expanded="false" aria-controls="collapseZero">
-          <h3>Izvoz KPO knjige</h3>
-        </button>
-      </div>
+<form method="post">
 
-      <div id="collapseZero" class="collapse" aria-labelledby="headingZero" data-parent="#accordionZero">
-        <div class="card-body">
-          <div class="row">
-            <div class="col form-group">
-              start date
+
+  {% if current_user.authorization != 'c_user' %}
+    <a class="btn btn-info btn-sm m-1" href="{{url_for('main.home')}}">&#8678; Nazad</a>
+    <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
+  {% endif %}
+  <div id="accordionZero">
+    <br>
+    <div class="accordion" id="accordionZero">
+      <div class="accordion-item">
+        <div class="accordion-header" id="headingZero">
+          <button type="button" class="accordion-button" data-toggle="collapse" data-target="#collapseZero" aria-expanded="false" aria-controls="collapseZero">
+            <h3>Izvoz KPO knjige</h3>
+          </button>
+        </div>
+
+        <div id="collapseZero" class="collapse" aria-labelledby="headingZero" data-parent="#accordionZero">
+          <div class="card-body">
+            <div class="row">
+              <div class="col form-group">
+                <label class="form-control-label" for="start">Od</label>
+                <input class="form-control form-control-lg" type="date" id="start" name="start" value="">
+              </div>
+              <div class="col form-box">
+                <label class="form-control-label" for="end">Do</label>
+                <input class="form-control form-control-lg" type="date" id="end" name="end" value="">
+              </div>
+              <div class="col form-group">
+                <input type="submit" name="" class="btn btn-info btn-lg m-1" value="Izvezite &#9782;">
+              </div>
             </div>
-            <div class="col form-box">
-              end date
-            </div>
-          </div>
-          <br>
-          <div class="form-group">
-            <a href="#" class="btn btn-info btn-lg m-1">Izvezite &#9782;</a>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<br>
-<div class="row">
-  <div class="col-md-9">
-    <table id="data" border="1" class="table table-striped ">
-      {% if current_user.authorization == 's_admin' %}
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Br. Fakture</th>
-            <th>Klijent</th>
-            <th>Opis knjiženja</th>
-            <th>Iznos [din]</th>
-            <th>Kompanija</th>
-            <th>Korinik</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for invoice in invoices %}
+  <br>
+  <div class="row">
+    <div class="col-md-9">
+      <table id="data" border="1" class="table table-striped ">
+        {% if current_user.authorization == 's_admin' %}
+          <thead>
             <tr>
-              <td>{{ invoice.date }}</td>
-              <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
-              <td>{{ invoice.customer }}</td>
-              <td>{{ invoice.service }}</td>
-              <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
-              <td>{{ invoice.invoice_company.companyname }}</td>
-              <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
-              <td style="text-align: center">{% if invoice.cancelled %} Storno &#9940 {% else %} &#9989 {% endif %}</td>
-          {% endfor %}
-        </tbody>
-      {% elif current_user.authorization == 'c_admin' %}
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Br. Fakture</th>
-            <th>Klijent</th>
-            <th>Opis knjiženja</th>
-            <th>Iznos [din]</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for invoice in invoices %}
-            {% if invoice.invoice_company.id == current_user.user_company.id %}
+              <th>Datum</th>
+              <th>Br. Fakture</th>
+              <th>Klijent</th>
+              <th>Opis knjiženja</th>
+              <th>Iznos [din]</th>
+              <th>Kompanija</th>
+              <th>Korinik</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for invoice in invoices %}
               <tr>
                 <td>{{ invoice.date }}</td>
                 <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
                 <td>{{ invoice.customer }}</td>
                 <td>{{ invoice.service }}</td>
                 <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
+                <td>{{ invoice.invoice_company.companyname }}</td>
+                <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
                 <td style="text-align: center">{% if invoice.cancelled %} Storno &#9940 {% else %} &#9989 {% endif %}</td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-        </tbody>
-      {% endif %}
-    </table>
-  </div>
-  <div class="col-md-3">
-    <div class="content-section">
-      <h3>Korisni podaci</h3>
-      <p class='text-muted'>Poslednja uneta faktura: {{ form.last_input.invoice_number }}
-        <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit -form.razlika[0] + 2000000) }} din</small></li>
-        <ul class="list-group">
-          <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
-          <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(form.razlika[1]) }} din</small></li>
-          <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(form.razlika[2]) }} din</small></li>
-          <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(form.razlika[3]) }} din</small></li>
-          <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(form.razlika[4]) }} din</small></li>
-          <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(form.razlika[5]) }} din</small></li>
-          <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(form.razlika[6]) }} din</small></li>
-        </ul>
-      </p>
+            {% endfor %}
+          </tbody>
+        {% elif current_user.authorization == 'c_admin' %}
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Br. Fakture</th>
+              <th>Klijent</th>
+              <th>Opis knjiženja</th>
+              <th>Iznos [din]</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for invoice in invoices %}
+              {% if invoice.invoice_company.id == current_user.user_company.id %}
+                <tr>
+                  <td>{{ invoice.date }}</td>
+                  <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
+                  <td>{{ invoice.customer }}</td>
+                  <td>{{ invoice.service }}</td>
+                  <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
+                  <td style="text-align: center">{% if invoice.cancelled %} Storno &#9940 {% else %} &#9989 {% endif %}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        {% endif %}
+      </table>
+    </div>
+    <div class="col-md-3">
+      <div class="content-section">
+        <h3>Korisni podaci</h3>
+        <p class='text-muted'>Poslednja uneta faktura: {{ data.last_input.invoice_number }}
+          <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din</small></li>
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
+            <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(data.razlika[1]) }} din</small></li>
+            <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(data.razlika[2]) }} din</small></li>
+            <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(data.razlika[3]) }} din</small></li>
+            <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(data.razlika[4]) }} din</small></li>
+            <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(data.razlika[5]) }} din</small></li>
+            <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(data.razlika[6]) }} din</small></li>
+          </ul>
+        </p>
+      </div>
     </div>
   </div>
-</div>
+</form>
 
 {% endblock content%}
 

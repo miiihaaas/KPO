@@ -1,17 +1,18 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from flask import Blueprint
-from flask import  render_template, url_for, flash, redirect, request, abort
+from flask import  render_template, url_for, flash, redirect, request, abort, send_file
 from sqlalchemy import func
 from kpo import app, db, bcrypt
 from kpo.invoices.forms import  RegistrationInvoiceForm, UpdateInvoiceForm, DashboardData
 from kpo.models import Company, Invoice, User
 from flask_login import current_user, login_required
+from kpo.invoices.pdf_form import create_invoice_report
 
 invoices = Blueprint('invoices', __name__)
 
 
-@invoices.route("/invoice_list")
+@invoices.route("/invoice_list", methods=['GET', 'POST'])
 def invoice_list():
     if not current_user.is_authenticated:
         flash('You have to be logged in to access this page', 'danger')
@@ -19,9 +20,18 @@ def invoice_list():
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         abort(403)
     invoices = Invoice.query.all()
-
-    form = DashboardData(current_user.user_company.id)
-    return render_template('invoice_list.html', title='Invoices', invoices=invoices, form=form)
+    data = DashboardData(current_user.user_company.id)
+    if request.method == 'POST':
+        start = request.form.get('start') #prilagoditi promenjive
+        end = request.form.get('end') #prilagoditi promenjive
+        filtered_invoices = [i for i in Invoice.query.filter(Invoice.date.between(start, end)).all()]
+        file_name = f'{current_user.user_company.companyname}.pdf'
+        create_invoice_report(start, end, filtered_invoices, file_name)
+        path = "static/pdf_forms/" + file_name
+        return send_file(path, as_attachment=True)
+        return render_template('invoice_list.html', title='Invoices', invoices=invoices, data=data)
+    else:
+        return render_template('invoice_list.html', title='Invoices', invoices=invoices, data=data)
 
 
 @invoices.route("/register_i", methods=['GET', 'POST'])
@@ -53,7 +63,7 @@ def register_i():
                                 invoice_number=form.invoice_number.data,
                                 customer=form.customer.data,
                                 service=form.service.data,
-                                amount=int(form.amount.data),
+                                amount=form.amount.data,
                                 company_id=form.company_id.data,
                                 user_id=current_user.id,
                                 cancelled=False) #form.user_id.data
