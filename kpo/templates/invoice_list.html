@@ -99,7 +99,7 @@
       <div class="content-section">
         <h3>Korisni podaci</h3>
         <p class='text-muted'>Poslednja uneta faktura: {{ data.last_input.invoice_number }}
-          <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit -data.razlika[0] + 2000000) }} din / ostalo: {{ '{:,.2f}'.format(data.razlika[0] - 2000000) }}  din</small></li>
           <ul class="list-group">
             <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
             <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(data.razlika[1]) }} din</small></li>
