@@ -60,11 +60,15 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
     company_mail = filtered_invoices[0].invoice_company.company_mail
     company_site = filtered_invoices[0].invoice_company.company_site
     class PDF(FPDF):
+        def __init__(self, **kwargs):
+            super(PDF, self).__init__(**kwargs)
+            self.add_font('DejaVuSansCondensed', '', './kpo/static/fonts/DejaVuSansCondensed.ttf', uni=True)
+            self.add_font('DejaVuSansCondensed', 'B', './kpo/static/fonts/DejaVuSansCondensed-Bold.ttf', uni=True)
         def header(self):
             # Logo
             self.image(company_logo, 1, 1, 25)
             # set font
-            self.set_font('times', 'I', 8)
+            self.set_font('DejaVuSansCondensed', '', 8)
             # Kompanija
             self.cell(50, 3, f'                         {company_name}', ln=False, align='L')
             # PIB
@@ -84,10 +88,10 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
             # Država
             self.cell(8, 3, f'                         {company_state}', ln=True, align='L')
             # linija
-            pdf.set_font('times','B', 16)
+            pdf.set_font('DejaVuSansCondensed','B', 16)
             pdf.cell(0, 30, f'Izvoz KPO podataka za period: {start} - {end} ', ln=True, align='L')
             pdf.line(10, 30, 200, 30)
-            pdf.set_font('times','B', 10)
+            pdf.set_font('DejaVuSansCondensed','B', 9)
             pdf.cell(20, 5, f'Datum', border=1, ln=False, align='C')
             pdf.cell(20, 5, f'Br. fakture', border=1, ln=False, align='C')
             pdf.cell(50, 5, f'Klijent', border=1, ln=False, align='C')
@@ -105,14 +109,16 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
     for invoice in filtered_invoices:
         if invoice.cancelled == False:
             ukupno = ukupno + invoice.amount
-            pdf.set_font('times','', 10)
+            pdf.set_font('DejaVuSansCondensed','', 8)
             pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.date)}', border='T', new_y='LAST', align='C')
             pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.invoice_number)}', border='T', new_y='LAST', align='C')
             pdf.multi_cell(50, 5, f'{replace_serbian_characters(invoice.customer)}', border='T', new_y='LAST', align='L')
             pdf.multi_cell(80, 5, f'{replace_serbian_characters(invoice.service)}', border='T', new_y='LAST', align='L')
             pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.amount)}', border='B', new_x='LMARGIN', new_y='NEXT', align='R')
-
-    pdf.cell(0, 5, f'Ukupno: {round(ukupno,2)} rsd', border='T', align='R')
+    pdf.cell(0, 5, f'Ukupno: {round(ukupno,2)} rsd', border='T', align='R', ln=True)
+    pdf.multi_cell(0, 10, f'''
+Potpis ovlašćenog lica:
+_________________________''', border=False, align='R')
 
     path = "kpo/static/pdf_forms/"
     pdf.output(path + file_name)

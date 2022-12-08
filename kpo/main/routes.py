@@ -18,8 +18,8 @@ def home():
         print(f'{current_user.user_company.id=}')
     else:
         print(f'nije ulogovan niko')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.' 'info')
         return redirect(url_for('main.about'))
-        flash('You have to be logged in to visit Home page' 'info')
     return render_template('home.html', title='Početna', form=form)
 
     print(form.start_day)

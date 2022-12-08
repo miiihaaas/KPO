@@ -13,7 +13,7 @@ companys = Blueprint('companys', __name__)
 @companys.route("/company_list")
 def company_list():
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     companys = Company.query.all()
     return render_template('company_list.html', title='Companies', companys=companys)
@@ -22,7 +22,7 @@ def company_list():
 @companys.route("/register_c", methods=['GET', 'POST'])
 def register_c():
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.is_authenticated and current_user.authorization != 's_admin':
         return redirect(url_for('main.home'))
@@ -42,9 +42,9 @@ def register_c():
                             company_logo='')
         db.session.add(company)
         db.session.commit()
-        flash(f'Company {form.companyname.data} has been created successfully!', 'success')
+        flash(f'Kompanija: {form.companyname.data} je uspešno kreirana!', 'success')
         return redirect(url_for('main.home'))
-    return render_template('register_c.html', title='Register New Company', form=form)
+    return render_template('register_c.html', title='Registracija nove kompanije', form=form)
 
 
 def save_picture(form_picture):
@@ -67,7 +67,7 @@ def save_picture(form_picture):
 def company_profile(company_id): #ovo je funkcija za editovanje user-a
     company = Company.query.get_or_404(company_id)
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         abort(403)
@@ -92,7 +92,7 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
         company.company_mail=form.company_mail.data
         company.company_phone=form.company_phone.data
         db.session.commit()
-        flash('Company details has been updated.', 'success')
+        flash('Podaci kompanije su izmenjeni.', 'success')
         return redirect(url_for('companys.company_list', title='Companies', companys=companys))
     elif request.method == 'GET':
         form.companyname.data=company.companyname

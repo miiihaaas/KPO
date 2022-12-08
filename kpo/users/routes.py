@@ -14,7 +14,7 @@ users = Blueprint('users', __name__)
 @users.route("/user_list")
 def user_list():
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     users = User.query.all()
     return render_template('user_list.html', title='Users', users=users)
@@ -24,10 +24,10 @@ def user_list():
 # @login_required
 def register_u():
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
-        flash('You do not have authorization to access this page', 'danger')
+        flash('Nemate autorizaciju da pristupite ovoj stranici', 'danger')
         return redirect(url_for('main.home'))
     form = RegistrationUserForm()
     form.reset()
@@ -53,9 +53,9 @@ def register_u():
                         company_id=form.company_id.data)
         db.session.add(user)
         db.session.commit()
-        flash(f'Account created for {form.name.data} {form.surname.data}!', 'success')
+        flash(f'Kreiran je porfil: {form.name.data} {form.surname.data}!', 'success')
         return redirect(url_for('users.user_list'))
-    return render_template('register_u.html', title='Register New User', form=form, legend='Add New User')
+    return render_template('register_u.html', title='Registracija novog korisnika', form=form, legend='Dodavanje novog korisnika')
 
 
 
@@ -65,7 +65,7 @@ def register_u():
 def user_profile(user_id): #ovo je funkcija za editovanje user-a
     user = User.query.get_or_404(user_id)
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         if current_user.id != user.id:
@@ -88,8 +88,8 @@ def user_profile(user_id): #ovo je funkcija za editovanje user-a
         else:
             validate_email = User.query.filter_by(email=form.email.data).first()
             if validate_email:
-                flash('That email is taken, please choose a different one', 'danger')
-                return render_template('user.html', title="Edit User", user=user, form=form, legend='Edit User')
+                flash('Taj mejl je zauzet, molim Vas izaberite drugi mejl.', 'danger')
+                return render_template('user.html', title="Izmena korisničkih podataka", user=user, form=form, legend='Edit User')
             else:
                 user.email = form.email.data
 
@@ -106,7 +106,7 @@ def user_profile(user_id): #ovo je funkcija za editovanje user-a
             user.company_id = user.company_id
 
         db.session.commit()
-        flash('Profile was updated', 'success')
+        flash('Profil je ažuriran', 'success')
         return redirect(url_for('users.user_list'))
     elif request.method == 'GET':
         form.name.data = user.name
@@ -117,12 +117,12 @@ def user_profile(user_id): #ovo je funkcija za editovanje user-a
         form.authorization.choices = [('c_user', 'USER'),('c_admin', 'ADMIN')]
         form.authorization.data = user.authorization
 
-        form.gender.choices = [(0, 'SREDNJI'),(1, 'MUŠKI'),(2, 'ŽENSKI')]
+        form.gender.choices = [(1, 'MUŠKI'),(2, 'ŽENSKI')]
         form.gender.data = user.gender
 
         form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
         form.company_id.data = str(user.company_id)
-    return render_template('user.html', title="Edit User", user=user, form=form, legend='Edit User')
+    return render_template('user.html', title="Izmena korisničkih podataka", user=user, form=form, legend='Izmena korisničkih podataka')
 
 
 
@@ -136,10 +136,10 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
+            flash(f'Dobrodošli {user.name}!', 'success')
             return redirect(next_page) if next_page else redirect(url_for('main.home'))
-            flash(f'Welcome back {user.name}!', 'success')
         else:
-            flash(f'Username or Password are not valid!', 'danger')
+            flash(f'Korisničko ime ili lozinka nisu ispravni!', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 
@@ -215,5 +215,4 @@ def reset_token(token):
             db.session.commit()
             flash(f'Vaša lozinka je ažurirana!', 'success')
             return redirect(url_for('users.login'))
-
         return render_template('reset_token.html', title='Resetovanje lozinke', form=form)

@@ -40,11 +40,11 @@ def register_i():
     if current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
         return redirect(url_for('main.home'))
 
-    # ovde je bila class DashboardData:
-
     data = DashboardData(current_user.user_company.id)
     # print(data.last_input.invoice_number)
-
+    # customer_list = Invoice.query.filter_by(company_id=current_user.user_company.id).distinct()
+    customer_list = [i.customer for i in db.session.query(Invoice.customer).distinct()]
+    print(customer_list)
     form = RegistrationInvoiceForm()
     form.reset()
     if form.validate_on_submit():
@@ -70,7 +70,7 @@ def register_i():
                                 cancelled=False) #form.user_id.data
             db.session.add(invoice)
             db.session.commit()
-        flash(f'Faktura: {form.invoice_number.data} has been created successfully!', 'success')
+        flash(f'Faktura: {form.invoice_number.data} je uspešno kreirana!', 'success')
         return redirect(url_for('invoices.invoice_list'))
 
 
@@ -78,7 +78,7 @@ def register_i():
 
 
 
-    return render_template('register_i.html', title='Register New Vehicle', form=form, data=data)
+    return render_template('register_i.html', title='Register New Vehicle', form=form, data=data, customer_list=customer_list)
 
 
 
@@ -89,7 +89,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
 
     print(f'{invoice.date=}')
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         abort(403)
@@ -113,7 +113,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
         invoice.cancelled = form.cancelled.data
 
         db.session.commit()
-        flash(f'Invoice {form.invoice_number.data} was updated', 'success')
+        flash(f'Faktura: {form.invoice_number.data} je ažurirana.', 'success')
         return redirect(url_for('invoices.invoice_list'))
     elif request.method == 'GET':
         print(f'{invoice.cancelled=}')
@@ -137,7 +137,7 @@ def delete_invoice(invoice_id):
     print(f'debug - {request.form.get("input_password")}')
     if not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):
         print('nije dobar password')
-        flash('Pogrešna lozinka', 'danger')
+        flash('Pogrešna lozinka.', 'danger')
         return redirect(url_for('invoices.invoice_list'))
         abort(403)
     else:
