@@ -2,58 +2,13 @@ from fpdf import FPDF
 import datetime
 
 
-def replace_serbian_characters(string):
-    # breakpoint()
-    try:
-        string = string.replace("č", "c")
-    except:
-        pass
-    try:
-        string = string.replace("ć", "c")
-    except:
-        pass
-    try:
-        string = string.replace("đ", "dj")
-    except:
-        pass
-    try:
-        string = string.replace("ž", "z")
-    except:
-        pass
-    try:
-        string = string.replace("š", "s")
-    except:
-        pass
-    try:
-        string = string.replace("Č", "C")
-    except:
-        pass
-    try:
-        string = string.replace("Ć", "C")
-    except:
-        pass
-    try:
-        string = string.replace("Đ", "Dj")
-    except:
-        pass
-    try:
-        string = string.replace("Ž", "Z")
-    except:
-        pass
-    try:
-        string = string.replace("Š", "S")
-    except:
-        pass
-    return string
-
-
 def create_invoice_report(start, end, filtered_invoices, file_name):
     company_logo = "kpo/static/company_logos/" + filtered_invoices[0].invoice_company.company_logo
-    company_name = replace_serbian_characters(filtered_invoices[0].invoice_company.companyname)
-    company_address = replace_serbian_characters(filtered_invoices[0].invoice_company.company_address) + f" {filtered_invoices[0].invoice_company.company_address_number}"
+    company_name = filtered_invoices[0].invoice_company.companyname
+    company_address = filtered_invoices[0].invoice_company.company_address + f" {filtered_invoices[0].invoice_company.company_address_number}"
     company_zip_code = filtered_invoices[0].invoice_company.company_zip_code
-    company_city = replace_serbian_characters(filtered_invoices[0].invoice_company.company_city)
-    company_state = replace_serbian_characters(filtered_invoices[0].invoice_company.company_state)
+    company_city = filtered_invoices[0].invoice_company.company_city
+    company_state = filtered_invoices[0].invoice_company.company_state
     company_pib = filtered_invoices[0].invoice_company.company_pib
     company_mb = filtered_invoices[0].invoice_company.company_mb
     company_phone = filtered_invoices[0].invoice_company.company_phone
@@ -110,15 +65,15 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
         if invoice.cancelled == False:
             ukupno = ukupno + invoice.amount
             pdf.set_font('DejaVuSansCondensed','', 8)
-            pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.date)}', border='T', new_y='LAST', align='C')
-            pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.invoice_number)}', border='T', new_y='LAST', align='C')
-            pdf.multi_cell(50, 5, f'{replace_serbian_characters(invoice.customer)}', border='T', new_y='LAST', align='L')
-            pdf.multi_cell(80, 5, f'{replace_serbian_characters(invoice.service)}', border='T', new_y='LAST', align='L')
-            pdf.multi_cell(20, 5, f'{replace_serbian_characters(invoice.amount)}', border='B', new_x='LMARGIN', new_y='NEXT', align='R')
+            pdf.multi_cell(20, 5, f'{invoice.date}', border='T', new_y='LAST', align='C')
+            pdf.multi_cell(20, 5, f'{invoice.invoice_number}', border='T', new_y='LAST', align='C')
+            pdf.multi_cell(50, 5, f'{invoice.customer}', border='T', new_y='LAST', align='L')
+            pdf.multi_cell(80, 5, f'{invoice.service}', border='T', new_y='LAST', align='L')
+            pdf.multi_cell(20, 5, f'{invoice.amount}', border='B', new_x='LMARGIN', new_y='NEXT', align='R')
     pdf.cell(0, 5, f'Ukupno: {round(ukupno,2)} rsd', border='T', align='R', ln=True)
     pdf.multi_cell(0, 10, f'''
 Potpis ovlašćenog lica:
-_________________________''', border=False, align='R')
+____________________________''', border=False, align='R')
 
     path = "kpo/static/pdf_forms/"
     pdf.output(path + file_name)

@@ -75,6 +75,7 @@ class Invoice(db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     cancelled = db.Column(db.Boolean(), default=False, nullable=False)
+    international_invoice = db.Column(db.Boolean(), default=False, nullable=False)
 
     def __repr__(self):
         return f"Invoice('{self.id=}', '{self.date=}', '{self.invoice_number=}', '{self.customer=}', '{self.service=}', '{self.amount=}')"

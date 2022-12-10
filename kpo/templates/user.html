@@ -116,6 +116,7 @@
             {% endif %}
         </fieldset>
         <div class="form-group">
+            <a class="btn btn-info" href="{{url_for('users.user_list')}}">&#8678; Nazad</a>
           {{ form.submit(class="btn btn-outline-info") }}
           {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
             <div>

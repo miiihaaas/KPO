@@ -75,56 +75,60 @@
                 {% endif %}
             </div>
             {% if current_user.authorization == 's_admin'%}
-              <div class="form-group">
-                  {{ form.company_id.label(class="form-control-label") }}
+                <div class="form-group">
+                    {{ form.company_id.label(class="form-control-label") }}
 
-                  {% if form.company_id.errors %}
-                      {{ form.company_id(class="form-control form-control-lg is-invalid") }}
-                      <div class="invalid-feedback">
-                          {% for error in form.company_id.errors %}
-                              <span>{{ error }}</span>
-                          {% endfor %}
-                      </div>
-                  {% else %}
-                      {{ form.company_id(class="form-control form-control-lg") }}
-                  {% endif %}
-              </div>
+                    {% if form.company_id.errors %}
+                        {{ form.company_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
             {% else %}
-              {{ form.company_id(class="sr-only form-control form-control-lg") }}
+                {{ form.company_id(class="sr-only form-control form-control-lg") }}
             {% endif %}
             {% if current_user.authorization == 's_admin'%}
-              <div class="form-group">
-                  {{ form.user_id.label(class="form-control-label") }}
+                <div class="form-group">
+                    {{ form.user_id.label(class="form-control-label") }}
 
-                  {% if form.user_id.errors %}
-                      {{ form.user_id(class="form-control form-control-lg is-invalid") }}
-                      <div class="invalid-feedback">
-                          {% for error in form.user_id.errors %}
-                              <span>{{ error }}</span>
-                          {% endfor %}
-                      </div>
-                  {% else %}
-                      {{ form.user_id(class="form-control form-control-lg") }}
-                  {% endif %}
-              </div>
+                    {% if form.user_id.errors %}
+                        {{ form.user_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.user_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.user_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
             {% else %}
-              {{ form.user_id(class="sr-only form-control form-control-lg") }}
+                {{ form.user_id(class="sr-only form-control form-control-lg") }}
             {% endif %}
         </fieldset>
         <div class="form-check form-switch">
-          {{ form.cancelled(class="form-check-input") }}
-          {{ form.cancelled.label(class="form-check-label") }}
+            {{ form.cancelled(class="form-check-input") }}
+            {{ form.cancelled.label(class="form-check-label") }}
+        </div>
+        <div class="form-check form-switch">
+            {{ form.international_invoice(class="form-check-input") }}
+            {{ form.international_invoice.label(class="form-check-label") }}
         </div>
         <br>
         <div class="form-group">
-          <a class="btn btn-info" href="{{url_for('invoices.invoice_list')}}">&#8678; Nazad</a>
-          {{ form.submit(class="btn btn-outline-info") }}
-          {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
+            <a class="btn btn-info" href="{{url_for('invoices.invoice_list')}}">&#8678; Nazad</a>
+            {{ form.submit(class="btn btn-outline-info") }}
+            {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
             <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrši fakturu</button>
-          {% endif %}
-          <a class="btn btn-danger btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje knjižog odobrenja</a>
+            {% endif %}
+            <a class="btn btn-danger btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje knjižog odobrenja</a>
         </div>
-  </form>
+    </form>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">

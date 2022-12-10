@@ -30,9 +30,8 @@ def invoice_list():
         create_invoice_report(start, end, filtered_invoices, file_name)
         path = "static/pdf_forms/" + file_name
         return send_file(path, as_attachment=True)
-        return render_template('invoice_list.html', title='Invoices', invoices=invoices, data=data)
     else:
-        return render_template('invoice_list.html', title='Invoices', invoices=invoices, data=data)
+        return render_template('invoice_list.html', title='Fakture', invoices=invoices, data=data)
 
 
 @invoices.route("/register_i", methods=['GET', 'POST'])
@@ -56,7 +55,8 @@ def register_i():
                                 amount=form.amount.data,
                                 company_id=current_user.user_company.id,
                                 user_id=current_user.id,
-                                cancelled=False)
+                                cancelled=False,
+                                international_invoice=form.international_invoice.data)
             db.session.add(invoice)
             db.session.commit()
         elif current_user.authorization == 's_admin':
@@ -67,19 +67,13 @@ def register_i():
                                 amount=form.amount.data,
                                 company_id=form.company_id.data,
                                 user_id=current_user.id,
-                                cancelled=False) #form.user_id.data
+                                cancelled=False,
+                                international_invoice=form.international_invoice.data) #form.user_id.data
             db.session.add(invoice)
             db.session.commit()
         flash(f'Faktura: {form.invoice_number.data} je uspešno kreirana!', 'success')
         return redirect(url_for('invoices.invoice_list'))
-
-
-
-
-
-
-    return render_template('register_i.html', title='Register New Vehicle', form=form, data=data, customer_list=customer_list)
-
+    return render_template('register_i.html', title='Dodavanje nove fakture', form=form, data=data, customer_list=customer_list)
 
 
 @invoices.route("/invoice/<int:invoice_id>", methods=['GET', 'POST'])
@@ -111,6 +105,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
             invoice.company_id = form.company_id.data
             invoice.user_id = form.user_id.data
         invoice.cancelled = form.cancelled.data
+        invoice.international_invoice = form.international_invoice.data
 
         db.session.commit()
         flash(f'Faktura: {form.invoice_number.data} je ažurirana.', 'success')
@@ -127,6 +122,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
         form.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]
         form.user_id.data = str(invoice.user_id)
         form.cancelled.data = invoice.cancelled
+        form.international_invoice.data=invoice.international_invoice
     return render_template('invoice.html', title="Edit Invoice", invoice=invoice, form=form, legend='Edit Invoice')
 
 
