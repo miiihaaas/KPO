@@ -69,6 +69,7 @@ class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     invoice_number = db.Column(db.String(12), nullable=False)
+    invoice_number_helper = db.Column(db.String(12), nullable=True) #! služi za povezivanje knjižnog odobrenja sa brojem fakture
     customer = db.Column(db.String(70), nullable=False)
     service = db.Column(db.String(400), nullable=True) #usluga
     amount = db.Column(db.Float, nullable=False)
@@ -76,6 +77,7 @@ class Invoice(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     cancelled = db.Column(db.Boolean(), default=False, nullable=False)
     international_invoice = db.Column(db.Boolean(), default=False, nullable=False)
+    type = db.Column(db.String(10), nullable=True)
 
     def __repr__(self):
         return f"Invoice('{self.id=}', '{self.date=}', '{self.invoice_number=}', '{self.customer=}', '{self.service=}', '{self.amount=}')"

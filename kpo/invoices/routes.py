@@ -15,7 +15,7 @@ invoices = Blueprint('invoices', __name__)
 @invoices.route("/invoice_list", methods=['GET', 'POST'])
 def invoice_list():
     if not current_user.is_authenticated:
-        flash('You have to be logged in to access this page', 'danger')
+# type: ignore        flash('You have to be logged in to access this page', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         abort(403)
@@ -50,30 +50,99 @@ def register_i():
         if current_user.authorization == 'c_admin':
             invoice = Invoice(date=form.date.data,
                                 invoice_number=form.invoice_number.data,
+                                invoice_number_helper=None,
                                 customer=form.customer.data,
                                 service=form.service.data,
                                 amount=form.amount.data,
                                 company_id=current_user.user_company.id,
                                 user_id=current_user.id,
                                 cancelled=False,
-                                international_invoice=form.international_invoice.data)
+                                international_invoice=form.international_invoice.data,
+                                type='faktura')
             db.session.add(invoice)
             db.session.commit()
         elif current_user.authorization == 's_admin':
             invoice = Invoice(date=form.date.data,
                                 invoice_number=form.invoice_number.data,
+                                invoice_number_helper=None,
                                 customer=form.customer.data,
                                 service=form.service.data,
                                 amount=form.amount.data,
                                 company_id=form.company_id.data,
                                 user_id=current_user.id,
                                 cancelled=False,
-                                international_invoice=form.international_invoice.data) #form.user_id.data
+                                international_invoice=form.international_invoice.data,
+                                type='faktura') #form.user_id.data
             db.session.add(invoice)
             db.session.commit()
         flash(f'Faktura: {form.invoice_number.data} je uspešno kreirana!', 'success')
         return redirect(url_for('invoices.invoice_list'))
-    return render_template('register_i.html', title='Dodavanje nove fakture', form=form, data=data, customer_list=customer_list)
+    return render_template('register_i.html', legend='Dodavanje nove fakture', title='Dodavanje nove fakture', form=form, data=data, customer_list=customer_list)
+
+
+@invoices.route("/invoice/<int:invoice_id>/<string:type>/register_n", methods=['GET', 'POST'])
+def register_n(invoice_id, type):
+    if current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
+        return redirect(url_for('main.home'))
+    invoice = Invoice.query.get_or_404(invoice_id)
+    data = DashboardData(current_user.user_company.id)
+    form = RegistrationInvoiceForm()
+    if type == 'odobrenje':
+        form.invoice_number.label.text = 'Broj knjižnog odobrenja'
+        form.submit.label.text = 'Dodajte knjižno odobrenje'
+    elif type == 'zaduzenje':
+        form.invoice_number.label.text = 'Broj knjižnog zaduženja'
+        form.submit.label.text = 'Dodajte knjižno zaduženje'
+    
+    if form.validate_on_submit():
+        if current_user.authorization == 'c_admin':
+            note = Invoice(date=form.date.data,
+                                invoice_number=form.invoice_number.data,
+                                invoice_number_helper=invoice.invoice_number,
+                                customer=form.customer.data,
+                                service=form.service.data,
+                                amount=-form.amount.data,
+                                company_id=current_user.user_company.id,
+                                user_id=current_user.id,
+                                cancelled=False,
+                                international_invoice=form.international_invoice.data,
+                                type='odobrenje')
+            invoice.invoice_number_helper = form.invoice_number.data
+            if type == 'odobrenje':
+                print(f'odobrenje treba da je (-): {note.amount}, {note.type=}')
+            elif type == 'zaduzenje':
+                note.amount = -note.amount
+                note.type = 'zaduženje'
+                print(f'zaduženje treba da je (+): {note.amount}, {note.type=}')
+            db.session.add(note)
+            db.session.commit()
+        elif current_user.authorization == 's_admin':
+            note = Invoice(date=form.date.data,
+                                invoice_number=form.invoice_number.data,
+                                invoice_number_helper=invoice.invoice_number,
+                                customer=form.customer.data,
+                                service=form.service.data,
+                                amount=-form.amount.data,
+                                company_id=form.company_id.data,
+                                user_id=current_user.id,
+                                cancelled=False,
+                                international_invoice=form.international_invoice.data,
+                                type='odobrenje') #form.user_id.data
+            invoice.invoice_number_helper = form.invoice_number.data
+            if type == 'odobrenje':
+                print(f'odobrenje treba da je (-): {note.amount}, {note.type=}')
+            elif type == 'zaduzenje':
+                note.amount = -note.amount
+                note.type = 'zaduženje'
+                print(f'zaduženje treba da je (+): {note.amount}, {note.type=}')
+            db.session.add(note)
+            db.session.commit()
+        flash(f'Knjižno odobrenje: {form.invoice_number.data} je uspešno kreirano!', 'success')
+        return redirect(url_for('invoices.invoice_list'))
+    elif request.method == 'GET':
+        form.customer.data = invoice.customer
+        form.international_invoice.data = invoice.international_invoice
+    return render_template('register_i.html', legend=f'Dodavanje knjižnog odobrenja ({invoice.invoice_number})', title='Dodavanje knjižnog odobrenja', form=form, data=data)
 
 
 @invoices.route("/invoice/<int:invoice_id>", methods=['GET', 'POST'])
@@ -123,7 +192,15 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
         form.user_id.data = str(invoice.user_id)
         form.cancelled.data = invoice.cancelled
         form.international_invoice.data=invoice.international_invoice
-    return render_template('invoice.html', title="Edit Invoice", invoice=invoice, form=form, legend='Edit Invoice')
+    
+    if invoice.type == 'faktura':
+        legend = 'Uređivanje fakture'
+    elif invoice.type == 'odobrenje':
+        legend = 'Uređivanje knjižnog odobrenja'
+    else:
+        legend = 'Uređivanje knjižnog zaduženja'
+    
+    return render_template('invoice.html', title=legend, invoice=invoice, form=form, legend=legend)
 
 
 @invoices.route("/invoice/<int:invoice_id>/delete", methods=['POST'])

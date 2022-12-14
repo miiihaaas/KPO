@@ -64,4 +64,4 @@ class DashboardData():
                             company_id=self.company_id
                             ).first()[0])
             except:
-                self.razlika.append(0)
+                self.razlika_8m.append(0)
