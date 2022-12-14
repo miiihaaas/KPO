@@ -40,8 +40,7 @@ def register_i():
         return redirect(url_for('main.home'))
 
     data = DashboardData(current_user.user_company.id)
-    # print(data.last_input.invoice_number)
-    # customer_list = Invoice.query.filter_by(company_id=current_user.user_company.id).distinct()
+    data.last_input = Invoice.query.filter_by(company_id=current_user.user_company.id).filter_by(type='faktura').order_by(Invoice.id.desc()).first()
     customer_list = [i.customer for i in db.session.query(Invoice.customer).distinct()]
     print(customer_list)
     form = RegistrationInvoiceForm()
@@ -90,10 +89,13 @@ def register_n(invoice_id, type):
     if type == 'odobrenje':
         form.invoice_number.label.text = 'Broj knjižnog odobrenja'
         form.submit.label.text = 'Dodajte knjižno odobrenje'
+        legend = 'Dodavanje knjižnog odobrenja'
+        data.last_input = Invoice.query.filter_by(company_id=current_user.user_company.id).filter_by(type='odobrenje').order_by(Invoice.id.desc()).first()
     elif type == 'zaduzenje':
         form.invoice_number.label.text = 'Broj knjižnog zaduženja'
         form.submit.label.text = 'Dodajte knjižno zaduženje'
-    
+        legend = 'Dodavanje knjižnog zaduženja'
+        data.last_input = Invoice.query.filter_by(company_id=current_user.user_company.id).filter_by(type='zaduženje').order_by(Invoice.id.desc()).first()
     if form.validate_on_submit():
         if current_user.authorization == 'c_admin':
             note = Invoice(date=form.date.data,
@@ -142,7 +144,7 @@ def register_n(invoice_id, type):
     elif request.method == 'GET':
         form.customer.data = invoice.customer
         form.international_invoice.data = invoice.international_invoice
-    return render_template('register_i.html', legend=f'Dodavanje knjižnog odobrenja ({invoice.invoice_number})', title='Dodavanje knjižnog odobrenja', form=form, data=data)
+    return render_template('register_i.html', legend=legend + f' ({invoice.invoice_number})', title=legend, form=form, data=data)
 
 
 @invoices.route("/invoice/<int:invoice_id>", methods=['GET', 'POST'])
@@ -194,11 +196,16 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
         form.international_invoice.data=invoice.international_invoice
     
     if invoice.type == 'faktura':
-        legend = 'Uređivanje fakture'
+        if invoice.invoice_number_helper:
+            legend = 'Uređivanje fakture' + f' ({invoice.invoice_number_helper})'
+        else:
+            legend = 'Uređivanje fakture'
     elif invoice.type == 'odobrenje':
-        legend = 'Uređivanje knjižnog odobrenja'
+        legend = 'Uređivanje knjižnog odobrenja' + f' ({invoice.invoice_number_helper})'
+        form.invoice_number.label.text = 'Broj knjižnog odobrenja'
     else:
-        legend = 'Uređivanje knjižnog zaduženja'
+        legend = 'Uređivanje knjižnog zaduženja' + f' ({invoice.invoice_number_helper})'
+        form.invoice_number.label.text = 'Broj knjižnog zaduženja'
     
     return render_template('invoice.html', title=legend, invoice=invoice, form=form, legend=legend)
 

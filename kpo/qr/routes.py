@@ -1,4 +1,4 @@
-from cv2 import cv2
+# from cv2 import cv2
 from PIL import Image
 # from pyzbar import pyzbar
 from flask import Flask, Blueprint, render_template, Response , url_for, redirect
