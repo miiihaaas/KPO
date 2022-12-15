@@ -49,8 +49,8 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
             pdf.set_font('DejaVuSansCondensed','B', 9)
             pdf.cell(20, 5, f'Datum', border=1, ln=False, align='C')
             pdf.cell(20, 5, f'Br. fakture', border=1, ln=False, align='C')
-            pdf.cell(50, 5, f'Klijent', border=1, ln=False, align='C')
-            pdf.cell(80, 5, f'Opis Knjizenja', border=1, ln=False, align='C')
+            pdf.cell(60, 5, f'Klijent', border=1, ln=False, align='C')
+            pdf.cell(70, 5, f'Opis Knjiženja', border=1, ln=False, align='C')
             pdf.cell(20, 5, f'Iznos [rsd]', border=1, ln=True, align='R')
         def footer(self):
             pass
@@ -65,12 +65,12 @@ def create_invoice_report(start, end, filtered_invoices, file_name):
         if invoice.cancelled == False:
             ukupno = ukupno + invoice.amount
             pdf.set_font('DejaVuSansCondensed','', 8)
-            pdf.multi_cell(20, 5, f'{invoice.date}', border='T', new_y='LAST', align='C')
-            pdf.multi_cell(20, 5, f'{invoice.invoice_number}', border='T', new_y='LAST', align='C')
-            pdf.multi_cell(50, 5, f'{invoice.customer}', border='T', new_y='LAST', align='L')
-            pdf.multi_cell(80, 5, f'{invoice.service}', border='T', new_y='LAST', align='L')
-            pdf.multi_cell(20, 5, f'{invoice.amount}', border='B', new_x='LMARGIN', new_y='NEXT', align='R')
-    pdf.cell(0, 5, f'Ukupno: {round(ukupno,2)} rsd', border='T', align='R', ln=True)
+            pdf.multi_cell(20, 5, f'{invoice.date}', border=0, new_y='LAST', align='C')
+            pdf.multi_cell(20, 5, f'{invoice.invoice_number}', border=0, new_y='LAST', align='C')
+            pdf.multi_cell(60, 5, f'{invoice.customer}', border=0, new_y='LAST', align='L')
+            pdf.multi_cell(70, 5, f'{invoice.service}', border=0, new_x='LMARGIN', new_y='LAST', align='L')
+            pdf.multi_cell(0, 5, f'{invoice.amount}', border='B', new_x='LMARGIN', new_y='NEXT', align='R')
+    pdf.cell(0, 5, f'Ukupno: {round(ukupno,2)} rsd', border=0, align='R', ln=True)
     pdf.multi_cell(0, 10, f'''
 Potpis ovlašćenog lica:
 ____________________________''', border=False, align='R')

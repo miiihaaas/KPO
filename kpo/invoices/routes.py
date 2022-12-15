@@ -216,22 +216,31 @@ def delete_invoice(invoice_id):
     invoice = Invoice.query.get_or_404(invoice_id)
     print(f'debug - {request.form.get("input_password")}')
     if not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):
-        print('nije dobar password')
         flash('Pogrešna lozinka.', 'danger')
         return redirect(url_for('invoices.invoice_list'))
-        abort(403)
     else:
         if current_user.authorization == 'c_user':
             abort(403)
         elif current_user.authorization == 'c_admin':
             if current_user.user_company.id != invoice.invoice_company.id:
-                abort(403)
+                flash(f'Nemate ovlašćenje da obrišete ovaj dokument', 'danger')
+                return redirect(url_for('invoices.invoice_list'))
             db.session.delete(invoice)
             db.session.commit()
-            flash(f'Faktura {invoice.invoice_number} je obrisana', 'success' )
+            if invoice.type == 'faktura':
+                flash(f'Faktura {invoice.invoice_number} je obrisana', 'success' )
+            elif invoice.type == 'odobrenje':
+                flash(f'Knjižno odobrenje {invoice.invoice_number} je obrisano', 'success' )
+            elif invoice.type == 'zaduženje':
+                flash(f'Knjižno zaduženje {invoice.invoice_number} je obrisano', 'success' )
             return redirect(url_for('invoices.invoice_list'))
         else:
             db.session.delete(invoice)
             db.session.commit()
-            flash(f'Faktura: {invoice.invoice_number} je obrisana', 'success' )
+            if invoice.type == 'faktura':
+                flash(f'Faktura {invoice.invoice_number} je obrisana', 'success' )
+            elif invoice.type == 'odobrenje':
+                flash(f'Knjižno odobrenje {invoice.invoice_number} je obrisano', 'success' )
+            elif invoice.type == 'zaduženje':
+                flash(f'Knjižno zaduženje {invoice.invoice_number} je obrisano', 'success' )
             return redirect(url_for('invoices.invoice_list'))
