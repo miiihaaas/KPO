@@ -79,4 +79,44 @@ a.article-title:hover {
   font-size: 2.5rem;
 }
 
-/* tr:hover {background-color: coral;} */
+/* ovo sam izgleda ja dodao  */
+/* .styled-table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.styled-table thead tr {
+  background-image: linear-gradient(#009dde, #104e97);
+  color: #ffffff;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 6px 7px;
+}
+
+.styled-table tbody tr td {
+  border-bottom: 1px solid #009dde;
+}
+
+.styled-table tr:hover td {
+  background-color: #940051c6;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3b4;
+}
+
+.styled-table tbody tr:last-of-type td {
+  border-bottom: 2px solid #104e97;
+} */
+
+

@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
+
 {% if current_user.authorization == 's_admin' %}
   <a class="btn btn-info btn-sm m-1" href="{{ url_for('companys.register_c') }}">Registracija nove kompanije</a>
+  <hr>
 {% endif %}
-<hr>
 <table id="data" border="1" class="table table-striped">
   <thead>
     <tr>
@@ -37,6 +38,7 @@
   </tbody>
   {% endif %}
 </table>
+
 {% endblock content%}
 
 {% block scripts %}

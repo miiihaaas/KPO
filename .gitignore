@@ -3,6 +3,20 @@ kpo\__pycache__/
 # Created by https://www.toptal.com/developers/gitignore/api/python,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,windows
 
+# Manualy added
+#TODO: komanda za brisanje fajlova sa gita: git rm -r --cached .\your\file\destination\file.extension
+kpo/site.db
+kpo/__pycache__/
+kpo/companys/__pycache__/
+kpo/main/__pycache__/
+kpo/invoices/__pycache__/
+kpo/users/__pycache__/
+kpo/qr/
+__pycache__/
+venv/
+
+
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

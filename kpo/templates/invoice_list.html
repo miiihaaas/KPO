@@ -1,35 +1,34 @@
 {% extends "layout.html" %}
 {% block content %}
 <form method="post">
-
-
-  {% if current_user.authorization != 'c_user' %}
-    <a class="btn btn-info btn-sm m-1" href="{{url_for('main.home')}}">&#8678; Nazad</a>
-    <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
-  {% endif %}
-  <div id="accordionZero">
-    <br>
-    <div class="accordion" id="accordionZero">
-      <div class="accordion-item">
-        <div class="accordion-header" id="headingZero">
-          <button type="button" class="accordion-button" data-toggle="collapse" data-target="#collapseZero" aria-expanded="false" aria-controls="collapseZero">
-            <h3>Izvoz KPO knjige</h3>
-          </button>
-        </div>
-
-        <div id="collapseZero" class="collapse" aria-labelledby="headingZero" data-parent="#accordionZero">
-          <div class="card-body">
-            <div class="row">
-              <div class="col form-group">
-                <label class="form-control-label" for="start">Od</label>
-                <input class="form-control form-control-lg" type="date" id="start" name="start" value="">
-              </div>
-              <div class="col form-box">
-                <label class="form-control-label" for="end">Do</label>
-                <input class="form-control form-control-lg" type="date" id="end" name="end" value="">
-              </div>
-              <div class="col form-group">
-                <input type="submit" name="" class="btn btn-info btn-lg m-1" value="Izvezite u PDF &#9782;">
+  <div class="dis-flex align-top">
+    {% if current_user.authorization != 'c_user' %}
+      <a class="btn btn-info btn-sm m-1" href="{{url_for('main.home')}}">&#8678; Nazad</a>
+      <a class="btn btn-info btn-sm m-1" href="{{ url_for('invoices.register_i') }}">Dodavanje nove fakture</a>
+    {% endif %}
+    <div id="accordionZero">
+      <!-- <br> -->
+      <div class="accordion" id="accordionZero">
+        <div class="accordion-item">
+          <div class="accordion-header" id="headingZero">
+            <button type="button" class="accordion-button" data-toggle="collapse" data-target="#collapseZero" aria-expanded="false" aria-controls="collapseZero">
+              Izvoz KPO knjige
+            </button>
+          </div>
+          <div id="collapseZero" class="collapse" aria-labelledby="headingZero" data-parent="#accordionZero">
+            <div class="card-body">
+              <div class="row">
+                <div class="col form-group">
+                  <label class="form-control-label" for="start">Od</label>
+                  <input class="form-control form-control-lg" type="date" id="start" name="start" value="">
+                </div>
+                <div class="col form-box">
+                  <label class="form-control-label" for="end">Do</label>
+                  <input class="form-control form-control-lg" type="date" id="end" name="end" value="">
+                </div>
+                <div class="col form-group">
+                  <input type="submit" name="" class="btn btn-info btn-lg m-1" value="Izvezite u PDF &#9782;">
+                </div>
               </div>
             </div>
           </div>
@@ -39,87 +38,89 @@
   </div>
   <br>
   <div class="row">
-    <div class="col-md-9">
-      <table id="data" border="1" class="table table-striped ">
-        {% if current_user.authorization == 's_admin' %}
-          <thead>
-            <tr>
-              <th>Datum</th>
-              <th>Br. Fakture</th>
-              <th>Klijent</th>
-              <th>Opis knjiženja</th>
-              <th>Iznos [din]</th>
-              <th>helper [din]</th>
-              <th>Kompanija</th>
-              <th>Korinik</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for invoice in invoices %}
-              <tr>
-                <td>{{ invoice.date }}</td>
-                <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
-                <td>{{ invoice.customer }}</td>
-                <td>{{ invoice.service }}</td>
-                <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
-                <td>{{ '{:.2f}'.format(invoice.amount) }} {% if invoice.cancelled %} Storno {% else %} &#9989 {% endif %} {% if invoice.international_invoice %} ino {% else %} {% endif %} {{ invoice.invoice_number_helper }}</td>
-                <td>{{ invoice.invoice_company.companyname }}</td>
-                <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
-                <td style="text-align: center">{% if invoice.cancelled %} <b title="Stornirana faktura">&#9940</b> {% else %} <b title="Aktivna faktura">&#9989</b> {% endif %} {% if invoice.international_invoice %} <b title="Ino faktura">&#x1F30D;</b> {% else %} {% endif %}</td>
+    <div class="col-sm-9">
+      <!-- <div id="data_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer"></div> -->
+        <table id="data" class="table table-striped dataTable no-footer" role="grid" aria-describedby="data_info" style="width: 968px;">
+          {% if current_user.authorization == 's_admin' %}
+            <thead>
+              <tr role="row">
+                <th class="sorting sorting_desc" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-sort="descending" aria-label="Datum: aktivirajte da sortirate kolonu uzlazno" style="width: 67px;">Datum</th>
+                <th class="sorting sorting_desc" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Br. Fakture: aktivirajte da sortirate kolonu uzlazno" style="width: 89px;">Br. Fakture</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Klijent: aktivirajte da sortirate kolonu uzlazno" style="width: 278px;">Klijent</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Opis knjiženja: aktivirajte da sortirate kolonu uzlazno" style="width: 166px;">Opis knjiženja</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Iznos [din]: aktivirajte da sortirate kolonu uzlazno" style="width: 88px;">Iznos [din]</th>
+                <th>helper [din]</th>
+                <th>Kompanija</th>
+                <th>Korinik</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Status: aktivirajte da sortirate kolonu uzlazno" style="width: 52px;">Status</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        {% elif current_user.authorization == 'c_admin' %}
-          <thead>
-            <tr>
-              <th>Datum</th>
-              <th>Br. Fakture</th>
-              <th>Klijent</th>
-              <th>Opis knjiženja</th>
-              <th>Iznos [din]</th>
-              <th>helper [din]</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for invoice in invoices %}
-              {% if invoice.invoice_company.id == current_user.user_company.id %}
-                <tr>
-                  <td>{{ invoice.date }}</td>
-                  <td><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Edit Invoice">{{ invoice.invoice_number }}</a></td>
+            </thead>
+            <tbody>
+              {% for invoice in invoices %}
+                <tr class="odd">
+                  <td class="sorting_1">{{ invoice.date }}</td>
+                  <td class="sorting_2"><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Izmena fakture">{{ invoice.invoice_number }}</a></td>
                   <td>{{ invoice.customer }}</td>
                   <td>{{ invoice.service }}</td>
                   <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
                   <td>{{ '{:.2f}'.format(invoice.amount) }} {% if invoice.cancelled %} Storno {% else %} &#9989 {% endif %} {% if invoice.international_invoice %} ino {% else %} {% endif %} {{ invoice.invoice_number_helper }}</td>
-                  <td style="text-align: center">{% if invoice.cancelled %} <b title="Stornirana faktura">&#9940</b> {% else %} <b title="Aktivna faktura">&#9989</b> {% endif %} {% if invoice.international_invoice %} <b title="Ino faktura">&#x1F30D;</b> {% else %} {% endif %}</td>
+                  <td>{{ invoice.invoice_company.companyname }}</td>
+                  <td>{{ invoice.invoice_user.name }} {{ invoice.invoice_user.surname }}</td>
+                  <td style="text-align: center">{% if invoice.cancelled %} <b title="Stornirana faktura"><img src="static/img/no.png" /></b> {% else %} <b title="Aktivna faktura"><img src="static/img/yes.png" /></b> {% endif %} {% if invoice.international_invoice %} <b title="Ino faktura"><img src="static/img/world.png" /></b> {% else %} {% endif %}</td>
                 </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        {% endif %}
-      </table>
+              {% endfor %}
+            </tbody>
+          {% elif current_user.authorization == 'c_admin' %}
+            <thead>
+              <tr>
+                <th class="sorting sorting_desc" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-sort="descending" aria-label="Datum: aktivirajte da sortirate kolonu uzlazno" style="width: 67px;">Datum</th>
+                <th class="sorting sorting_desc" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Br. Fakture: aktivirajte da sortirate kolonu uzlazno" style="width: 89px;">Br. Fakture</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Klijent: aktivirajte da sortirate kolonu uzlazno" style="width: 278px;">Klijent</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Opis knjiženja: aktivirajte da sortirate kolonu uzlazno" style="width: 166px;">Opis knjiženja</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Iznos [din]: aktivirajte da sortirate kolonu uzlazno" style="width: 88px;">Iznos [din]</th>
+                <th>helper [din]</th>
+                <th class="sorting" tabindex="0" aria-controls="data" rowspan="1" colspan="1" aria-label="Status: aktivirajte da sortirate kolonu uzlazno" style="width: 52px;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for invoice in invoices %}
+                {% if invoice.invoice_company.id == current_user.user_company.id %}
+                  <tr class="odd">
+                    <td class="sorting_1">{{ invoice.date }}</td>
+                    <td class="sorting_2"><a class="mr-2 btn btn-info" href="{{ url_for('invoices.invoice_profile', invoice_id=invoice.id) }}" title="Izmena fakture">{{ invoice.invoice_number }}</a></td>
+                    <td>{{ invoice.customer }}</td>
+                    <td>{{ invoice.service }}</td>
+                    <td>{{ '{:,.2f}'.format(invoice.amount) }}</td>
+                    <td>{{ '{:.2f}'.format(invoice.amount) }} {% if invoice.cancelled %} Storno {% else %} &#9989 {% endif %} {% if invoice.international_invoice %} ino {% else %} {% endif %} {{ invoice.invoice_number_helper }}</td>
+                    <td style="text-align: center">{% if invoice.cancelled %} <b title="Stornirana faktura"><img src="static/img/no.png" /></b> {% else %} <b title="Aktivna faktura"><img src="static/img/yes.png" /></b> {% endif %} {% if invoice.international_invoice %} <b title="Ino faktura"><img src="static/img/world.png" /></b> {% else %} {% endif %}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          {% endif %}
+        </table>
+      <!-- </div> -->
     </div>
     <div class="col-md-3">
       <div class="content-section">
         <h3>Korisni podaci</h3>
-        <p class='text-muted'>
-          <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit - data.razlika_6m) }} din / ostalo: {{ '{:,.2f}'.format(data.razlika_6m) }} din</small></li>
-          <ul class="list-group">
-            <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
-            <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(data.razlika_8m[1]) }} din</small></li>
-            <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(data.razlika_8m[2]) }} din</small></li>
-            <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(data.razlika_8m[3]) }} din</small></li>
-            <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(data.razlika_8m[4]) }} din</small></li>
-            <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(data.razlika_8m[5]) }} din</small></li>
-            <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(data.razlika_8m[6]) }} din</small></li>
-          </ul>
-        </p>
+        <p class='text-muted'></p>
+        <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(data.limit - data.razlika_6m) }} din / ostalo: {{ '{:,.2f}'.format(data.razlika_6m) }} din</small></li>
+        <ul class="list-group">
+          <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
+          <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(data.razlika_8m[1]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(data.razlika_8m[2]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(data.razlika_8m[3]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(data.razlika_8m[4]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(data.razlika_8m[5]) }} din</small></li>
+          <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(data.razlika_8m[6]) }} din</small></li>
+        </ul>
+        <p></p>
       </div>
     </div>
   </div>
+  <br>
 </form>
-
 {% endblock content%}
 
 {% block scripts %}
