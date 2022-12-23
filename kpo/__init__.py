@@ -35,11 +35,11 @@ from kpo.companys.routes import companys
 from kpo.invoices.routes import invoices
 from kpo.users.routes import users
 from kpo.main.routes import main
-from kpo.qr.routes import qr
+# from kpo.qr.routes import qr
 
 
 app.register_blueprint(companys)
 app.register_blueprint(invoices)
 app.register_blueprint(users)
 app.register_blueprint(main)
-app.register_blueprint(qr)
+# app.register_blueprint(qr)
