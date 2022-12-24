@@ -14,7 +14,7 @@ users = Blueprint('users', __name__)
 @users.route("/user_list")
 def user_list():
     if not current_user.is_authenticated:
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     users = User.query.all()
     return render_template('user_list.html', title='Korisnici', users=users)
@@ -24,7 +24,7 @@ def user_list():
 # @login_required
 def register_u():
     if not current_user.is_authenticated:
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
         flash('Nemate autorizaciju da pristupite ovoj stranici', 'danger')
@@ -65,7 +65,7 @@ def register_u():
 def user_profile(user_id): #ovo je funkcija za editovanje user-a
     user = User.query.get_or_404(user_id)
     if not current_user.is_authenticated:
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         if current_user.id != user.id:
@@ -136,7 +136,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            flash(f'Dobrodošli {user.name}!', 'success')
+            flash(f'Dobro došli {user.name}!', 'success')
             return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
             flash(f'Korisničko ime ili lozinka nisu ispravni!', 'danger')
@@ -154,7 +154,7 @@ def logout():
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     if not current_user.is_authenticated:
-        flash('Morate da budete ulogovani da bi ste pristupili ovoj stranici', 'danger')
+        flash('Morate da budete ulogovani da biste pristupili ovoj stranici', 'danger')
         return redirect(url_for('users.login'))
     elif not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):
         print('nije dobar password')

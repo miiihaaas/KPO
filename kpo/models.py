@@ -18,7 +18,7 @@ class Company(db.Model):
     company_state = db.Column(db.String(20), unique=False, nullable=False)
     company_pib = db.Column(db.Integer, nullable=False)
     company_mb = db.Column(db.Integer, nullable=False)
-    company_site = db.Column(db.String(50), unique=True, nullable=False) #vidi imali neki model tipa db.Link()
+    company_site = db.Column(db.String(120), unique=True, nullable=False) #vidi imali neki model tipa db.Link()
     company_mail = db.Column(db.String(120), unique=True, nullable=False)
     company_phone = db.Column(db.String(20), nullable=False)
     company_logo = db.Column(db.String(60), nullable=False)

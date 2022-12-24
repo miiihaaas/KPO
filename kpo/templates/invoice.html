@@ -120,8 +120,8 @@
                 {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
                     <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši fakturu</button>
                 {% endif %}
-                <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='odobrenje') }}">Dodavanje knjižog odobrenja</a>
-                <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='zaduzenje') }}">Dodavanje knjižog zaduženja</a>
+                <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='odobrenje') }}">Dodavanje knjižnog odobrenja</a>
+                <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='zaduzenje') }}">Dodavanje knjižnog zaduženja</a>
             {% elif invoice.type == "odobrenje" %}
                 {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
                     <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši knjižno odobrenje</button>

@@ -13,7 +13,7 @@ companys = Blueprint('companys', __name__)
 @companys.route("/company_list")
 def company_list():
     if not current_user.is_authenticated:
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     companys = Company.query.all()
     return render_template('company_list.html', title='Kompanija', companys=companys)
@@ -22,7 +22,7 @@ def company_list():
 @companys.route("/register_c", methods=['GET', 'POST'])
 def register_c():
     if not current_user.is_authenticated:
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.is_authenticated and current_user.authorization != 's_admin':
         return redirect(url_for('main.home'))
@@ -67,7 +67,7 @@ def save_picture(form_picture):
 def company_profile(company_id): #ovo je funkcija za editovanje user-a
     company = Company.query.get_or_404(company_id)
     if not current_user.is_authenticated:
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         abort(403)

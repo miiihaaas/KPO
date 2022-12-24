@@ -10,7 +10,7 @@ from kpo.models import Company, User, Invoice
 
 class RegistrationInvoiceForm(FlaskForm):
     date = DateField('Datum: ', format='%Y-%m-%d', validators=[DataRequired()])
-    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=5, max=12)])
+    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=1, max=12)])
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
     service = StringField('Opis knjiženja', validators=[Length(min=0, max=500)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])
@@ -25,7 +25,7 @@ class RegistrationInvoiceForm(FlaskForm):
 
 class UpdateInvoiceForm(FlaskForm):
     date = DateField('Datum: ', format='%Y-%m-%d', validators=[DataRequired()])
-    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=5, max=12)])
+    invoice_number = StringField('Broj fakture', validators=[DataRequired(), Length(min=1, max=12)])
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
     service = StringField('Opis knjiženja', validators=[Length(min=0, max=500)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])

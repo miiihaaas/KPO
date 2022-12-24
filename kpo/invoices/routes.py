@@ -156,7 +156,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
 
     print(f'{invoice.date=}')
     if not current_user.is_authenticated:
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     elif current_user.authorization != 's_admin' and current_user.authorization != 'c_admin':
         abort(403)

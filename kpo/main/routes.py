@@ -18,7 +18,7 @@ def home():
         print(f'{current_user.user_company.id=}')
     else:
         print(f'nije ulogovan niko')
-        flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.' 'info')
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'info')
         return redirect(url_for('main.about'))
     return render_template('home.html', title='Početna', form=form)
 

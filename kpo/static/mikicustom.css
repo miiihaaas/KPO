@@ -21,7 +21,7 @@ main.login-screen .content-section { background: transparent; padding: 0; border
 main.login-screen .subtitle { text-align: center; }
 main.login-screen i { color: #bbb; }
 .login-screen input.form-control { border: 0; border-bottom: 1px solid #ccc; border-radius: 0; }
-.login-screen input.form-control:focus { box-shadow: none; border-bottom: 3px solid red !important; }
+.login-screen input.form-control:focus { box-shadow: none; border-bottom: 3px solid #940052 !important; }
 .login-screen input:-internal-autofill-selected { background-color: transparent !important; }
 .login-screen label.form-control-label { color: #bbb; font-style: italic; font-size: 14px; }
 #email:before {content: '\f0e0' !important; position: absolute; font-family: "Font Awesome 6 Free"; }
