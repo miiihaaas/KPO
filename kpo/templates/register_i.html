@@ -34,10 +34,14 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="wrapper"><div class="search-input">{{ form.customer(class="form-control form-control-lg", id="tags", placeholder="Pretražite klijente") }}</div></div>
-                        <!-- {{ form.customer(class="form-control form-control-lg", id="tags") }} -->
-                        <div class="autocom-box">
-                            <!-- here list are inserted from javascript -->
+                        <div class="wrapper">
+                            <div class="search-input">
+                                {{ form.customer(class="form-control form-control-lg", type="text", placeholder="Pretražite klijente") }}
+                                <!-- {{ form.customer(class="form-control form-control-lg", id="tags") }} -->
+                                <div class="autocom-box">
+                                    <!-- here list are inserted from javascript -->
+                                </div>
+                            </div>
                         </div>
                     {% endif %}
                 </div>
@@ -141,7 +145,7 @@
         </div>
     </fieldset>
     <div class="form-group">
-        <a class="btn btn-info" href="{{url_for('invoices.invoice_list')}}">&#8678; Nazad</a>
+        <a class="btn" href="{{url_for('invoices.invoice_list')}}">&#8678; Nazad</a>
         {{ form.submit(class="btn btn-outline-info") }}
     </div>
     </form>
@@ -155,17 +159,57 @@
 <!-- todo: autocomplete klijent list (ali izgleda da ne radi kad klineš da ti dopuni input polje): https://www.youtube.com/watch?v=bRdjEpodiaQ&ab_channel=TheTechTeam -->
 <!-- todo: autocomplete klijent list (ali izgleda da ne radi kad klineš da ti dopuni input polje): https://www.youtube.com/watch?v=bRdjEpodiaQ&ab_channel=TheTechTeam -->
     <script>
-        $( function(){
-            let avalableTags = 
-                "{{customer_list}}";
-            console.log("neki tekst");
-            console.log(avalableTags);
-            const searchInput = document.getElementById('tags');
-            const searchWrapper = 
-            console.log(avalableTags);
-            $( "#tags" ).autocomplete({
-                source: avalableTags
-            });
-        });
+        // getting all required elements
+        const searchWrapper = document.querySelector(".search-input");
+        const inputBox = searchWrapper.querySelector("input");
+        const suggBox = searchWrapper.querySelector(".autocom-box");
+        const icon = searchWrapper.querySelector(".icon");
+        let linkTag = searchWrapper.querySelector("a");
+        let webLink;
+        let suggestions = JSON.parse('{{customer_list|tojson|safe}}');
+        // let suggestions_ = ['klijent1', 'klijent2', 'klijent3', 'klijent4', 'klijent5'];
+        console.log(suggestions);
+        // console.log(suggestions_);
+        // if user press any key and release
+        inputBox.onkeyup = (e) =>{
+            console.log(e.target.value);
+            let userData = e.target.value; //user enetered data
+            let emptyArray = [];
+            if(userData){
+                emptyArray = suggestions.filter((data)=>{
+                    //filtering array value and user characters to lowercase and return only those words which are start with user enetered chars
+                    return data.toLocaleLowerCase().includes(userData.toLocaleLowerCase());
+                });
+                emptyArray = emptyArray.map((data)=>{
+                    // passing return data inside li tag
+                    return data = `<li>${data}</li>`;
+                });
+                searchWrapper.classList.add("active"); //show autocomplete box
+                showSuggestions(emptyArray);
+                let allList = suggBox.querySelectorAll("li");
+                for (let i = 0; i < allList.length; i++) {
+                    //adding onclick attribute in all li tag
+                    allList[i].setAttribute("onclick", "select(this)");
+                }
+            }else{
+                searchWrapper.classList.remove("active"); //hide autocomplete box
+            }
+        }
+        function select(element){
+            let selectData = element.textContent;
+            inputBox.value = selectData;
+            
+            searchWrapper.classList.remove("active");
+        }
+        function showSuggestions(list){
+            let listData;
+            if(!list.length){
+                userValue = inputBox.value;
+                listData = `<li>${userValue}</li>`;
+            }else{
+            listData = list.join('');
+            }
+            suggBox.innerHTML = listData;
+        }
     </script>
 {% endblock %}
