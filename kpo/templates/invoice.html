@@ -4,7 +4,7 @@
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">{{legend}}</legend>
+            <!-- <legend class="border-bottom mb-4">{{legend}}</legend> -->
             <div class="form-group">
                 {{ form.date.label(class="form-control-label") }}
                 {% if form.date.errors %}
@@ -104,31 +104,30 @@
             {% else %}
                 {{ form.user_id(class="sr-only form-control form-control-lg") }}
             {% endif %}
+            <div class="form-check form-switch button-group">
+                {{ form.cancelled(class="form-check-input") }}
+                {{ form.cancelled.label(class="form-check-label") }}
+            </div>
+            <div class="form-check form-switch button-group">
+                {{ form.international_invoice(class="form-check-input") }}
+                {{ form.international_invoice.label(class="form-check-label") }}
+            </div>
         </fieldset>
-        <div class="form-check form-switch">
-            {{ form.cancelled(class="form-check-input") }}
-            {{ form.cancelled.label(class="form-check-label") }}
-        </div>
-        <div class="form-check form-switch">
-            {{ form.international_invoice(class="form-check-input") }}
-            {{ form.international_invoice.label(class="form-check-label") }}
-        </div>
-        <br>
-        <div class="form-group">
+        <div class="form-group button-group">
             <a class="btn btn-info" href="{{url_for('invoices.invoice_list')}}">&#8678; Nazad</a>
             {{ form.submit(class="btn btn-outline-info") }}
             {% if invoice.type == "faktura" %}
                 {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
-                    <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrši fakturu</button>
+                    <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši fakturu</button>
                 {% endif %}
                 <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='odobrenje') }}">Dodavanje knjižog odobrenja</a>
                 <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='zaduzenje') }}">Dodavanje knjižog zaduženja</a>
             {% elif invoice.type == "odobrenje" %}
                 {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
-                    <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrši knjižno odobrenje</button>
+                    <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši knjižno odobrenje</button>
                 {% endif %}
             {% elif invoice.type == "zaduženje" %}
-                <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrši knjižno zaduženje</button>
+                <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši knjižno zaduženje</button>
             {% endif %}
         </div>
     </form>

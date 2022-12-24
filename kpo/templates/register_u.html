@@ -4,7 +4,7 @@
   <form method="POST" action="">
     {{ form.hidden_tag() }}
     <fieldset class="form-group">
-        <legend class="border-bottom mb-4">Add New User</legend>
+        <!-- <legend class="border-bottom mb-4">{{ legend }}</legend> -->
         <div class="form-group">
             {{ form.email.label(class="form-control-label") }}
             {% if form.email.errors %}
@@ -70,18 +70,34 @@
                 {{ form.workplace(class="form-control form-control-lg") }}
             {% endif %}
         </div>
-        <div class="form-group">
-            {{ form.gender.label(class="form-control-label") }}
-            {% if form.gender.errors %}
-                {{ form.gender(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.gender.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-            {% else %}
-                {{ form.gender(class="form-control form-control-lg") }}
-            {% endif %}
+        <div class="two-inputs-in-row">
+
+            <div class="form-group">
+                {{ form.gender.label(class="form-control-label") }}
+                {% if form.gender.errors %}
+                    {{ form.gender(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.gender.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.gender(class="form-select form-select-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.authorization.label(class="form-control-label") }}
+                {% if form.authorization.errors %}
+                    {{ form.authorization(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.authorization.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.authorization(class="form-select form-select-lg") }}
+                {% endif %}
+            </div>
         </div>
 
         {% if current_user.authorization == 's_admin'%}
@@ -101,21 +117,8 @@
         {% else %}
           {{ form.company_id(class="sr-only form-control form-control-lg") }}
         {% endif %}
-        <div class="form-group">
-            {{ form.authorization.label(class="form-control-label") }}
-            {% if form.authorization.errors %}
-                {{ form.authorization(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.authorization.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-            {% else %}
-                {{ form.authorization(class="form-control form-control-lg") }}
-            {% endif %}
-        </div>
     </fieldset>
-    <div class="form-group">
+    <div class="form-group button-group">
       <a class="btn btn-info" href="{{url_for('users.user_list')}}">&#8678; Nazad</a>
       {{ form.submit(class="btn btn-outline-info") }}
     </div>

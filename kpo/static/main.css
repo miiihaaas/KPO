@@ -8,9 +8,6 @@ h1, h2, h3, h4, h5, h6 {
   color: #444444;
 }
 
-.bg-steel {
-  background-color: #5f788a;
-}
 
 .site-header .navbar-nav .nav-link {
   color: #cbd5db;
@@ -117,6 +114,28 @@ a.article-title:hover {
 
 .styled-table tbody tr:last-of-type td {
   border-bottom: 2px solid #104e97;
+} */
+
+/* .wrapper{
+  max-width: 450px;
+  margin: 0px auto;
+}
+.wrapper .search-input{
+  background: #fff;
+  width: 100%;
+  border-radius: 5px;
+  position: relative;
+  box-shadow: 0px 1px 5px 3px rgba(0,0,0,0.12);
+}
+.search-input input{
+  height: 55px;
+  width: 100%;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  padding: 0 60px 0 20px;
+  font-size: 18px;
+  box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
 } */
 
 

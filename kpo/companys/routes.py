@@ -16,7 +16,7 @@ def company_list():
         flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     companys = Company.query.all()
-    return render_template('company_list.html', title='Companies', companys=companys)
+    return render_template('company_list.html', title='Kompanija', companys=companys)
 
 
 @companys.route("/register_c", methods=['GET', 'POST'])

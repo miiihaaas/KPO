@@ -17,7 +17,7 @@ def user_list():
         flash('Morate da budete prijavljeni da bi ste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     users = User.query.all()
-    return render_template('user_list.html', title='Users', users=users)
+    return render_template('user_list.html', title='Korisnici', users=users)
 
 
 @users.route("/register_u", methods=['GET', 'POST'])
