@@ -84,6 +84,8 @@ def register_n(invoice_id, type):
     if current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
         return redirect(url_for('main.home'))
     invoice = Invoice.query.get_or_404(invoice_id)
+    customer_list = [i.customer for i in db.session.query(Invoice.customer).distinct()]
+    print(customer_list)
     data = DashboardData(current_user.user_company.id)
     form = RegistrationInvoiceForm()
     if type == 'odobrenje':
@@ -144,7 +146,7 @@ def register_n(invoice_id, type):
     elif request.method == 'GET':
         form.customer.data = invoice.customer
         form.international_invoice.data = invoice.international_invoice
-    return render_template('register_i.html', legend=legend + f' ({invoice.invoice_number})', title=legend, form=form, data=data)
+    return render_template('register_i.html', legend=legend + f' ({invoice.invoice_number})', title=legend, form=form, data=data, customer_list=customer_list)
 
 
 @invoices.route("/invoice/<int:invoice_id>", methods=['GET', 'POST'])
