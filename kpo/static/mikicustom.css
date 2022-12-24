@@ -2,6 +2,7 @@ body { background: url(img/loginbg.jpg) center center no-repeat; background-size
 h1 { font-size: 1.6rem; color: #999; font-weight: 700; padding: 30px 0 0 0; }
 h2 { font-size: 1.4rem; }
 h3 { font-size: 1.2rem; }
+body.Dodavanje fieldset.form-group { max-width: 100% !important;}
 .alert-success { color: #0c8e51; background-color: transparent; border: 0; font-weight: 700; font-size: 20px; text-align: center;}
 .alert-danger { color: #cc0000; background-color: transparent; border: 0; font-weight: 700; font-size: 20px; text-align: center; padding-top: 40px;}
 .alert-message { color: #009dde; background-color: transparent; border: 0; font-weight: 700; font-size: 20px; text-align: center;}
@@ -95,7 +96,7 @@ form > div.form-group { text-align: center; }
 .btn.btn-danger:hover { background-image: linear-gradient(#990000, #990000) !important; }
 .btn.btn-secondary, .btn.btn-danger { margin: 0 0 10px 0 !important}
 @media (min-width: 992px) {
-	.invoices .btn-info { width: 100%}
+	body:not(.Korisnici) .btn-info { width: 100%}
 }
 @media (max-width: 991px) {
 	table.dataTable { max-width: 100% !important; width: 100% !important; }
