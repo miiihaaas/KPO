@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <link rel="shortcut icon" href="/static/img/KPO_Favicon.png" type="image/png">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
@@ -23,14 +25,12 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-implicit-deepblue bg-steel "> <!--fixed-top: ipak treba da se podvlači pod navbar-->
         <div class="container">
-          {% if current_user.is_authenticated %}
-            <img class="rounded-circle" src="static/company_logos/{{ current_user.user_company.company_logo }}" width="50" >
-          {% endif %}
+          <img class="rounded-circle" src="/static/img/KPO_Favicon.png" width="50" >
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
-            <div class="navbar-nav mr-auto">
+            <div class="navbar-nav">
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Početna</a>
                 <a class="nav-item nav-link" href="{{ url_for('invoices.invoice_list') }}">Fakture</a>
@@ -38,9 +38,6 @@
                 <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Početna</a>
                 <a class="nav-item nav-link" href="{{ url_for('main.about') }}">O softveru</a>
               {% endif %}
-            </div>
-            <!-- Navbar Right Side -->
-            <div class="navbar-nav">
               {% if current_user.is_authenticated %}
                 {% if current_user.authorization == 's_admin' %}
                   <a class="nav-item nav-link" href="{{ url_for('companys.company_list') }}">Kompanija</a>
@@ -56,6 +53,10 @@
                 {% endif %}
               {% else %}
                 <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Prijavite se</a>
+              {% endif %}
+              {% if current_user.is_authenticated %}
+                <img class="rounded-circle" src="/static/company_logos/{{ current_user.user_company.company_logo }}" width="50" >
+                <a class="nav-item nav-link" href="{{ url_for('users.user_profile', user_id=current_user.id) }}">{{ current_user.name }}</a>
               {% endif %}
             </div>
           </div>
