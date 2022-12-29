@@ -25,11 +25,14 @@ def invoice_list():
         start = request.form.get('start') #prilagoditi promenjive
         end = request.form.get('end') #prilagoditi promenjive
         filtered_invoices = [i for i in Invoice.query.filter(Invoice.company_id==current_user.user_company.id).filter(Invoice.date.between(start, end)).all()]
-        
-        file_name = f'{current_user.user_company.companyname}.pdf'
-        create_invoice_report(start, end, filtered_invoices, file_name)
-        path = "static/pdf_forms/" + file_name
-        return send_file(path, as_attachment=True)
+        if filtered_invoices == []:
+            flash('Izabrani interval datuma ne sadrži fakture...', 'danger')
+            return render_template('invoice_list.html', title='Fakture', invoices=invoices, data=data)
+        else:
+            file_name = f'{current_user.user_company.companyname}.pdf'
+            create_invoice_report(start, end, filtered_invoices, file_name)
+            path = "static/pdf_forms/" + file_name
+            return send_file(path, as_attachment=True)
     else:
         return render_template('invoice_list.html', title='Fakture', invoices=invoices, data=data)
 
