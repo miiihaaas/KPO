@@ -44,8 +44,11 @@ def register_i():
 
     data = DashboardData(current_user.user_company.id)
     data.last_input = Invoice.query.filter_by(company_id=current_user.user_company.id).filter_by(type='faktura').order_by(Invoice.id.desc()).first()
-    customer_list = [i.customer for i in db.session.query(Invoice.customer).distinct()]
+    customer_list = [i.customer for i in db.session.query(Invoice.customer).filter(Invoice.company_id == current_user.user_company.id).distinct()]
+    service_list = [i.service for i in db.session.query(Invoice.service).filter(Invoice.company_id == current_user.user_company.id).distinct()]
+    
     print(customer_list)
+    print(service_list)
     form = RegistrationInvoiceForm()
     form.reset()
     if form.validate_on_submit():
@@ -79,7 +82,7 @@ def register_i():
             db.session.commit()
         flash(f'Faktura: {form.invoice_number.data} je uspešno kreirana!', 'success')
         return redirect(url_for('invoices.invoice_list'))
-    return render_template('register_i.html', legend='Dodavanje nove fakture', title='Dodavanje nove fakture', form=form, data=data, customer_list=customer_list)
+    return render_template('register_i.html', legend='Dodavanje nove fakture', title='Dodavanje nove fakture', form=form, data=data, customer_list=customer_list, service_list=service_list)
 
 
 @invoices.route("/invoice/<int:invoice_id>/<string:type>/register_n", methods=['GET', 'POST'])
