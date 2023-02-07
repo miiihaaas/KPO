@@ -25,7 +25,7 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-implicit-deepblue bg-steel "> <!--fixed-top: ipak treba da se podvlači pod navbar-->
         <div class="container">
-          <img class="rounded-circle" src="/static/img/KPO_Favicon.png" width="50" >
+          <a href="{{ url_for('main.home') }}"><img class="rounded-circle" src="/static/img/KPO_Favicon.png" width="50" ></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -55,8 +55,8 @@
                 <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Prijavite se</a>
               {% endif %}
               {% if current_user.is_authenticated %}
+                <span class="user_identification">{{ current_user.name }}</span>
                 <img class="rounded-circle" src="/static/company_logos/{{ current_user.user_company.company_logo }}" width="50" >
-                <a class="nav-item nav-link" href="{{ url_for('users.user_profile', user_id=current_user.id) }}">{{ current_user.name }}</a>
               {% endif %}
             </div>
           </div>
