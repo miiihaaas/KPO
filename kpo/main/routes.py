@@ -22,7 +22,6 @@ def home():
         return redirect(url_for('main.about'))
     return render_template('home.html', title='Početna', form=form)
 
-    print(form.start_day)
 
 
 @main.route("/about")

@@ -46,11 +46,20 @@ class DashboardData():
         self.end_day = date.today()
         self.start_day = [date(date.today().year, 1, 1)]
         self.razlika_8m = []
-        self.razlika_6m = self.limit - Invoice.query.with_entities(
+        invoice_total = Invoice.query.with_entities(
                             func.sum(Invoice.amount).label("suma")
                             ).filter_by(cancelled=False).filter(Invoice.date.between(self.start_day[0], self.end_day)).filter_by(
                             company_id=self.company_id
                             ).first()[0]
+        if invoice_total is not None:
+            self.razlika_6m = self.limit - invoice_total
+        else:
+            self.razlika_6m = 0
+        # self.razlika_6m = self.limit - Invoice.query.with_entities(
+        #                     func.sum(Invoice.amount).label("suma")
+        #                     ).filter_by(cancelled=False).filter(Invoice.date.between(self.start_day[0], self.end_day)).filter_by(
+        #                     company_id=self.company_id
+        #                     ).first()[0]
         self.company_id = company_id
         self.last_input = Invoice.query.filter_by(company_id=company_id).order_by(Invoice.id.desc()).first() # dodati filter po preduzeću i porežati silazno --- ovo treba da predstavlja pslednju unetu fakturu
         list = [0, 1, 7, 15, 30, 90] # broj dana za proračun do limita
@@ -58,10 +67,14 @@ class DashboardData():
             self.start_day.append(date.today() + relativedelta(days=item) + relativedelta(days=-365))
         for value in range(7):
             try:
-                self.razlika_8m.append(self.limit + 2000000 - Invoice.query.with_entities(
+                invoice_total = Invoice.query.with_entities(
                             func.sum(Invoice.amount).label("suma")
                             ).filter_by(cancelled=False).filter_by(international_invoice=False).filter(Invoice.date.between(self.start_day[value], self.end_day)).filter_by(
                             company_id=self.company_id
-                            ).first()[0])
+                            ).first()[0]
+                if invoice_total is not None:
+                    self.razlika_8m.append(self.limit + 2000000 - invoice_total)
+                else:
+                    self.razlika_8m.append(0)
             except:
                 self.razlika_8m.append(0)
