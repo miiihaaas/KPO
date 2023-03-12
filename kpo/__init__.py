@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -17,6 +17,38 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     "pool_pre_ping": True,
     "pool_recycle": 300,
 }
+
+@app.errorhandler(401)
+def unauthorized(e):
+    error_info = "An error occurred: " + str(e)
+    return render_template('401.html', error_info=error_info), 401
+
+@app.errorhandler(403)
+def forbidden(e):
+    error_info = "An error occurred: " + str(e)
+    return render_template('403.html', error_info=error_info), 403
+
+@app.errorhandler(404)
+def page_not_found(e):
+    error_info = "An error occurred: " + str(e)
+    return render_template('404.html', error_info=error_info), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    error_info = "An error occurred: " + str(e)
+    return render_template('500.html', error_info=error_info), 500
+
+@app.errorhandler(502)
+def bad_gateway(e):
+    error_info = "An error occurred: " + str(e)
+    return render_template('502.html', error_info=error_info), 502
+
+@app.errorhandler(Exception)
+def handle_error(e):
+    error_info = "An error occurred: " + str(e)
+    return render_template('500.html', error_info=error_info), 500
+
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db, compare_type=True, render_as_batch=True) #da primeti izmene npr u dužini stringova
 bcrypt = Bcrypt(app)
