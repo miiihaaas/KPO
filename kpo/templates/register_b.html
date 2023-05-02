@@ -200,6 +200,10 @@
         {% endif %}
       </div>
     </fieldset>
+    <div class="form-group">
+      <a class="btn" href="{{url_for('bills.bill_list')}}">&#8678; Nazad</a>
+      {{ form.submit(class="btn btn-outline-info") }}
+  </div>
   </form>
 </div>
 

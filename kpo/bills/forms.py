@@ -11,7 +11,7 @@ class RegisterBillForm(FlaskForm):
     bill_customer_id = StringField('Kupac')
     bill_number = StringField('Broj dokumenta', validators=[DataRequired(), Length(min=3, max=50)])
     bill_tax_category = SelectField('PDV kategorija', choices=[('S', 'S'), ('AE', 'AE'), ('O', 'O'), ('E', 'E'), ('R', 'R'), ('Z', 'Z'), ('SS', 'SS'), ('OE', 'OE'), ('N', 'N')])
-    bill_base_code = SelectField('Šifra Osnova', choices=[])
+    bill_base_code = SelectField('Šifra Osnova', validators=[Optional()], choices=[('', 'testing')])
     bill_decision_number = StringField('Broj odluke', validators=[Optional(), Length(min=0, max=50)])
     bill_contract_number = StringField('Broj ugovora', validators=[Optional(), Length(min=0, max=50)])
     bill_purchase_order_number = StringField('Broj narudžbenice / ponude', validators=[Optional(), Length(min=0, max=50)])
@@ -21,6 +21,7 @@ class RegisterBillForm(FlaskForm):
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
     bill_attachment = StringField('Dodaj fajl -- radi na ovome :)')
+    submit = SubmitField('Dodajte dokument')
 
 
 class EditBillForm(FlaskForm):
@@ -29,7 +30,7 @@ class EditBillForm(FlaskForm):
     bill_customer_id = StringField('Kupac')
     bill_number = StringField('Broj dokumenta', validators=[DataRequired(), Length(min=3, max=50)])
     bill_tax_category = SelectField('PDV kategorija', choices=[('S', 'S'), ('AE', 'AE'), ('O', 'O'), ('E', 'E'), ('R', 'R'), ('Z', 'Z'), ('SS', 'SS'), ('OE', 'OE'), ('N', 'N')])
-    bill_base_code = SelectField('Šifra Osnova', choices=[])
+    bill_base_code = SelectField('Šifra Osnova', validators=[Optional()], choices=[('', 'testing')])
     bill_decision_number = StringField('Broj odluke', validators=[Optional(), Length(min=0, max=50)])
     bill_contract_number = StringField('Broj ugovora', validators=[Optional(), Length(min=0, max=50)])
     bill_purchase_order_number = StringField('Broj narudžbenice / ponude', validators=[Optional(), Length(min=0, max=50)])
@@ -39,6 +40,7 @@ class EditBillForm(FlaskForm):
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
     bill_attachment = StringField('Dodaj fajl -- radi na ovome :)')
+    submit = SubmitField('ažurirajte dokument')
     
     
 class RegisterItemForm(FlaskForm):

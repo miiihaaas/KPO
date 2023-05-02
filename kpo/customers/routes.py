@@ -1,4 +1,4 @@
-from kpo.models import Customer
+from kpo.models import Customer, Bill
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort
 from kpo import db, app
@@ -38,6 +38,7 @@ def register_customer():
 @customers.route('/customer/<int:customer_id>', methods=['GET', 'POST'])
 def customer_profile(customer_id):
     customer = Customer.query.get_or_404(customer_id)
+    bills = Bill.query.filter_by(bill_customer_id=customer_id).all()
     form = EditCustomerForm()
     if form.validate_on_submit():
         customer.customer_name = form.customer_name.data
@@ -64,5 +65,5 @@ def customer_profile(customer_id):
         form.customer_mb.data = customer.customer_mb
         form.customer_jbkjs.data = customer.customer_jbkjs
         form.customer_mail.data = customer.customer_mail
-    return render_template('customer.html', legend='Komitent',  title='Komitent', form=form, customer=customer)
+    return render_template('customer.html', legend='Komitent',  title='Komitent', form=form, customer=customer, bills=bills)
     

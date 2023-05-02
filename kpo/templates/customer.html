@@ -149,7 +149,34 @@
                 {% endif %}
             </div>
         </fieldset>
-        
+        <table id="data" class="table table-striped dataTable no-footer invoices" role="grid" aria-describedby="data_info" style="width: 968px;">
+            <thead>
+                <tr role="row">
+                    <th>Br fakture</th> 
+                    <th>Datum prometa</th> 
+                    <th>Opis knjiženja</th> 
+                    <th>Iznos</th> 
+                    <th>Valuta plaćanja/Datum dospeća?</th> 
+                    <th>Plaćeno u celosti</th> 
+                    <th>Delimično plaćeno</th> 
+                    <th>Preostalo za uplatu</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in bills %}
+                <tr>
+                    <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }}</td>
+                    <td>{{ bill.bill_transaction_date }}</td>
+                    <td>Da li treba - trenutno nemamo taj atribut u fakuri</td>
+                    <td>workinprogres</td>
+                    <td>{{ bill.bill_due_date }}</td>
+                    <td>workinprogres</td>
+                    <td>workinprogres</td>
+                    <td>workinprogres</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </form>
 {% endblock content%}
 

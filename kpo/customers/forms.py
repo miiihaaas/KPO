@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField, FieldList, FormField
-from wtforms.validators import DataRequired, Length, Email, ValidationError
+from wtforms.validators import DataRequired, Length, Email, ValidationError, Optional
 
 
 class RegisterCustomerForm(FlaskForm):
@@ -13,7 +13,7 @@ class RegisterCustomerForm(FlaskForm):
     customer_state = StringField('Država', validators=[DataRequired(), Length(min=2, max=50)])
     customer_pib = StringField('PIB', validators=[DataRequired(), Length(min=9, max=9)])
     customer_mb = StringField('MB', validators=[DataRequired(), Length(min=8, max=8)])
-    customer_jbkjs = StringField('JBKJS', validators=[DataRequired(), Length(min=5, max=5)])
+    customer_jbkjs = StringField('JBKJS', validators=[Optional(), Length(min=5, max=5)])
     customer_mail = StringField('Mejl', validators=[DataRequired(), Length(min=8, max=50)])
     submit = SubmitField('Registrujte komitenta')
     
@@ -28,6 +28,6 @@ class EditCustomerForm(FlaskForm):
     customer_state = StringField('Dršava', validators=[DataRequired(), Length(min=2, max=50)])
     customer_pib = StringField('PIB', validators=[DataRequired(), Length(min=9, max=9)])
     customer_mb = StringField('MB', validators=[DataRequired(), Length(min=8, max=8)])
-    customer_jbkjs = StringField('JBKJS', validators=[DataRequired(), Length(min=5, max=5)])
+    customer_jbkjs = StringField('JBKJS', validators=[Optional(), Length(min=5, max=5)])
     customer_mail = StringField('Mejl', validators=[DataRequired(), Length(min=8, max=50)])
     submit = SubmitField('Izmenite podatke')
