@@ -5,6 +5,17 @@
     <h1>{{ current_user.user_company.companyname }}</h1>
     <h2>{{ form.end_day.strftime("%d.%m.%Y.") }} </h2>
   </div>
+  {% if current_user.authorization == 's_admin' %}
+  <div class="form-group">
+    <label class="form-control-label" for="">Selektujte kompaniju:</label>
+    <select class="form-select form-select-lg" name="" id="">
+      <option value="jedan">jedan</option>
+      <option value="dva">dva</option>
+      <option value="tri">tri</option>
+    </select>
+    <button class="btn btn-primary mt-3" type="submit">Primeni</button>
+  </div>
+  {% endif %}
   <hr>
   <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit - form.razlika_6m) }} din</h3>
   <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(form.razlika_6m) }} din</h3>

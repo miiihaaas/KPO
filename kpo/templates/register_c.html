@@ -114,6 +114,19 @@
                     {{ form.company_mb(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
+            <div class="form-group">
+                {{ form.company_jbkjs.label(class="form-control-label") }}
+                {% if form.company_jbkjs.errors %}
+                    {{ form.company_jbkjs(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.company_jbkjs.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.company_jbkjs(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
         </div>
         <div class="form-group">
             {{ form.company_site.label(class="form-control-label") }}
@@ -154,6 +167,34 @@
                 {{ form.company_phone(class="form-control form-control-lg") }}
             {% endif %}
         </div>
+        <label for="" class="form-control-label">Dinarski računi</label>
+        <div class="form-group">
+            {% if form.dinar_account_list.errors %}
+                {{ form.dinar_account_list(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.dinar_account_list.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.dinar_account_list(class="") }}
+            {% endif %}
+            <button id="add_dinar_account" class="btn btn-primary">Dodaj dinarski račun</button>
+        </div>
+        <label for="" class="form-control-label">Devizni računi</label>
+        <div class="form-group">
+            {% if form.foreign_account_list.errors %}
+                {{ form.foreign_account_list(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.foreign_account_list.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.foreign_account_list(class="") }}
+            {% endif %}
+            <button id="add_foreign_account" class="btn btn-primary">Dodaj devizni račun</button>
+        </div>
     </fieldset>
     <div class="form-group button-group">
         <a class="btn btn-info" href="{{url_for('companys.company_list')}}">&#8678; Nazad</a>
@@ -162,3 +203,14 @@
 </form>
 </div>
 {% endblock content%}
+{% block scripts %}
+<script>
+    window.onload = function() {
+        let addDinarAccountButton = documet.getElementByIF('add_dinar_account');
+        addDinarAccountButton.addEventListener('click', function(e){
+            e.preventDefault();
+            let all
+        })
+    }
+</script>
+{% endblock %}

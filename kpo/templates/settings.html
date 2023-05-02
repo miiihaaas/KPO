@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Podešavanja</h1>
+<div class="content-section">
+  <form action="" method="POST">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <div class="form-check form-switch">
+        {{ form.synchronization_with_eFaktura(class="form-check-input", disabled=False) }} 
+        {{ form.synchronization_with_eFaktura.label(class="form-check-label") }}
+      </div>
+      <div class="form-check form-switch">
+        {{ form.payment_records(class="form-check-input") }} 
+        {{ form.payment_records.label(class="form-check-label") }}
+      </div>
+      <div class="form-check form-switch">
+        {{ form.synchronization_with_CRF(class="form-check-input", disabled=True) }} 
+        {{ form.synchronization_with_CRF.label(class="form-check-label") }}
+      </div>
+      <div class="form-check form-switch">
+        {{ form.forward_invoice_to_customer(class="form-check-input") }} 
+        {{ form.forward_invoice_to_customer.label(class="form-check-label") }}
+      </div>
+      <div class="button-group">
+        <a class="btn btn-info" href="{{url_for('main.home')}}">Nazad</a>
+        {{ form.submit(class="btn btn-primary") }}
+      </div>
+    </fieldset>
+  </form>
+</div>
+{% endblock content%}
+{% block scripts %}
+<script>
+  // Selektujemo elemente koje želimo da promenimo
+  const synchronizationCheckbox = document.querySelector('input[name="synchronization_with_eFaktura"]');
+  const forwardInvoiceCheckbox = document.querySelector('input[name="forward_invoice_to_customer"]');
+  const forwardInvoiceDiv = document.querySelector('div.form-check.form-switch:nth-child(4)');
+
+  // Funkcija koju ćemo koristiti za promenu vidljivosti i stanja polja za unos
+  function toggleForwardInvoice() {
+    if (synchronizationCheckbox.checked) { // Ako je synchronizationCheckbox čekiran
+      forwardInvoiceCheckbox.checked = false; // forwardInvoiceCheckbox postavljamo na false
+      forwardInvoiceCheckbox.disabled = true; // forwardInvoiceCheckbox onemogućavamo
+      forwardInvoiceDiv.style.display = 'none'; // forwardInvoiceDiv sakrivamo
+    } else {
+      forwardInvoiceCheckbox.disabled = false; // forwardInvoiceCheckbox omogućavamo
+      forwardInvoiceDiv.style.display = 'block'; // forwardInvoiceDiv prikazujemo
+    }
+  }
+
+  // Postavljamo događaj koji će se aktivirati kada se promeni stanje synchronizationCheckbox
+  synchronizationCheckbox.addEventListener('change', toggleForwardInvoice);
+
+  // Pozivamo funkciju toggleForwardInvoice kada se stranica učita, kako bismo prikazali/sakrili forwardInvoiceCheckbox
+  toggleForwardInvoice();
+
+</script>
+{% endblock %}

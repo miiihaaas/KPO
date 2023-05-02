@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+    <a class="btn btn-info btn-sm m-1" href="{{ url_for('customers.register_customer') }}">Registracija novog komitenta</a>
+    <hr class="mb-3">
+</div>
+<div class="row">
+    <div class="col">
+        <label for="start-date" class="form-label">Početni datum:</label>
+        <input class="form-control mb-2" type="date" id="start-date" name="start-date">
+    </div>
+    <div class="col">
+        <label for="end-date" class="form-label">Krajnji datum:</label>
+        <input class="form-control mb-4" type="date" id="end-date" name="end-date">
+    </div>
+</div>
+
+<table id="data" class="table table-striped dataTable no-footer invoices" role="grid" aria-describedby="data_info" style="width: 968px;">
+    <thead>
+        <tr role="row">
+            <th>Naziv</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('customers.customer_profile', customer_id=customer.id) }}" title="Izmenite korisnika">{{ customer.customer_name }} </a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+        $('#data').DataTable({
+            language: {
+            url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
+            }
+        });
+        });
+    </script>
+{% endblock %}

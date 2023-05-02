@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <div class="form-gorup">
+                {{ form.customer_name.label(class="form-control-label") }}
+                {% if form.customer_name.errors %}
+                    {{ form.customer_name(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.customer_name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.customer_name(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="col-7 form-gorup">
+                    {{ form.customer_address.label(class="form-control-label") }}
+                    {% if form.customer_address.errors %}
+                        {{ form.customer_address(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_address.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_address(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col-2 form-gorup">
+                    {{ form.customer_address_number.label(class="form-control-label") }}
+                    {% if form.customer_address_number.errors %}
+                        {{ form.customer_address_number(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_address_number.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_address_number(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col-3 form-gorup">
+                    {{ form.customer_zip_code.label(class="form-control-label") }}
+                    {% if form.customer_zip_code.errors %}
+                        {{ form.customer_zip_code(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_zip_code.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_zip_code(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-gorup">
+                    {{ form.customer_city.label(class="form-control-label") }}
+                    {% if form.customer_city.errors %}
+                        {{ form.customer_city(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_city.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_city(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col form-gorup">
+                    {{ form.customer_state.label(class="form-control-label") }}
+                    {% if form.customer_state.errors %}
+                        {{ form.customer_state(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_state.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_state(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-gorup">
+                    {{ form.customer_pib.label(class="form-control-label") }}
+                    {% if form.customer_pib.errors %}
+                        {{ form.customer_pib(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_pib.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_pib(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col form-gorup">
+                    {{ form.customer_mb.label(class="form-control-label") }}
+                    {% if form.customer_mb.errors %}
+                        {{ form.customer_mb(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_mb.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_mb(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col form-gorup">
+                    {{ form.customer_jbkjs.label(class="form-control-label") }}
+                    {% if form.customer_jbkjs.errors %}
+                        {{ form.customer_jbkjs(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.customer_jbkjs.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.customer_jbkjs(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-gorup">
+                {{ form.customer_mail.label(class="form-control-label") }}
+                {% if form.customer_mail.errors %}
+                    {{ form.customer_mail(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.customer_mail.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.customer_mail(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+        </fieldset>
+        <div class="form-group button-group">
+            <a class="btn btn-info" href="{{url_for('customers.customer_list')}}">&#8678; Nazad</a>
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+{% endblock content%}
