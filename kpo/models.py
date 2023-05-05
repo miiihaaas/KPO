@@ -34,6 +34,7 @@ class Company(db.Model):
     foreign_account_list = db.Column(db.JSON, nullable=True)
     users = db.relationship('User', backref='user_company', lazy=True)
     invoices = db.relationship('Invoice', backref='invoice_company', lazy=True)
+    customers = db.relationship('Customer', backref='customer_company', lazy=True)
 
     def __repr__(self):
         return self.companyname
@@ -81,6 +82,7 @@ class Customer(db.Model):
     customer_mb = db.Column(db.Integer, nullable=False)
     customer_jbkjs = db.Column(db.Integer, nullable=False)
     customer_mail = db.Column(db.String(50), unique=False, nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
     bills = db.relationship('Bill', backref='bill_customer', lazy=True)
     
 

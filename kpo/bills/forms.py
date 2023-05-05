@@ -8,7 +8,7 @@ from kpo.models import Bill
 class RegisterBillForm(FlaskForm):
     bill_currency = SelectField('Valuta', choices=[('RSD', 'RSD'), ('EUR', 'EUR'), ('USD', 'USD'), ('GBP', 'GBP'), ('CHF', 'CHF'), ('AUD', 'AUD')])
     bill_type = SelectField('Tip dokumenta', choices=[('faktura', 'Faktura'), ('avans', 'Avansni račun'), ('knjizno_odobrenje', 'Knjizno odobrenje'), ('knjizno_zaduzenje', 'Knjizno zaduzenje')])
-    bill_customer_id = StringField('Kupac')
+    bill_customer_id = SelectField('Kupac')
     bill_number = StringField('Broj dokumenta', validators=[DataRequired(), Length(min=3, max=50)])
     bill_tax_category = SelectField('PDV kategorija', choices=[('S', 'S'), ('AE', 'AE'), ('O', 'O'), ('E', 'E'), ('R', 'R'), ('Z', 'Z'), ('SS', 'SS'), ('OE', 'OE'), ('N', 'N')])
     bill_base_code = SelectField('Šifra Osnova', validators=[Optional()], choices=[('', 'testing')])
@@ -27,7 +27,7 @@ class RegisterBillForm(FlaskForm):
 class EditBillForm(FlaskForm):
     bill_currency = SelectField('Valuta', choices=[('RSD', 'RSD'), ('EUR', 'EUR'), ('USD', 'USD'), ('GBP', 'GBP'), ('CHF', 'CHF'), ('AUD', 'AUD')])
     bill_type = SelectField('Tip dokumenta', choices=[('faktura', 'Faktura'), ('avans', 'Avansni račun'), ('knjizno_odobrenje', 'Knjizno odobrenje'), ('knjizno_zaduzenje', 'Knjizno zaduzenje')])
-    bill_customer_id = StringField('Kupac')
+    bill_customer_id = SelectField('Kupac')
     bill_number = StringField('Broj dokumenta', validators=[DataRequired(), Length(min=3, max=50)])
     bill_tax_category = SelectField('PDV kategorija', choices=[('S', 'S'), ('AE', 'AE'), ('O', 'O'), ('E', 'E'), ('R', 'R'), ('Z', 'Z'), ('SS', 'SS'), ('OE', 'OE'), ('N', 'N')])
     bill_base_code = SelectField('Šifra Osnova', validators=[Optional()], choices=[('', 'testing')])
