@@ -1,6 +1,7 @@
 from kpo.models import Customer, Bill
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort
+from flask_login import login_required, current_user
 from kpo import db, app
 from kpo.customers.forms import RegisterCustomerForm, EditCustomerForm
 
@@ -27,7 +28,8 @@ def register_customer():
                             customer_pib=form.customer_pib.data,
                             customer_mb=form.customer_mb.data,
                             customer_jbkjs=form.customer_jbkjs.data,
-                            customer_mail=form.customer_mail.data)
+                            customer_mail=form.customer_mail.data,
+                            company_id=current_user.company_id)
         db.session.add(customer)
         db.session.commit()
         flash(f'Komitent: {form.customer_name.data} je uspesno registrovan.', 'success')
@@ -51,6 +53,7 @@ def customer_profile(customer_id):
         customer.customer_mb = form.customer_mb.data
         customer.customer_jbkjs = form.customer_jbkjs.data
         customer.customer_mail = form.customer_mail.data
+        customer.company_id = current_user.company_id
         db.session.commit()
         flash('Podaci komitenta su uspešno izmenjeni.', 'success')
         return redirect(url_for('customers.customer_profile', customer_id=customer.id))

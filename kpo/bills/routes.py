@@ -87,7 +87,7 @@ def bill_profile(bill_id):
         form.bill_transaction_date.data = bill.bill_transaction_date.strftime('%Y-%m-%d')
         form.bill_due_date.data = bill.bill_due_date.strftime('%Y-%m-%d')
         form.bill_tax_calculation_date.data = bill.bill_tax_calculation_date
-        form.bill_reference_number.data = bill.bill_reference_numbe
+        form.bill_reference_number.data = bill.bill_reference_number
         form.bill_model.data = bill.bill_model
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = bill.bill_customer_id
