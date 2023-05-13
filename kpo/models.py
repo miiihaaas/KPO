@@ -123,6 +123,7 @@ class Bill(db.Model):
     bill_model = db.Column(db.String(50), nullable=True)
     bill_attachment = db.Column(db.String(60), nullable=True)
     bill_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    bill_items = db.Column(db.JSON, nullable=True)
 
 
 class Item(db.Model):

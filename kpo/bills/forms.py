@@ -21,7 +21,7 @@ class RegisterBillForm(FlaskForm):
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
     bill_attachment = StringField('Dodaj fajl -- radi na ovome :)')
-    submit = SubmitField('Dodajte dokument')
+    submit = SubmitField('Dodajte stavke')
 
 
 class EditBillForm(FlaskForm):
@@ -40,7 +40,7 @@ class EditBillForm(FlaskForm):
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
     bill_attachment = StringField('Dodaj fajl -- radi na ovome :)')
-    submit = SubmitField('ažurirajte dokument')
+    submit = SubmitField('Ažurirajte dokument')
     
     
 class RegisterItemForm(FlaskForm):

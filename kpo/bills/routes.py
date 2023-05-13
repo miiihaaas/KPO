@@ -42,12 +42,12 @@ def register_b():
             bill_reference_number = form.bill_reference_number.data,
             bill_model = form.bill_model.data,
             bill_attachment = form.bill_attachment.data,
-            bill_customer_id = form.bill_customer_id.data
+            bill_customer_id = form.bill_customer_id.data,
+            bill_items = [{'sifra': '', 'naziv': '', 'kolicina': '', 'jedinica_mere': '', 'cena': ''}]
         )
         db.session.add(bill)
         db.session.commit()
-        flash('Uspesno ste dodali novu fakturu!', 'success')
-        return redirect(url_for('bills.bill_list'))
+        return redirect(url_for('bills.bill_profile', bill_id=bill.id) + '#stavke')
     return render_template('register_b.html', title='Registracija nove fakture', form=form)
     
     
@@ -75,6 +75,25 @@ def bill_profile(bill_id):
         bill.bill_model = form.bill_model.data
         bill.bill_attachment = form.bill_attachment.data
         bill.bill_customer_id = form.bill_customer_id.data
+        
+        fullname = request.form.getlist('field[]')
+        print(f'{fullname=}')
+        #split fullname list into many lists of 5
+        split_fullname = [fullname[i:i + 5] for i in range(0, len(fullname), 5)]
+        print(f'{split_fullname=}')
+        records = []
+        for list in split_fullname:
+            item = {'sifra': list[0], 'naziv': list[1], 'kolicina': list[2], 'jedinica_mere': list[3], 'cena': list[4]}
+            records.append(item)
+        print(f'{records=}')
+        total_price = 0
+        for record in records:
+            total_price += (int(record['cena']) * int(record['kolicina']))
+        print(f'{total_price=}')
+        bill.bill_items = records
+        
+        db.session.commit()
+        return redirect(url_for('bills.bill_list'))
     elif request.method == 'GET':
         form.bill_currency.data = bill.bill_currency
         form.bill_type.data = bill.bill_type
@@ -92,4 +111,28 @@ def bill_profile(bill_id):
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = bill.bill_customer_id
         
-    return render_template('bill.html', title='Detalji fakture', form=form)
+    return render_template('bill.html', title='Detalji fakture', form=form, bill=bill)
+
+
+@bills.route("/new_item", methods=['GET', 'POST'])
+def new_item():
+    global counter
+    counter = 1
+    new_item_form = f'''
+    <tr >
+        <td><input class="form-control" type="text" name="field[]"></td>
+        <td><input class="form-control" type="text" name="field[]"></td>
+        <td><input class="form-control" type="text" name="field[]"></td>
+        <td><input class="form-control" type="text" name="field[]"></td>
+        <td><input class="form-control" type="text" name="field[]"></td>
+        <td><button type="button" hx-delete="/delete_item" class="btn btn-danger">-</button></td>
+    </tr>
+    '''
+    counter += 1
+    return new_item_form
+
+
+@bills.route("/delete_item", methods=['DELETE'])
+def delete_item():
+    form = ''
+    return form

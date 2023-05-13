@@ -7,6 +7,7 @@
         <p class="text-secondary text-muted">{{ company.company_address }} {{ company.company_address_number }}, {{ company.company_city }}</p>
     </div>
 </div>
+<!-- {{form.errors}} -->
 <div class="content-section">
     <form method="POST" action="" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
@@ -93,71 +94,74 @@
                     {% endif %}
                 </div>
             </div>
-            
-            <div class="form-group">
-                {{ form.company_pib.label(class="form-control-label") }}
-                {% if form.company_pib.errors %}
-                    {{ form.company_pib(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.company_pib.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.company_pib(class="form-control form-control-lg") }}
-                {% endif %}
+            <div class="row">
+                <div class="col form-group">
+                    {{ form.company_pib.label(class="form-control-label") }}
+                    {% if form.company_pib.errors %}
+                        {{ form.company_pib(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_pib.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_pib(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col form-group">
+                    {{ form.company_mb.label(class="form-control-label") }}
+                    {% if form.company_mb.errors %}
+                        {{ form.company_mb(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_mb.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_mb(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col form-group">
+                    {{ form.company_jbkjs.label(class="form-control-label") }}
+                    {% if form.company_jbkjs.errors %}
+                        {{ form.company_jbkjs(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_jbkjs.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_jbkjs(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
             </div>
-            <div class="form-group">
-                {{ form.company_mb.label(class="form-control-label") }}
-                {% if form.company_mb.errors %}
-                    {{ form.company_mb(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.company_mb.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.company_mb(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.company_jbkjs.label(class="form-control-label") }}
-                {% if form.company_jbkjs.errors %}
-                    {{ form.company_jbkjs(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.company_jbkjs.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.company_jbkjs(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.company_site.label(class="form-control-label") }}
-                {% if form.company_site.errors %}
-                    {{ form.company_site(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.company_site.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.company_site(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.company_mail.label(class="form-control-label") }}
-                {% if form.company_mail.errors %}
-                    {{ form.company_mail(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.company_mail.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.company_mail(class="form-control form-control-lg") }}
-                {% endif %}
+            <div class="row">
+                <div class="col form-group">
+                    {{ form.company_site.label(class="form-control-label") }}
+                    {% if form.company_site.errors %}
+                        {{ form.company_site(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_site.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_site(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col form-group">
+                    {{ form.company_mail.label(class="form-control-label") }}
+                    {% if form.company_mail.errors %}
+                        {{ form.company_mail(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_mail.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_mail(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
             </div>
             <div class="form-group">
                 {{ form.company_phone.label(class="form-control-label") }}
@@ -172,34 +176,57 @@
                     {{ form.company_phone(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-            <label for="" class="form-control-label">Dinarski računi</label>
+            <legend id="DevizniRacuni" class="border-bottom mb-4">Dinarski računi</legend>
             <div class="form-group">
-                {% if form.dinar_account_list.errors %}
-                    {{ form.dinar_account_list(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.dinar_account_list.errors %}
-                            <span>{{ error }}</span>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Dinarski račun</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for field in form.dinar_account_list %}
+                        <tr>
+                            <td>{{field(class="form-control")}}</td>
+                            <td><button class="btn btn-danger">-</button></td>
+                        </tr>
                         {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.dinar_account_list(class="") }}
-                {% endif %}
-                <button id="add_dinar_account" class="btn btn-primary">Dodaj dinarski račun</button>
+                    </tbody>
+                </table>
             </div>
-            <div class="form-group">
-                {% if form.foreign_account_list.errors %}
-                    {{ form.foreign_account_list(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.foreign_account_list.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.foreign_account_list(class="") }}
-                {% endif %}
-                <button id="add_foreign_account" class="btn btn-primary">Dodaj devizni račun</button>
+            <legend id="DevizniRacuni" class="border-bottom mb-4">Devizni računi</legend>
+            <div id="form" class="form-group">
+                
+                <div class="form-group">
+                    <table id="account_table">
+                        <thead>
+                            <tr>
+                                <th>Devizni račun</th>
+                                <th>IBAN</th>
+                                <th>SWIFT</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for field in form.foreign_account_list %}
+                            <tr>
+                                <td>{{ field.account(class="form-control") }}</td>
+                                <td>{{ field.iban(class="form-control") }}</td>
+                                <td>{{ field.swift(class="form-control") }}</td>
+                                <td>{{ field.csrf_token }}<button id="remove_account_{{ loop.index0 }}" name="remove_account_{{ loop.index0 }}" type="submit" class="btn btn-danger remove-field">-</button></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
             </div>
-            <label for="" class="form-control-label">Devizni računi</label>
+            <button id="add_account" name="add_account" type="submit" class="btn btn-success add-field mt-3">Dodaj devizni račun</button>
+            <button type="button" hx-trigger="click" hx-get="/api/testing" hx-target="#test" class="btn btn-primary">HTMLX</button>
+            <div id="test">
+                gornje dugme služi za testiranje, klikni ako smeš :)
+            </div>
             <div class="form-group">
                 {{ form.company_logo.label() }}
                 {{ form.company_logo(class="form-control-file") }}
@@ -210,10 +237,33 @@
                 {% endif %}
             </div>
         </fieldset>
-            <div class="form-group button-group">
+        <div class="form-group button-group">
             <a class="btn btn-info" href="{{url_for('companys.company_list')}}">&#8678; Nazad</a>
             {{ form.submit(class="btn btn-outline-info") }}
-            </div>
+        </div>
     </form>
 </div>
 {% endblock content%}
+
+{% block scripts %}
+<!-- <script>
+    const addBtn = document.getElementById("add_account");
+    const tableBody = document.querySelector("#account_table tbody");
+
+    let rowCount = tableBody.children.length;
+
+    addBtn.addEventListener("click", () => {
+        const newRow = `
+        <tr>
+            <td><input class="form-control" id="foreign_account_list-${rowCount}-account" name="foreign_account_list-${rowCount}-account" type="text" value=""></td>
+            <td><input class="form-control" id="foreign_account_list-${rowCount}-iban" name="foreign_account_list-${rowCount}-iban" type="text" value=""></td>
+            <td><input class="form-control" id="foreign_account_list-${rowCount}-swift" name="foreign_account_list-${rowCount}-swift" type="text" value=""></td>
+            <td><input id="foreign_account_list-${rowCount}-csrf_token" name="foreign_account_list-${rowCount}-csrf_token" type="hidden" value=""><button type="button" class="btn btn-danger remove-field">-</button></td>
+        </tr>
+        `;
+        tableBody.insertAdjacentHTML("beforeend", newRow);
+        rowCount++;
+        console.log(account_table)
+    });
+</script> -->
+{% endblock %}
