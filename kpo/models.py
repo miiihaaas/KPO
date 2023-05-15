@@ -35,6 +35,7 @@ class Company(db.Model):
     users = db.relationship('User', backref='user_company', lazy=True)
     invoices = db.relationship('Invoice', backref='invoice_company', lazy=True)
     customers = db.relationship('Customer', backref='customer_company', lazy=True)
+    bills = db.relationship('Bill', backref='bill_company', lazy=True)
 
     def __repr__(self):
         return self.companyname
@@ -115,6 +116,7 @@ class Bill(db.Model):
     bill_base_code = db.Column(db.String(20), nullable=False)
     bill_decision_number = db.Column(db.String(20), nullable=True)
     bill_contract_number = db.Column(db.String(50), nullable=True)
+    bill_service = db.Column(db.String(400), nullable=True)
     bill_purchase_order_number = db.Column(db.String(50), nullable=True)
     bill_transaction_date = db.Column(db.Date, nullable=False)
     bill_due_date = db.Column(db.Date, nullable=False)
@@ -122,8 +124,10 @@ class Bill(db.Model):
     bill_reference_number = db.Column(db.String(50), nullable=True)
     bill_model = db.Column(db.String(50), nullable=True)
     bill_attachment = db.Column(db.String(60), nullable=True)
-    bill_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     bill_items = db.Column(db.JSON, nullable=True)
+    total_price = db.Column(db.Float, nullable=True)
+    bill_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    bill_company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
 
 
 class Item(db.Model):

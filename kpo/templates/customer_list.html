@@ -19,12 +19,28 @@
     <thead>
         <tr role="row">
             <th>Naziv</th>
+            <th>Br faktura</th>
+            <th>Ukupno zaduženje</th>
         </tr>
     </thead>
     <tbody>
         {% for customer in customers %}
         <tr>
             <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('customers.customer_profile', customer_id=customer.id) }}" title="Izmenite korisnika">{{ customer.customer_name }} </a></td>
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ data['count_bills'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ data['total_price'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>

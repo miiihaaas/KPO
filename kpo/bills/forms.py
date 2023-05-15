@@ -14,6 +14,7 @@ class RegisterBillForm(FlaskForm):
     bill_base_code = SelectField('Šifra Osnova', validators=[Optional()], choices=[('', 'testing')])
     bill_decision_number = StringField('Broj odluke', validators=[Optional(), Length(min=0, max=50)])
     bill_contract_number = StringField('Broj ugovora', validators=[Optional(), Length(min=0, max=50)])
+    bill_service = StringField('Opis knjiženja', validators=[Optional(), Length(min=0, max=250)])
     bill_purchase_order_number = StringField('Broj narudžbenice / ponude', validators=[Optional(), Length(min=0, max=50)])
     bill_transaction_date = StringField('Datum prometa')
     bill_due_date = StringField('Datum dospeća')
@@ -33,13 +34,14 @@ class EditBillForm(FlaskForm):
     bill_base_code = SelectField('Šifra Osnova', validators=[Optional()], choices=[('', 'testing')])
     bill_decision_number = StringField('Broj odluke', validators=[Optional(), Length(min=0, max=50)])
     bill_contract_number = StringField('Broj ugovora', validators=[Optional(), Length(min=0, max=50)])
+    bill_service = StringField('Opis knjiženja', validators=[Optional(), Length(min=0, max=250)])
     bill_purchase_order_number = StringField('Broj narudžbenice / ponude', validators=[Optional(), Length(min=0, max=50)])
     bill_transaction_date = StringField('Datum prometa')
     bill_due_date = StringField('Datum dospeća')
     bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('Datum slanja fakture', 'Datum slanja fakture'), ('Datum prometa', 'Datum prometa'), ('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')])
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl -- radi na ovome :)')
+    bill_attachment = StringField('Dodaj fajl')
     submit = SubmitField('Ažurirajte dokument')
     
     
@@ -52,5 +54,5 @@ class RegisterItemForm(FlaskForm):
     item_discount = DecimalField('Popust, %', validators=[Optional(), NumberRange(min=0, max=100, message='Popust mora biti između 0 i 100')])
     #? proračun - iznos popusta
     #? proračun - iznos bez PDVa
-    item_tax = SelectField('PDV, %', choices=[(('0', '0'), '10', '10'), ('20', '20'),])
+    item_tax = SelectField('PDV, %', choices=[('0', '0'), ('10', '10'), ('20', '20')])
     item_tax_category = SelectField('PDV katgorija', choices=[('S', 'S'), ('AE', 'AE'), ('O', 'O'), ('E', 'E'), ('R', 'R'), ('Z', 'Z'), ('SS', 'SS'), ('OE', 'OE'), ('N', 'N')])

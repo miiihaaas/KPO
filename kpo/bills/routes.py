@@ -59,6 +59,8 @@ def bill_profile(bill_id):
     bill = Bill.query.get_or_404(bill_id)
     form = EditBillForm()
     form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
+    units = [('kWh', 'kWh'), ('kom', 'kom'), ('kg', 'kg'), ('km', 'km'), ('g', 'g'), ('m', 'metar'), ('l', 'litar'), ('t', 'tona'), ('m2', 'm2'), ('m3', 'm3'), ('min', 'min'), ('h', 'sat'), ('d', 'dan'), ('M', 'mesec'), ('god', 'godina')]
+    taxes = [('0', '0%'), ('10', '10%'), ('20', '20%')]
     if form.validate_on_submit():
         bill.bill_currency = form.bill_currency.data
         bill.bill_type = form.bill_type.data
@@ -67,6 +69,7 @@ def bill_profile(bill_id):
         bill.bill_base_code = form.bill_base_code.data
         bill.bill_decision_number = form.bill_decision_number.data
         bill.bill_contract_number = form.bill_contract_number.data
+        bill.bill_service = form.bill_service.data
         bill.bill_purchase_order_number = form.bill_purchase_order_number.data
         bill.bill_transaction_date = datetime.strptime(form.bill_transaction_date.data, '%Y-%m-%d')
         bill.bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d')
@@ -79,11 +82,19 @@ def bill_profile(bill_id):
         fullname = request.form.getlist('field[]')
         print(f'{fullname=}')
         #split fullname list into many lists of 5
-        split_fullname = [fullname[i:i + 5] for i in range(0, len(fullname), 5)]
+        split_fullname = [fullname[i:i + 9] for i in range(0, len(fullname), 9)]
         print(f'{split_fullname=}')
         records = []
         for list in split_fullname:
-            item = {'sifra': list[0], 'naziv': list[1], 'kolicina': list[2], 'jedinica_mere': list[3], 'cena': list[4]}
+            item = {'sifra': list[0], 
+                    'naziv': list[1], 
+                    'kolicina': list[2], 
+                    'jedinica_mere': list[3], 
+                    'cena': list[4], 
+                    'popust': list[5],
+                    'iznos_popusta': list[6],
+                    'iznos_bez_pdv': list[7],
+                    'pdv': list[8]}
             records.append(item)
         print(f'{records=}')
         total_price = 0
@@ -91,6 +102,7 @@ def bill_profile(bill_id):
             total_price += (int(record['cena']) * int(record['kolicina']))
         print(f'{total_price=}')
         bill.bill_items = records
+        bill.total_price = total_price
         
         db.session.commit()
         return redirect(url_for('bills.bill_list'))
@@ -102,6 +114,7 @@ def bill_profile(bill_id):
         form.bill_base_code.data = bill.bill_base_code
         form.bill_decision_number.data = bill.bill_decision_number
         form.bill_contract_number.data = bill.bill_contract_number
+        form.bill_service.data = bill.bill_service
         form.bill_purchase_order_number.data = bill.bill_purchase_order_number
         form.bill_transaction_date.data = bill.bill_transaction_date.strftime('%Y-%m-%d')
         form.bill_due_date.data = bill.bill_due_date.strftime('%Y-%m-%d')
@@ -109,15 +122,13 @@ def bill_profile(bill_id):
         form.bill_reference_number.data = bill.bill_reference_number
         form.bill_model.data = bill.bill_model
         form.bill_attachment.data = bill.bill_attachment
-        form.bill_customer_id.data = bill.bill_customer_id
+        form.bill_customer_id.data = str(bill.bill_customer_id)
         
-    return render_template('bill.html', title='Detalji fakture', form=form, bill=bill)
+    return render_template('bill.html', title='Detalji fakture', form=form, bill=bill, units=units, taxes=taxes)
 
 
 @bills.route("/new_item", methods=['GET', 'POST'])
 def new_item():
-    global counter
-    counter = 1
     new_item_form = f'''
     <tr >
         <td><input class="form-control" type="text" name="field[]"></td>
@@ -125,10 +136,19 @@ def new_item():
         <td><input class="form-control" type="text" name="field[]"></td>
         <td><input class="form-control" type="text" name="field[]"></td>
         <td><input class="form-control" type="text" name="field[]"></td>
+        <td><input class="form-control" type="text" name="field[]" ></td>
+        <td><input class="form-control" type="text" name="field[]" value="proračun" readonly></td>
+        <td><input class="form-control" type="text" name="field[]" value="proračun" readonly></td>
+        <td>
+            <select class="form-select" name="field[]" id="">
+                <option value="0">0%</option>
+                <option value="10">10%</option>
+                <option value="20">20%</option>
+            </select>
+        </td>
         <td><button type="button" hx-delete="/delete_item" class="btn btn-danger">-</button></td>
     </tr>
     '''
-    counter += 1
     return new_item_form
 
 

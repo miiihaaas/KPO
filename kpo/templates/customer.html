@@ -168,8 +168,8 @@
                 <tr>
                     <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }}</td>
                     <td>{{ bill.bill_transaction_date }}</td>
-                    <td>Da li treba - trenutno nemamo taj atribut u fakuri</td>
-                    <td>workinprogres</td>
+                    <td>{{ bill.bill_service }}</td>
+                    <td>{{ bill.total_price }}</td>
                     <td>{{ bill.bill_due_date }}</td>
                     <td>workinprogres</td>
                     <td>workinprogres</td>
@@ -197,6 +197,14 @@
         $('#submit').addClass('hidden');
     }
     });
-
+</script>
+<script>
+    $(document).ready(function () {
+    $('#data').DataTable({
+        language: {
+        url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
+        }
+    });
+    });
 </script>
 {% endblock %}

@@ -10,9 +10,28 @@ customers = Blueprint('customers', __name__)
 
 @customers.route('/customer_list')
 def customer_list():
-    customers = Customer.query.all()
+    customers = Customer.query.filter_by(company_id=current_user.company_id).all()
+    bills = Bill.query.filter_by(bill_company_id=current_user.company_id).all()
+    print(f'Komitenti: {customers}')
+    print(f'Fakture: {bills}')
+    table_data = []
+    for customer in customers:
+        total_price_by_customer = 0
+        count_bills_by_customer = 0
+        for bill in bills:
+            if int(bill.bill_customer_id) == int(customer.id):
+                total_price_by_customer += bill.total_price
+                count_bills_by_customer += 1
+                print(f'Faktura: {bill.total_price} - Komitent: {customer.customer_name}')
+                print(f'{customer.id=}, {total_price_by_customer=}')
+        table_data.append({'customer_id': f"{customer.id}", 'total_price': f"{total_price_by_customer}", 'count_bills': f"{count_bills_by_customer}"})
+    print(f'Table data: {table_data}')
     
-    return render_template('customer_list.html', customers=customers, legend='Komitenti',  title='Komitenti')
+    return render_template('customer_list.html', 
+                            customers=customers, 
+                            table_data=table_data,
+                            legend='Komitenti',  
+                            title='Komitenti')
 
 
 @customers.route('/register_customer', methods=['GET', 'POST'])

@@ -22,7 +22,7 @@
           <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }} </a></td>
           <td>{{ bill.bill_type }}</td>
           <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('customers.customer_profile', customer_id=bill.bill_customer.id) }}">{{ bill.bill_customer.customer_name }}</a></td>
-          <td>workinprogres</td>
+          <td>{{ bill.total_price }}</td>
           <td>{{ bill.bill_transaction_date }}</td>
           <td>{{ bill.bill_due_date }}</td>
       </tr>
@@ -31,3 +31,15 @@
 </table>
 
 {% endblock content%}
+
+{% block scripts  %}
+<script>
+  $(document).ready(function () {
+  $('#data').DataTable({
+      language: {
+      url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
+      }
+  });
+  });
+</script>
+{% endblock %}

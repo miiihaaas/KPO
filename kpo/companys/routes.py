@@ -29,6 +29,20 @@ def register_c():
         return redirect(url_for('main.home'))
     form = RegistrationCompanyForm()
     if form.validate_on_submit():
+        dinar_account_list = request.form.getlist('dinar_account[]')
+        foreign_account_list = request.form.getlist('foreign_account[]')
+        print(f'{foreign_account_list=}')
+        split_foreign_account_list = [foreign_account_list[i:i + 3] for i in range(0, len(foreign_account_list), 3)]
+        print(f'{split_foreign_account_list=}')
+        records = []
+        for list in split_foreign_account_list:
+            item = {
+                'account': list[0],
+                'iban': list[1],
+                'swift': list[2]
+            }
+            records.append(item)
+        print(f'{records=}')
         company = Company(companyname=form.companyname.data,
                             company_address=form.company_address.data,
                             company_address_number=form.company_address_number.data,
@@ -42,8 +56,8 @@ def register_c():
                             company_mail=form.company_mail.data,
                             company_phone=form.company_phone.data,
                             company_logo='',
-                            dinar_account_list=form.dinar_account_list.data,
-                            foreign_account_list=form.foreign_account_list.data
+                            dinar_account_list=dinar_account_list,
+                            foreign_account_list=records
                             )
         db.session.add(company)
         db.session.commit()
@@ -79,23 +93,6 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
     elif current_user.user_company.id != company.id and current_user.authorization != 's_admin':
         abort(403)
     form = EditCompanyForm()
-    while len(form.foreign_account_list) < len(company.foreign_account_list):
-        form.foreign_account_list.append_entry()
-    if request.method == 'POST' and 'add_account' in request.form:
-        print('Kliknuto je dugme sa ID-om "add_account"!')
-        form.foreign_account_list.append_entry()
-    elif request.method == 'POST':
-        for key in request.form.keys():
-            if key.startswith('remove_account_'):
-                remove_account_name = key
-                print(f'Kliknuto je dugme sa nazivom {remove_account_name}!')
-                remove_account_index = int(remove_account_name.split('_')[-1])
-                print(f'Kliknuto je dugme sa indeksom {remove_account_index}!')
-                form.foreign_account_list.entries.pop(remove_account_index)
-                company.foreign_account_list = form.foreign_account_list.data
-                db.session.commit()
-                return redirect(url_for('companys.company_profile', company_id=company.id) + '#DevizniRacuni') #! u html fajlu <legend id="DevizniRacuni">
-
     
     if form.validate_on_submit():
         print('forma je validna')
@@ -103,16 +100,24 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
             picture_file = save_picture(form.company_logo.data)
             company.company_logo=picture_file
         # Update the fields in dinar_account_list and foreign_account_list        
-        company.dinar_account_list=form.dinar_account_list.data
-        foreign_account_list = []
-        for field in form.foreign_account_list:
-            account = field.account.data
-            iban = field.iban.data
-            swift = field.swift.data
-            csrf_token = field.csrf_token.data
-            foreign_account_list.append({'account': account, 'iban': iban, 'swift': swift, 'csrf_token': csrf_token})
-        print(f'nakon validacije: {foreign_account_list=}')
-        company.foreign_account_list = foreign_account_list
+        foreign_account_list = request.form.getlist('foreign_account[]')
+        print(f'{foreign_account_list=}')
+        split_foreign_account_list = [foreign_account_list[i:i + 3] for i in range(0, len(foreign_account_list), 3)]
+        print(f'{split_foreign_account_list=}')
+        records = []
+        for list in split_foreign_account_list:
+            item = {
+                'account': list[0],
+                'iban': list[1],
+                'swift': list[2]
+            }
+            records.append(item)
+        print(f'{records=}')
+        company.foreign_account_list = records
+        
+        dinar_account_list = request.form.getlist('dinar_account[]')
+        print(f'{dinar_account_list=}')
+        company.dinar_account_list = dinar_account_list
 
         company.companyname=form.companyname.data
         company.company_address=form.company_address.data
@@ -143,16 +148,7 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
         form.company_mail.data=company.company_mail
         form.company_phone.data=company.company_phone
         form.company_logo.data=company.company_logo
-        # Set the data for dinar_account_list
-        for i, field in enumerate(form.dinar_account_list):
-            if i < len(company.dinar_account_list):
-                field.data = company.dinar_account_list[i]
-        # Set the data for foreign_account_list
-        for i, subform in enumerate(form.foreign_account_list):
-            if i < len(company.foreign_account_list):
-                subform.account.data = company.foreign_account_list[i]['account']
-                subform.iban.data = company.foreign_account_list[i]['iban']
-                subform.swift.data = company.foreign_account_list[i]['swift']
+
     elif request.method == 'POST':
         if not form.validate():
             for field, errors in form.errors.items():
@@ -165,19 +161,31 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
     return render_template('company.html', title='Uređivanje podataka kompanije', company=company, form=form, legend='Uređivanje podataka kompanije', image_file=image_file)
 
 
-@companys.route("/api/testing", methods=['GET'])
-def test():    
-    # form = RegistrationCompanyForm()
-    form = '''<!DOCTYPE html><html>
-    <head>
-    <title>Test</title>
-    </head>
-    <body>
-    <h1>Test</h1>
-    <div>
-    <input class="form-control" type="text" name="test" value="test">
-    <button class="btn btn-primary" type="submit">Submit</button>
-    </div>
-    </body>
-    </html>'''
+@companys.route("/new_foreign_account", methods=['GET', 'POST'])
+def new_foreign_account():
+    new_item_form = f'''
+    <tr >
+        <td><input class="form-control" type="text" name="foreign_account[]"></td>
+        <td><input class="form-control" type="text" name="foreign_account[]"></td>
+        <td><input class="form-control" type="text" name="foreign_account[]"></td>
+        <td><button type="button" hx-delete="/delete_account" class="btn btn-danger">-</button></td>
+    </tr>
+    '''
+    return new_item_form
+
+
+@companys.route("/new_dinar_account", methods=['GET', 'POST'])
+def new_dinar_account():
+    new_item_form = f'''
+    <tr >
+        <td><input class="form-control" type="text" name="dinar_account[]"></td>
+        <td><button type="button" hx-delete="/delete_account" class="btn btn-danger">-</button></td>
+    </tr>
+    '''
+    return new_item_form
+
+
+@companys.route("/delete_account", methods=['DELETE'])
+def delete_foreign_account():
+    form = ''
     return form

@@ -5,12 +5,6 @@ from wtforms.validators import DataRequired, Length, Email, ValidationError, Opt
 from kpo.models import Company
 
 
-class ForeignAccountsForm(FlaskForm):
-    account = StringField('Devizni račun :')
-    iban = StringField('IBAN :')
-    swift = StringField('SWIFT :')
-    
-
 class RegistrationCompanyForm(FlaskForm):
     companyname = StringField('Naziv kompanije', validators=[DataRequired(), Length(min=2, max=50)])
     company_address = StringField('Adresa', validators=[DataRequired(), Length(min=2, max=50)])
@@ -25,9 +19,6 @@ class RegistrationCompanyForm(FlaskForm):
     company_mail = StringField('Mejl', validators=[DataRequired(), Email()])
     company_phone = StringField('Broj telefona', validators=[DataRequired(), Length(min=9, max=13)])
     company_logo = "" #na ovom poraditi --->> https://www.youtube.com/watch?v=803Ei2Sq-Zs&list=PL-osiE80TeTs4UjLw5MM6OjgkjFeUxCYH&index=7&ab_channel=CoreySchafer <<--- :)
-    dinar_account_list = FieldList(StringField('Dinarski račun: ', validators=[DataRequired()]), min_entries=3)
-    foreign_account_list = FieldList(FormField(ForeignAccountsForm), min_entries=3)
-    
     submit = SubmitField('Registrujte kompaniju')
 
     def validate_companyname(self, companyname):
@@ -49,7 +40,5 @@ class EditCompanyForm(FlaskForm):
     company_site = StringField('Veb stranica', validators=[DataRequired(), Length(min=5, max=50)])
     company_mail = StringField('Mejl', validators=[DataRequired(), Email()])
     company_phone = StringField('Broj telefona', validators=[DataRequired(), Length(min=9, max=13)])
-    dinar_account_list = FieldList(StringField('Dinarski račun: '), min_entries=3)
-    foreign_account_list = FieldList(FormField(ForeignAccountsForm), min_entries=1, max_entries=10)
     company_logo = FileField('Ažuriranje loga', validators=[FileAllowed(['jpg', 'png'])]) 
     submit = SubmitField('Ažuriraj podatke')

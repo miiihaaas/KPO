@@ -185,19 +185,21 @@
                             <td></td>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for field in form.dinar_account_list %}
+                    <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
+                        {% for record in company.dinar_account_list %}
                         <tr>
-                            <td>{{field(class="form-control")}}</td>
-                            <td><button class="btn btn-danger">-</button></td>
+                            <td><input class="form-control" type="text" name="dinar_account[]" value="{{record}}"></td>
+                            <td><button type="button" hx-delete="/delete_account" class="btn btn-danger">-</button></td>
                         </tr>
                         {% endfor %}
+                        <tr id="new_dinar_account" hx-swap="beforebegin">
+                            <td><button type="button" hx-get="/new_dinar_account" hx-target="#new_dinar_account" class="btn btn-primary mb-4">Dodajte dinarski račun</button></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             <legend id="DevizniRacuni" class="border-bottom mb-4">Devizni računi</legend>
             <div id="form" class="form-group">
-                
                 <div class="form-group">
                     <table id="account_table">
                         <thead>
@@ -208,25 +210,23 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for field in form.foreign_account_list %}
+                        <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
+                            {% for record in company.foreign_account_list %}
                             <tr>
-                                <td>{{ field.account(class="form-control") }}</td>
-                                <td>{{ field.iban(class="form-control") }}</td>
-                                <td>{{ field.swift(class="form-control") }}</td>
-                                <td>{{ field.csrf_token }}<button id="remove_account_{{ loop.index0 }}" name="remove_account_{{ loop.index0 }}" type="submit" class="btn btn-danger remove-field">-</button></td>
+                                <td><input class="form-control" type="text" name="foreign_account[]" value="{{record['account']}}"></td>
+                                <td><input class="form-control" type="text" name="foreign_account[]" value="{{record['iban']}}"></td>
+                                <td><input class="form-control" type="text" name="foreign_account[]" value="{{record['swift']}}"></td>
+                                <td><button type="button" hx-delete="/delete_account" class="btn btn-danger">-</button></td>
                             </tr>
                             {% endfor %}
+                            <tr id="new_foreign_account" hx-swap="beforebegin">
+                                <td><button type="button" hx-get="/new_foreign_account" hx-target="#new_foreign_account" class="btn btn-primary mb-4">Dodajte devizni račun</button></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-                
             </div>
-            <button id="add_account" name="add_account" type="submit" class="btn btn-success add-field mt-3">Dodaj devizni račun</button>
-            <button type="button" hx-trigger="click" hx-get="/api/testing" hx-target="#test" class="btn btn-primary">HTMLX</button>
-            <div id="test">
-                gornje dugme služi za testiranje, klikni ako smeš :)
-            </div>
+            
             <div class="form-group">
                 {{ form.company_logo.label() }}
                 {{ form.company_logo(class="form-control-file") }}
