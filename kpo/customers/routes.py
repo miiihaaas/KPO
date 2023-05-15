@@ -24,7 +24,7 @@ def customer_list():
                 count_bills_by_customer += 1
                 print(f'Faktura: {bill.total_price} - Komitent: {customer.customer_name}')
                 print(f'{customer.id=}, {total_price_by_customer=}')
-        table_data.append({'customer_id': f"{customer.id}", 'total_price': f"{total_price_by_customer}", 'count_bills': f"{count_bills_by_customer}"})
+        table_data.append({'customer_id': customer.id, 'total_price': total_price_by_customer, 'count_bills': count_bills_by_customer})
     print(f'Table data: {table_data}')
     
     return render_template('customer_list.html', 
