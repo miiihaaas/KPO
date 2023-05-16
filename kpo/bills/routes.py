@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import Blueprint
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, send_file
 from flask_login import login_required, current_user
 from kpo import db, app
 from kpo.models import Bill, Customer, Settings
@@ -43,7 +43,8 @@ def register_b():
             bill_model = form.bill_model.data,
             bill_attachment = form.bill_attachment.data,
             bill_customer_id = form.bill_customer_id.data,
-            bill_items = [{'sifra': '', 'naziv': '', 'kolicina': '', 'jedinica_mere': '', 'cena': ''}]
+            bill_items = [{'sifra': '', 'naziv': '', 'kolicina': '', 'jedinica_mere': '', 'cena': ''}],
+            bill_payments = [{'payment_date': '', 'payment_amount': ''}]
         )
         db.session.add(bill)
         db.session.commit()
@@ -99,8 +100,11 @@ def bill_profile(bill_id):
             records.append(item)
         print(f'{records=}')
         total_price = 0
-        for record in records:
-            total_price += (int(record['cena']) * int(record['kolicina']))
+        try:
+            for record in records:
+                total_price += (int(record['cena']) * int(record['kolicina']))
+        except:
+            total_price = 0
         print(f'{total_price=}')
         bill.bill_items = records
         bill.total_price = total_price
@@ -115,8 +119,11 @@ def bill_profile(bill_id):
                 records.append(item)
             print(f'{records=}')
             total_payments = 0
-            for record in records:
-                total_payments += int(record['payment_amount'])
+            try:
+                for record in records:
+                    total_payments += int(record['payment_amount'])
+            except:
+                total_payments = 0
             print(f'{total_payments=}')
             bill.bill_payments = records
             bill.total_payments = total_payments
@@ -192,3 +199,10 @@ def new_payment():
 def delete_item():
     form = ''
     return form
+
+
+@bills.route('/download_pdf')
+def download_pdf():
+    # Logika za generisanje ili pronalaženje PDF datoteke
+    filename = 'static/pdf_forms/STUDIO IMPLICIT.pdf'
+    return send_file(filename, mimetype='application/pdf')
