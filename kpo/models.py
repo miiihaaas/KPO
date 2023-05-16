@@ -126,6 +126,8 @@ class Bill(db.Model):
     bill_attachment = db.Column(db.String(60), nullable=True)
     bill_items = db.Column(db.JSON, nullable=True)
     total_price = db.Column(db.Float, nullable=True)
+    bill_payments = db.Column(db.JSON, nullable=True)
+    total_payments = db.Column(db.Float, nullable=True)
     bill_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     bill_company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
 

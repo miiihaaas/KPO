@@ -36,7 +36,6 @@
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Početna</a>
                 <a class="nav-item nav-link" href="{{ url_for('bills.bill_list') }}">eFaktura</a>
-                <a class="nav-item nav-link" href="{{ url_for('invoices.invoice_list') }}">Fakture</a>
                 <a class="nav-item nav-link" href="{{ url_for('customers.customer_list') }}">Komitenti</a>
                 <li class="nav-item dropdown dropdown--align-right">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

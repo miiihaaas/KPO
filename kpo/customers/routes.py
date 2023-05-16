@@ -1,4 +1,4 @@
-from kpo.models import Customer, Bill
+from kpo.models import Customer, Bill, Settings
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort
 from flask_login import login_required, current_user
@@ -12,24 +12,37 @@ customers = Blueprint('customers', __name__)
 def customer_list():
     customers = Customer.query.filter_by(company_id=current_user.company_id).all()
     bills = Bill.query.filter_by(bill_company_id=current_user.company_id).all()
-    print(f'Komitenti: {customers}')
-    print(f'Fakture: {bills}')
+    company_settings = Settings.query.filter_by(id=current_user.company_id).first()
+    print(f'{company_settings.synchronization_with_eFaktura=}')
+    print(f'{company_settings.payment_records=}')
+    print(f'{company_settings.synchronization_with_CRF=}')
+    print(f'{company_settings.forward_invoice_to_customer=}')
+    # print(f'Komitenti: {customers}')
+    # print(f'Fakture: {bills}')
     table_data = []
     for customer in customers:
         total_price_by_customer = 0
         count_bills_by_customer = 0
+        total_payments_by_customer = 0
         for bill in bills:
             if int(bill.bill_customer_id) == int(customer.id):
                 total_price_by_customer += bill.total_price
                 count_bills_by_customer += 1
-                print(f'Faktura: {bill.total_price} - Komitent: {customer.customer_name}')
-                print(f'{customer.id=}, {total_price_by_customer=}')
-        table_data.append({'customer_id': customer.id, 'total_price': total_price_by_customer, 'count_bills': count_bills_by_customer})
+                total_payments_by_customer += bill.total_payments
+                # print(f'Faktura: {bill.total_price} - Komitent: {customer.customer_name}')
+                # print(f'{customer.id=}, {total_price_by_customer=}')
+        table_data.append({'customer_id': customer.id, 
+                            'customer_name': customer.customer_name,
+                            'total_price': total_price_by_customer, 
+                            'count_bills': count_bills_by_customer,
+                            'total_payments': total_payments_by_customer,
+                            'saldo': total_price_by_customer - total_payments_by_customer})
     print(f'Table data: {table_data}')
     
     return render_template('customer_list.html', 
                             customers=customers, 
                             table_data=table_data,
+                            company_settings=company_settings,
                             legend='Komitenti',  
                             title='Komitenti')
 
@@ -60,6 +73,7 @@ def register_customer():
 def customer_profile(customer_id):
     customer = Customer.query.get_or_404(customer_id)
     bills = Bill.query.filter_by(bill_customer_id=customer_id).all()
+    company_settings = Settings.query.filter_by(id=current_user.company_id).first()
     form = EditCustomerForm()
     if form.validate_on_submit():
         customer.customer_name = form.customer_name.data
@@ -87,5 +101,11 @@ def customer_profile(customer_id):
         form.customer_mb.data = customer.customer_mb
         form.customer_jbkjs.data = customer.customer_jbkjs
         form.customer_mail.data = customer.customer_mail
-    return render_template('customer.html', legend='Komitent',  title='Komitent', form=form, customer=customer, bills=bills)
+    return render_template('customer.html', 
+                            form=form,
+                            company_settings = company_settings, 
+                            customer=customer, 
+                            bills=bills,
+                            legend='Komitent', 
+                            title='Komitent',  )
     

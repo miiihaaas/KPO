@@ -3,7 +3,7 @@ from flask import Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from kpo import db, app
-from kpo.models import Bill, Customer
+from kpo.models import Bill, Customer, Settings
 from kpo.bills.forms import RegisterBillForm, EditBillForm
 
 
@@ -57,6 +57,7 @@ def bill_profile(bill_id):
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     bill = Bill.query.get_or_404(bill_id)
+    company_settings = Settings.query.filter_by(id=current_user.company_id).first()
     form = EditBillForm()
     form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
     units = [('kWh', 'kWh'), ('kom', 'kom'), ('kg', 'kg'), ('km', 'km'), ('g', 'g'), ('m', 'metar'), ('l', 'litar'), ('t', 'tona'), ('m2', 'm2'), ('m3', 'm3'), ('min', 'min'), ('h', 'sat'), ('d', 'dan'), ('M', 'mesec'), ('god', 'godina')]
@@ -103,8 +104,25 @@ def bill_profile(bill_id):
         print(f'{total_price=}')
         bill.bill_items = records
         bill.total_price = total_price
+        if company_settings.payment_records:
+            payments_list = request.form.getlist('payment[]')
+            print(f'{payments_list=}')
+            split_payments_list = [payments_list[i:i + 2] for i in range(0, len(payments_list), 2)]
+            print(f'{split_payments_list=}')
+            records = []
+            for list in split_payments_list:
+                item = {'payment_date': list[0], 'payment_amount': list[1]}
+                records.append(item)
+            print(f'{records=}')
+            total_payments = 0
+            for record in records:
+                total_payments += int(record['payment_amount'])
+            print(f'{total_payments=}')
+            bill.bill_payments = records
+            bill.total_payments = total_payments
         
         db.session.commit()
+        flash(f'Dokument {bill.bill_number} je uspesno izmenjen.', 'success')
         return redirect(url_for('bills.bill_list'))
     elif request.method == 'GET':
         form.bill_currency.data = bill.bill_currency
@@ -124,7 +142,13 @@ def bill_profile(bill_id):
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = str(bill.bill_customer_id)
         
-    return render_template('bill.html', title='Detalji fakture', form=form, bill=bill, units=units, taxes=taxes)
+    return render_template('bill.html', company_settings = company_settings,
+                            form=form, 
+                            bill=bill, 
+                            units=units, 
+                            taxes=taxes,
+                            title='Detalji fakture', 
+                            legend = 'Detalji fakture')
 
 
 @bills.route("/new_item", methods=['GET', 'POST'])
@@ -150,6 +174,18 @@ def new_item():
     </tr>
     '''
     return new_item_form
+
+
+@bills.route("/new_payment", methods=['GET', 'POST'])
+def new_payment():
+    new_payment_form = '''
+    <tr>
+        <td><input type="date" name="payment[]" class="form-control"></td>
+        <td><input type="text" name="payment[]" class="form-control"></td>
+        <td><button type="button" hx-delete="/delete_item" class="btn btn-danger">-</button></td>
+    </tr>
+    '''
+    return new_payment_form
 
 
 @bills.route("/delete_item", methods=['DELETE'])

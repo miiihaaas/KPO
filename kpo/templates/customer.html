@@ -6,7 +6,7 @@
         <div class="form-group button-group">
             <a class="btn btn-info" href="{{url_for('customers.customer_list')}}">&#8678; Nazad</a>
             <a class="btn btn-info btn-sm" href="{{ url_for('bills.register_b') }}">Kreirajte novu fakturu</a>
-            {{ form.submit(class="btn btn-outline-info hidden") }}
+            {{ form.submit(class="btn btn-danger mb-10 hidden") }}
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="edit-switch">
                 <label class="form-check-label" for="edit-switch">Editujte podatke komitenta</label>
@@ -157,26 +157,61 @@
                     <th>Datum prometa</th> 
                     <th>Opis knjiženja</th> 
                     <th>Iznos</th> 
-                    <th>Datum dospeća</th> 
+                    <th>Datum dospeća</th>
+                    {% if company_settings.payment_records %}
                     <th>Plaćeno u celosti</th> 
                     <th>Delimično plaćeno</th> 
-                    <th>Preostalo za uplatu</th> 
+                    <th>Preostalo za uplatu</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for bill in bills %}
                 <tr>
-                    <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-primary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }} </a>
+                            <a class="btn btn-danger btn-sm" href="#" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
+                        </div>
+                    </td>
                     <td>{{ bill.bill_transaction_date }}</td>
                     <td>{{ bill.bill_service }}</td>
                     <td>{{ bill.total_price }}</td>
                     <td>{{ bill.bill_due_date }}</td>
-                    <td>workinprogres</td>
-                    <td>workinprogres</td>
-                    <td>workinprogres</td>
+                    {% if company_settings.payment_records %}
+                    <td>
+                        {% if bill.total_price == bill.total_payments %}
+                            <i class="fa-solid fa-circle-check" title="Plaćeno u celosti"></i>
+                        {% elif bill.total_price < bill.total_payments %}
+                            <i class="fa-solid fa-triangle-exclamation" title="GREŠKA"></i>
+                        {% else %}
+                            <i class="fa-solid fa-circle-xmark" title="Delimično plaćeno"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if bill.total_price != bill.total_payments %}
+                            {% if bill.total_payments == None %}
+                                0,0
+                            {% else %}
+                                {{bill.total_payments}}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if bill.total_price != bill.total_payments %}
+                            {{ bill.total_price - bill.total_payments|float }}
+                        {% endif %}
+                    </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7" style="text-align:right"></td>
+                    <td></td>
+                </tr>
+            </tfoot>
         </table>
     </form>
 {% endblock content%}
@@ -201,10 +236,38 @@
 <script>
     $(document).ready(function () {
     $('#data').DataTable({
+        footerCallback: function (row, data, start, end, display) {
+        var api = this.api();
+
+        // Remove the formatting to get integer data for summation
+        var intVal = function (i) {
+            return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+        };
+
+        // Total over all pages
+        total = api
+            .column(7)
+            .data()
+            .reduce(function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0);
+
+        // Total over this page
+        pageTotal = api
+            .column(7, { page: 'current' })
+            .data()
+            .reduce(function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0);
+
+        // Update footer
+        $(api.column(7).footer()).html(pageTotal + ' (' + total + ' total)');
+        },
         language: {
-        url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
-        }
-    });
+            url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
+        },
+        stateSave: true,
+        });
     });
 </script>
 {% endblock %}

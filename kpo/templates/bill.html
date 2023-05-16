@@ -263,8 +263,8 @@
                 </td>
                 <td><input class="form-control" type="text" name="field[]" value="{{record['cena']}}"></td>
                 <td><input class="form-control" type="text" name="field[]" value="{{record['popust']}}"></td>
-                <td><input class="form-control" type="text" name="field[]" value="proračun" readonly></td>
-                <td><input class="form-control" type="text" name="field[]" value="proračun" readonly></td>
+                <td><input class="form-control" type="text" name="field[]" value="proračun = količina*cena*popust" readonly></td>
+                <td><input class="form-control" type="text" name="field[]" value="proračun = količina*cena-iznos_popusta" readonly></td>
                 <td>
                   <select class="form-select" name="field[]" id="">
                     {% for tax in taxes %}
@@ -276,14 +276,49 @@
                     {% endfor %}
                   </select>
                 </td>
-                <td><button type="button" hx-delete="/delete_item" class="btn btn-danger">-</button></td>
+                <td><button type="button" hx-delete="/delete_item" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
               </tr>
             {% endfor %}
             <tr id="new_item" hx-swap="beforebegin">
-              <td><button type="button" hx-get="/new_item" hx-target="#new_item" class="btn btn-primary mb-4">Nova stavka</button></td>
+              <td><button type="button" hx-get="/new_item" hx-target="#new_item" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i></button></td>
             </tr>
           </tbody>
         </table>
+      </div>
+      {% if company_settings.payment_records %}
+      <div>
+        <legend id="" class="border-bottom mb-4">Uplate</legend>
+        <table>
+          <thead>
+            <tr>
+              <th>Datum uplate</th>
+              <th>Iznos uplate</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
+            {% for payment in bill.bill_payments %}
+            <tr>
+              <td><input type="date" name="payment[]" class="form-control" value="{{payment['payment_date']}}"></td>
+              <td><input type="text" name="payment[]" class="form-control" value="{{payment['payment_amount']}}"></td>
+              <td><button type="button" hx-delete="/delete_item" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
+            </tr>
+            {% endfor %}
+            <tr id="new_payment" hx-swap="beforebegin">
+              <td><button type="button" hx-get="/new_payment" hx-target="#new_payment" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i> Nova uplata</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      <div class="content-section m-3">
+        <ul class="list-group">
+          <li>Zbir stavki - nije predmet oporezivanja PDV: _____</li>
+          <li>Ukupna osnovica - nije predmet oporezivanja PDV: _____</li>
+          <li>Umanjena osnovica - nije predmet oporezivanja PDV: _____</li>
+          <li>Ukupno za uplatu: ____</li>
+          <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDF-a.</li>
+        </ul>
       </div>
       <div class="form-group">
         <a class="btn" href="{{url_for('bills.bill_list')}}">&#8678; Nazad</a>
