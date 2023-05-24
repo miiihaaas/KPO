@@ -7,11 +7,11 @@
 <div class="row">
     <div class="col">
         <label for="start-date" class="form-label">Početni datum:</label>
-        <input class="form-control mb-2" type="date" id="start-date" name="start-date">
+        <input class="form-control mb-2" type="date" id="start-date" name="start-date" value="{{ start_date }}">
     </div>
     <div class="col">
         <label for="end-date" class="form-label">Krajnji datum:</label>
-        <input class="form-control mb-4" type="date" id="end-date" name="end-date">
+        <input class="form-control mb-4" type="date" id="end-date" name="end-date" value="{{ end_date }}">
     </div>
 </div>
 
@@ -42,7 +42,7 @@
             <td>
                 {% for data in table_data %}
                     {% if customer.id == data['customer_id'] %}
-                        {{ data['total_price'] }}
+                        {{ '%.2f' % data['total_price'] }}
                     {% endif %}
                 {% endfor %}
             </td>
@@ -50,18 +50,24 @@
             <td>
                 {% for data in table_data %}
                     {% if customer.id == data['customer_id'] %}
-                        {{ data['total_payments'] }}
+                        {{ '%.2f' % data['total_payments'] }}
                     {% endif %}
                 {% endfor %}
             </td>
             <td>
                 {% for data in table_data %}
                     {% if customer.id == data['customer_id'] %}
-                        {{ data['saldo'] }}
+                        {{ '%.2f' % data['saldo'] }}
                     {% endif %}
                 {% endfor %}
             </td>
-            <td>workinprogres</td>
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ '%.2f' % data['total_depts'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
             {% endif %}
         </tr>
         {% endfor %}
@@ -104,7 +110,7 @@
                     }, 0);
 
                 // Update footer
-                $(api.column(4).footer()).html(pageTotal + ' (' + total + ' total)');
+                $(api.column(4).footer()).html(pageTotal.toFixed(2) + ' (' + total.toFixed(2) + ' total)');
             },
             language: {
                 url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
@@ -112,5 +118,18 @@
             stateSave: true,
             });
         });
+    </script>
+    <script>
+        // Funkcija koja se poziva pri promeni datuma
+        function handleDateChange() {
+            var startDate = document.getElementById("start-date").value;
+            var endDate = document.getElementById("end-date").value;
+            var url = "{{ url_for('customers.customer_list') }}?start_date=" + startDate + "&end_date=" + endDate;
+            window.location.href = url; // Ponovno učitavanje stranice sa novim vrednostima datuma
+        }
+    
+        // Dodavanje osluškivača događaja za promenu datuma
+        document.getElementById("start-date").addEventListener("change", handleDateChange);
+        document.getElementById("end-date").addEventListener("change", handleDateChange);
     </script>
 {% endblock %}

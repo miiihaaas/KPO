@@ -65,19 +65,6 @@
               </div>
               <div class="row">
                 <div class="col form-group">
-                  {{ form.bill_type.label(class="form-control-label") }}
-                  {% if form.bill_type.errors %}
-                    {{ form.bill_type(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                      {% for error in form.bill_type.errors %}
-                        <span>{{ error }}</span>
-                      {% endfor %}
-                    </div>
-                  {% else %}
-                    {{ form.bill_type(class="form-select") }}
-                  {% endif %}
-                </div>
-                <div class="col form-group">
                   {{ form.bill_customer_id.label(class="form-control-label") }}
                   {% if form.bill_customer_id.errors %}
                     {{ form.bill_customer_id(class="form-control is-invalid") }}
@@ -161,6 +148,7 @@
                 {% endif %}
               </div>
             </div>
+            {% if not bill.bill_type in ['Knjižno odobrenje'] %}
             <div class="row">
               <div class="col-3 form-group">
                 {{ form.bill_transaction_date.label(class="form-control-label") }}
@@ -175,6 +163,7 @@
                   {{ form.bill_transaction_date(class="form-control", type="date") }}
                 {% endif %}
               </div>
+              {% if not bill.bill_type in ['Knjižno odobrenje', 'Avansni račun'] %}
               <div class="col-3 form-group">
                 {{ form.bill_due_date.label(class="form-control-label") }}
                 {% if form.bill_due_date.errors %}
@@ -188,6 +177,7 @@
                   {{ form.bill_due_date(class="form-control", type="date") }}
                 {% endif %}
               </div>
+              {% endif %}
               <div class="col form-group">
                 {{ form.bill_tax_calculation_date.label(class="form-control-label") }}
                 {% if form.bill_tax_calculation_date.errors %}
@@ -201,7 +191,9 @@
                   {{ form.bill_tax_calculation_date(class="form-select") }}
                 {% endif %}
               </div>
+              
             </div>
+            {% endif %}
             <div class="row">
               <div class="col form-group">
                 {{ form.bill_reference_number.label(class="form-control-label") }}
@@ -247,8 +239,16 @@
         </div>
         <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <div>
-            <legend id="stavke" class="border-bottom mb-4">Stavke fakture</legend>
-            <table class="mb-4">
+            {% if bill.bill_type == 'Faktura' %}
+            <legend id="stavke" class="border-bottom mb-4">Stavke fakture <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% elif bill.bill_type == 'Avansni račun' %}
+            <legend id="stavke" class="border-bottom mb-4">Stavke avansnog računa <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% elif bill.bill_type == 'Knjižno odobrenje' %}
+            <legend id="stavke" class="border-bottom mb-4">Stavke knjižnog odobrenja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% elif bill.bill_type == 'Knjižno zaduženje' %}
+            <legend id="stavke" class="border-bottom mb-4">Stavke knjižnog zaduženja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% endif %}
+            <table class="mb-4" id="stavke">
               <thead>
                 <tr>
                   <th>Šifra</th>
@@ -268,7 +268,7 @@
                   <tr>
                     <td><input class="form-control" type="text" name="field[]" value="{{record['sifra']}}"></td>
                     <td><input class="form-control" type="text" name="field[]" value="{{record['naziv']}}"></td>
-                    <td><input class="form-control" type="text" name="field[]" value="{{record['kolicina']}}"></td>
+                    <td><input class="form-control" type="number" name="field[]" value="{{record['kolicina']}}" oninput="updateCalculation(this)"></td>
                     <td>
                       <select class="form-select" name="field[]">
                         {% for unit in units %}
@@ -280,10 +280,10 @@
                         {% endfor %}
                       </select>
                     </td>
-                    <td><input class="form-control" type="text" name="field[]" value="{{record['cena']}}"></td>
-                    <td><input class="form-control" type="text" name="field[]" value="{{record['popust']}}"></td>
-                    <td><input class="form-control" type="text" name="field[]" value="proračun = količina*cena*popust" readonly></td>
-                    <td><input class="form-control" type="text" name="field[]" value="proračun = količina*cena-iznos_popusta" readonly></td>
+                    <td><input class="form-control" type="number" name="field[]" value="{{record['cena']}}" oninput="updateCalculation(this)"></td>
+                    <td><input class="form-control" type="number" name="field[]" value="{{record['popust']}}" oninput="updateCalculation(this)"></td>
+                    <td><input class="form-control" type="text" name="field[]" value="{{record['iznos_popusta']}}" readonly></td>
+                    <td><input class="form-control" type="text" name="field[]" value="{{record['iznos_bez_pdv']}}" readonly></td>
                     <td>
                       <select class="form-select" name="field[]" id="">
                         {% for tax in taxes %}
@@ -307,10 +307,10 @@
           
           <div class="content-section m-3">
             <ul class="list-group">
-              <li>Zbir stavki - nije predmet oporezivanja PDV: _____</li>
+              <li>Zbir stavki - nije predmet oporezivanja PDV: {{ bill.total_price }}</li>
               <li>Ukupna osnovica - nije predmet oporezivanja PDV: _____</li>
               <li>Umanjena osnovica - nije predmet oporezivanja PDV: _____</li>
-              <li>Ukupno za uplatu: ____</li>
+              <li>Ukupno za uplatu: <strong>{{ bill.total_price }}</strong></li>
               <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDF-a.</li>
             </ul>
           </div>
@@ -318,7 +318,7 @@
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
           {% if company_settings.payment_records %}
           <div>
-            <legend id="" class="border-bottom mb-4">Uplate</legend>
+            <legend id="" class="border-bottom mb-4">Uplate po fakturi <strong>{{ bill.bill_number }}</strong> za kupca <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
             <table>
               <thead>
                 <tr>
@@ -354,20 +354,54 @@
       
       
       <div class="form-group">
-        <a class="btn" href="{{url_for('bills.bill_list')}}">&#8678; Nazad</a>
-        {{ form.submit(class="btn btn-outline-info") }}
-        <a class="btn btn-primary" href="/download_pdf" target="_blank">Otvori PDF</a>
-        <a href="#" class="btn">Pošaljite dokument</a>
-        <a href="#" class="btn btn-danger">Stornirajte dokument</a>
+        <a class="btn" href="{{url_for('bills.bill_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
+        {% if bill.bill_status == 'nacrt' %}
+          {{ form.submit(class="btn btn-outline-info") }}
+          <a href="#" class="btn">Pošaljite dokument</a>
+        {% elif bill.bill_status == 'poslat' %}
+          <a class="btn btn-primary" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank">Otvori PDF</a>
+          <a class="btn btn-primary" id="credit_note" name="credit_note"  href="{{ url_for('bills.register_notes', bill_id=bill.id, note_type='credit_note') }}">Kreirajte knjižno odobrenje</a>
+          <a class="btn btn-primary" id="debit_note" name="debit_note"  href="{{ url_for('bills.register_notes', bill_id=bill.id, note_type='debit_note') }}">Kreirajte knjižno zaduženje</a>
+          <a href="#" class="btn btn-danger">Stornirajte dokument</a>
+        {% endif %}
       </div>
     </form>
   </div>  
 
-  
-  
-
 {% endblock content%}
 
 {% block scripts %}
-
+<script>
+  function updateCalculation(input) {
+    console.log('Promenjen je input');
+    var row = input.parentNode.parentNode;
+    var input1 = parseFloat(row.cells[2].querySelector("input").value);
+    var input2 = parseFloat(row.cells[4].querySelector("input").value);
+    var input3 = parseFloat(row.cells[5].querySelector("input").value);
+    var product = input1 * input2 * input3 / 100;
+    row.cells[6].querySelector("input").value = product;
+    var amountWithoutTax = input1 * input2 - product;
+    row.cells[7].querySelector("input").value = amountWithoutTax;
+  }
+</script>
+<script>
+  // Dohvati vrijednost bill_status iz objekta bill u predlošku
+  var billStatus = '{{ bill.bill_status }}';
+  // Provjeri status računa
+if (billStatus === 'poslat') {
+  console.log(billStatus)
+  // Pronađi sve elemente input i select
+  var inputs = document.getElementsByTagName('input');
+  var selects = document.getElementsByTagName('select');
+  
+  // Onemogući sve pronađene elemente
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].disabled = true;
+  }
+  
+  for (var j = 0; j < selects.length; j++) {
+    selects[j].disabled = true;
+  }
+}
+</script>
 {% endblock%}

@@ -56,19 +56,6 @@
         </div>
         <div class="row">
           <div class="col form-group">
-            {{ form.bill_type.label(class="form-control-label") }}
-            {% if form.bill_type.errors %}
-              {{ form.bill_type(class="form-control is-invalid") }}
-              <div class="invalid-feedback">
-                {% for error in form.bill_type.errors %}
-                  <span>{{ error }}</span>
-                {% endfor %}
-              </div>
-            {% else %}
-              {{ form.bill_type(class="form-select") }}
-            {% endif %}
-          </div>
-          <div class="col form-group">
             {{ form.bill_customer_id.label(class="form-control-label") }}
             {% if form.bill_customer_id.errors %}
               {{ form.bill_customer_id(class="form-control is-invalid") }}
@@ -166,6 +153,7 @@
             {{ form.bill_transaction_date(class="form-control", type="date") }}
           {% endif %}
         </div>
+        {% if type == 'faktura' %}
         <div class="col-3 form-group">
           {{ form.bill_due_date.label(class="form-control-label") }}
           {% if form.bill_due_date.errors %}
@@ -179,6 +167,7 @@
             {{ form.bill_due_date(class="form-control", type="date") }}
           {% endif %}
         </div>
+        {% endif %}
         <div class="col form-group">
           {{ form.bill_tax_calculation_date.label(class="form-control-label") }}
           {% if form.bill_tax_calculation_date.errors %}
@@ -236,10 +225,14 @@
       </div>
     </fieldset>
     <div class="form-group">
-      <a class="btn" href="{{url_for('bills.bill_list')}}">&#8678; Nazad</a>
+      <a class="btn" href="{{url_for('bills.bill_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
       {{ form.submit(class="btn btn-outline-info") }}
     </div>
   </form>
 </div>
 
 {% endblock content%}
+
+{% block scripts %}
+<script></script>
+{% endblock %}

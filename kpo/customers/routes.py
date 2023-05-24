@@ -1,48 +1,57 @@
-from kpo.models import Customer, Bill, Settings
+from datetime import date
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort
 from flask_login import login_required, current_user
 from kpo import db, app
+from kpo.models import Customer, Bill, Settings
 from kpo.customers.forms import RegisterCustomerForm, EditCustomerForm
 
 
 customers = Blueprint('customers', __name__)
 
-@customers.route('/customer_list')
+@customers.route('/customer_list', methods = ['GET'])
 def customer_list():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    if start_date is None or end_date is None:
+        start_date = date.today().replace(day=1, month=1).isoformat()
+        end_date = date.today().isoformat()
     customers = Customer.query.filter_by(company_id=current_user.company_id).all()
-    bills = Bill.query.filter_by(bill_company_id=current_user.company_id).all()
-    company_settings = Settings.query.filter_by(id=current_user.company_id).first()
-    print(f'{company_settings.synchronization_with_eFaktura=}')
-    print(f'{company_settings.payment_records=}')
-    print(f'{company_settings.synchronization_with_CRF=}')
-    print(f'{company_settings.forward_invoice_to_customer=}')
+    bills = Bill.query.filter(
+        Bill.bill_company_id == current_user.company_id,
+        Bill.bill_transaction_date.between(start_date, end_date)).all()
+    company_settings = Settings.query.filter_by(company_id=current_user.company_id).first()
     # print(f'Komitenti: {customers}')
-    # print(f'Fakture: {bills}')
+    print(f'Fakture: {bills}')
     table_data = []
     for customer in customers:
         total_price_by_customer = 0
         count_bills_by_customer = 0
         total_payments_by_customer = 0
+        total_depts_by_customer = 0
         for bill in bills:
             if int(bill.bill_customer_id) == int(customer.id):
                 total_price_by_customer += bill.total_price
                 count_bills_by_customer += 1
                 total_payments_by_customer += bill.total_payments
-                # print(f'Faktura: {bill.total_price} - Komitent: {customer.customer_name}')
-                # print(f'{customer.id=}, {total_price_by_customer=}')
+                if bill.bill_due_date:
+                    if bill.bill_due_date < date.today():
+                        total_depts_by_customer += bill.total_price - bill.total_payments
         table_data.append({'customer_id': customer.id, 
                             'customer_name': customer.customer_name,
                             'total_price': total_price_by_customer, 
                             'count_bills': count_bills_by_customer,
                             'total_payments': total_payments_by_customer,
-                            'saldo': total_price_by_customer - total_payments_by_customer})
+                            'saldo': total_price_by_customer - total_payments_by_customer,
+                            'total_depts': total_depts_by_customer})
     print(f'Table data: {table_data}')
     
     return render_template('customer_list.html', 
                             customers=customers, 
                             table_data=table_data,
                             company_settings=company_settings,
+                            start_date=start_date,
+                            end_date=end_date,
                             legend='Komitenti',  
                             title='Komitenti')
 
@@ -73,7 +82,7 @@ def register_customer():
 def customer_profile(customer_id):
     customer = Customer.query.get_or_404(customer_id)
     bills = Bill.query.filter_by(bill_customer_id=customer_id).all()
-    company_settings = Settings.query.filter_by(id=current_user.company_id).first()
+    company_settings = Settings.query.filter_by(company_id=current_user.company_id).first()
     form = EditCustomerForm()
     if form.validate_on_submit():
         customer.customer_name = form.customer_name.data

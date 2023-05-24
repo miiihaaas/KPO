@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
 <div>
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b') }}">Kreirajte novu fakturu</a>
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='faktura') }}">Kreirajte novu fakturu</a>
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='avans') }}">Kreirajte novi avansni račun</a>
   <hr class="mb-3">
 </div>
 <h2 class="">Izlazni dokumenti</h2>
@@ -14,6 +15,7 @@
           <th>Iznos</th>
           <th>Datum prometa</th>
           <th>Datum dospeća</th>
+          <th>bill_original</th>
       </tr>
   </thead>
   <tbody>
@@ -22,14 +24,23 @@
           <td>
             <div class="btn-group">
               <a class="btn btn-primary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }} </a>
-              <a class="btn btn-danger btn-sm" href="#" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
+              <a class="btn btn-danger btn-sm" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
             </div>
           </td>
           <td>{{ bill.bill_type }}</td>
           <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('customers.customer_profile', customer_id=bill.bill_customer.id) }}">{{ bill.bill_customer.customer_name }}</a></td>
-          <td>{{ bill.total_price }}</td>
-          <td>{{ bill.bill_transaction_date }}</td>
-          <td>{{ bill.bill_due_date }}</td>
+          <td style="text-align: right;">{{ '%.2f' % bill.total_price }}</td>
+          {% if bill.bill_transaction_date %}
+            <td>{{ bill.bill_transaction_date }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          {% if bill.bill_due_date %}
+            <td>{{ bill.bill_due_date }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          <td>{{ bill.bill_original }}</td>
       </tr>
       {% endfor %}
   </tbody>
@@ -73,12 +84,22 @@
 
       // Update footer
       $(api.column(3).footer()).html(pageTotal + ' (' + total + ' total)');
+      // Hide the seventh column again
+      api.column(6).visible(false);
+      
     },
+    columnDefs: [
+      {
+        targets: [6],
+        visible: false,
+        searchable: true,
+      },
+    ],
     language: {
       url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
     },
     stateSave: true,
-    });
   });
+});
 </script>
 {% endblock %}

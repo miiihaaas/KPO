@@ -36,7 +36,7 @@ def settings(company_id):
     if current_user.user_company.id != company_id:
         flash(f'Nemate ovlašćenje da podešavate parametre drugih kompanija.', 'danger')
         return redirect(url_for('main.home'))
-    global_settings = Settings.query.filter_by(id=company_id).first()
+    global_settings = Settings.query.filter_by(company_id=company_id).first()
     print(f'{global_settings.id=}')
     form = SettingsForm()
     if form.validate_on_submit():

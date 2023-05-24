@@ -10,6 +10,7 @@ def load_user(user_id):
 
 class Settings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
     synchronization_with_eFaktura = db.Column(db.Boolean, default=False)
     payment_records = db.Column(db.Boolean, default=False)
     synchronization_with_CRF = db.Column(db.Boolean, default=False) #! za sada nemamo tu opciju
@@ -36,6 +37,7 @@ class Company(db.Model):
     invoices = db.relationship('Invoice', backref='invoice_company', lazy=True)
     customers = db.relationship('Customer', backref='customer_company', lazy=True)
     bills = db.relationship('Bill', backref='bill_company', lazy=True)
+    settings = db.relationship('Settings', backref='settings_company', lazy=True)
 
     def __repr__(self):
         return self.companyname
@@ -118,16 +120,19 @@ class Bill(db.Model):
     bill_contract_number = db.Column(db.String(50), nullable=True)
     bill_service = db.Column(db.String(400), nullable=True)
     bill_purchase_order_number = db.Column(db.String(50), nullable=True)
-    bill_transaction_date = db.Column(db.Date, nullable=False)
-    bill_due_date = db.Column(db.Date, nullable=False)
+    bill_transaction_date = db.Column(db.Date, nullable=True)
+    bill_due_date = db.Column(db.Date, nullable=True)
     bill_tax_calculation_date = db.Column(db.String(35), nullable=True)
     bill_reference_number = db.Column(db.String(50), nullable=True)
     bill_model = db.Column(db.String(50), nullable=True)
+    bill_original = db.Column(db.String(60), nullable=True)
     bill_attachment = db.Column(db.String(60), nullable=True)
     bill_items = db.Column(db.JSON, nullable=True)
     total_price = db.Column(db.Float, nullable=True)
     bill_payments = db.Column(db.JSON, nullable=True)
     total_payments = db.Column(db.Float, nullable=True)
+    bill_pdf = db.Column(db.String(60), nullable=True)
+    bill_status = db.Column(db.String(20), nullable=True) #! nacrt, poslat, storniran
     bill_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     bill_company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
 
