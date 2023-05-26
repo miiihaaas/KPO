@@ -56,19 +56,6 @@
             </div>
             <div class="row">
             <div class="col form-group">
-                {{ form.bill_type.label(class="form-control-label") }}
-                {% if form.bill_type.errors %}
-                {{ form.bill_type(class="form-control is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.bill_type.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-                {% else %}
-                {{ form.bill_type(class="form-control", readonly=True) }}
-                {% endif %}
-            </div>
-            <div class="col form-group">
                 {{ form.bill_customer_id.label(class="form-control-label") }}
                 {% if form.bill_customer_id.errors %}
                 {{ form.bill_customer_id(class="form-control is-invalid") }}
@@ -152,20 +139,8 @@
             {% endif %}
             </div>
         </div>
+        {% if note_type == 'debit_note'  %}
         <div class="row">
-            <div class="col-3 form-group">
-            {{ form.bill_transaction_date.label(class="form-control-label") }}
-            {% if form.bill_transaction_date.errors %}
-                {{ form.bill_transaction_date(class="form-control is-invalid") }}
-                <div class="invalid-feedback">
-                {% for error in form.bill_transaction_date.errors %}
-                    <span>{{ error }}</span>
-                {% endfor %}
-                </div>
-            {% else %}
-                {{ form.bill_transaction_date(class="form-control", type="date", min=bill.bill_transaction_date) }}
-            {% endif %}
-            </div>
             <div class="col-3 form-group">
             {{ form.bill_due_date.label(class="form-control-label") }}
             {% if form.bill_due_date.errors %}
@@ -193,6 +168,7 @@
             {% endif %}
             </div>
         </div>
+        {% endif %}
         <div class="row">
             <div class="col form-group">
             {{ form.bill_reference_number.label(class="form-control-label") }}

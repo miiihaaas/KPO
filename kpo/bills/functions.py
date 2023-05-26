@@ -14,6 +14,14 @@ def pdf_gen(bill):
     company_phone = bill.bill_company.company_phone
     company_mail = bill.bill_company.company_mail
     company_site = bill.bill_company.company_site
+    if bill.bill_type == 'Faktura':
+        broj_dokumenta = 'Broj fakture'
+    elif bill.bill_type == 'Avansni račun':
+        broj_dokumenta = 'Broj avansnog računa'
+    elif bill.bill_type == 'Knjižno odobrenje':
+        broj_dokumenta = 'Broj knjižnog odobrenja'
+    elif bill.bill_type == 'Knjižno zaduženje':
+        broj_dokumenta = 'Broj knjižnog zaduženja'
     class PDF(FPDF):
         def __init__(self, **kwargs):
             super(PDF, self).__init__(**kwargs)
@@ -46,9 +54,11 @@ def pdf_gen(bill):
     pdf.set_y(40)  # Prilagodite Y poziciju prema potrebi
     if bill.bill_transaction_date:
         pdf.cell(95,6, f"Datum izdavanja: {bill.bill_transaction_date.strftime('%d.%m.%Y')}", ln=False, align='L')
+    else:
+        pdf.cell(95,6, f"", ln=False, align='L')
     pdf.set_font('DejaVuSansCondensed', 'B', 10)
     pdf.set_fill_color(192, 192, 192)  # Postavljanje RGB vrijednosti sive boje
-    pdf.cell(95,6, f'Broj fakture', ln=True, align='C', fill=True)
+    pdf.cell(95,6, f'{broj_dokumenta}', ln=True, align='C', fill=True)
     pdf.set_font('DejaVuSansCondensed', 'B', 15)
     pdf.cell(95,10, f'', ln=False, align='L')
     pdf.cell(95,10, f'{bill.bill_number}', ln=True, align='C')
@@ -76,14 +86,19 @@ def pdf_gen(bill):
     pdf.cell(47,4, f"{bill.bill_customer.customer_pib}", new_y='NEXT', align='L')
     pdf.set_font('DejaVuSansCondensed', '', 12)
     pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
-    pdf.cell(48,6, f"Valuta fakture", new_y='LAST', align='R')
+    pdf.cell(48,6, f"Valuta", new_y='LAST', align='R')
     pdf.set_font('DejaVuSansCondensed', 'B', 15)
     pdf.cell(47,6, f"{bill.bill_currency}", new_y='NEXT', align='L')
     pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
     pdf.set_font('DejaVuSansCondensed', '', 12)
-    pdf.cell(48,6, f"Ukupno za plaćanje", new_y='LAST', align='R')
-    pdf.set_font('DejaVuSansCondensed', 'B', 15)
-    pdf.cell(47,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='L')
+    if bill.bill_type != 'Knjižno odobrenje':
+        pdf.cell(48,6, f"Ukupno za plaćanje", new_y='LAST', align='R')
+        pdf.set_font('DejaVuSansCondensed', 'B', 15)
+        pdf.cell(47,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='L')
+    else:
+        pdf.cell(48,6, f"Ukupno odobrenje", new_y='LAST', align='R')
+        pdf.set_font('DejaVuSansCondensed', 'B', 15)
+        pdf.cell(47,6, "{:,.2f}".format(-bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='L')
     pdf.set_x(10)  # Prilagodite X poziciju prema potrebi
     pdf.set_font('DejaVuSansCondensed', 'B', 10)
     pdf.cell(0,6, f'', new_x='LMARGIN', new_y='NEXT', align='L')
@@ -104,7 +119,10 @@ def pdf_gen(bill):
     pdf.cell(20,4, f'PDV stopa', new_x='LMARGIN', new_y='NEXT', align='R', fill=1)
     for item in bill.bill_items:
         print(f'item: {item=}')
-        pdf.cell(55,4, f"({item['sifra']}) {item['naziv']}", new_y='LAST', align='L', border='B')
+        if item['sifra']:
+            pdf.cell(55,4, f"({item['sifra']}) {item['naziv']}", new_y='LAST', align='L', border='B')
+        else:
+            pdf.cell(55,4, f"{item['naziv']}", new_y='LAST', align='L', border='B')
         pdf.cell(20,4, f'{item["kolicina"]}', new_y='LAST', align='R', border='B')
         pdf.cell(25,4, f'{item["jedinica_mere"]}', new_y='LAST', align='R', border='B')
         pdf.cell(25,4, "{:,.2f}".format(float(item["cena"])).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='LAST', align='R', border='B') #"{:,.2f}".format(item["cena"]).replace(",", " ").replace(".", ",").replace(" ", ".")

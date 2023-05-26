@@ -12,7 +12,9 @@
         </li>
         <li class="nav-item" role="presentation">
           {% if company_settings.payment_records %}
-          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" >Uplate</a>
+            {% if bill.bill_type != 'Knjižno odobrenje' %}
+            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" >Uplate</a>
+            {% endif %}
           {% else %}
           <a class="nav-link hidden" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" >Uplate</a>
           {% endif %}
@@ -150,6 +152,7 @@
             </div>
             {% if not bill.bill_type in ['Knjižno odobrenje'] %}
             <div class="row">
+              {% if bill.bill_type in ['Faktura'] %}
               <div class="col-3 form-group">
                 {{ form.bill_transaction_date.label(class="form-control-label") }}
                 {% if form.bill_transaction_date.errors %}
@@ -163,7 +166,8 @@
                   {{ form.bill_transaction_date(class="form-control", type="date") }}
                 {% endif %}
               </div>
-              {% if not bill.bill_type in ['Knjižno odobrenje', 'Avansni račun'] %}
+              {% endif %}
+              {% if not bill.bill_type in ['Knjižno odobrenje'] %}
               <div class="col-3 form-group">
                 {{ form.bill_due_date.label(class="form-control-label") }}
                 {% if form.bill_due_date.errors %}
@@ -295,11 +299,15 @@
                         {% endfor %}
                       </select>
                     </td>
+                    {% if bill.bill_status == 'nacrt' %}
                     <td><button type="button" hx-delete="/delete_item" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
+                    {% endif %}
                   </tr>
                 {% endfor %}
                 <tr id="new_item" hx-swap="beforebegin">
+                  {% if bill.bill_status == 'nacrt' %}
                   <td><button type="button" hx-get="/new_item" hx-target="#new_item" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i> Nova stavka</button></td>
+                  {% endif %}
                 </tr>
               </tbody>
             </table>
@@ -311,7 +319,7 @@
               <li>Ukupna osnovica - nije predmet oporezivanja PDV: _____</li>
               <li>Umanjena osnovica - nije predmet oporezivanja PDV: _____</li>
               <li>Ukupno za uplatu: <strong>{{ bill.total_price }}</strong></li>
-              <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDF-a.</li>
+              <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDV-a.</li>
             </ul>
           </div>
         </div>
@@ -355,9 +363,9 @@
       
       <div class="form-group">
         <a class="btn" href="{{url_for('bills.bill_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
+        {{ form.submit(class="btn btn-outline-info") }}
         {% if bill.bill_status == 'nacrt' %}
-          {{ form.submit(class="btn btn-outline-info") }}
-          <a href="#" class="btn">Pošaljite dokument</a>
+          <input type="submit" class="btn btn-primary" id="send" name="send" value="Pošaljite dokument">
         {% elif bill.bill_status == 'poslat' %}
           <a class="btn btn-primary" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank">Otvori PDF</a>
           <a class="btn btn-primary" id="credit_note" name="credit_note"  href="{{ url_for('bills.register_notes', bill_id=bill.id, note_type='credit_note') }}">Kreirajte knjižno odobrenje</a>
@@ -387,21 +395,192 @@
 <script>
   // Dohvati vrijednost bill_status iz objekta bill u predlošku
   var billStatus = '{{ bill.bill_status }}';
+
   // Provjeri status računa
-if (billStatus === 'poslat') {
-  console.log(billStatus)
-  // Pronađi sve elemente input i select
-  var inputs = document.getElementsByTagName('input');
-  var selects = document.getElementsByTagName('select');
-  
-  // Onemogući sve pronađene elemente
-  for (var i = 0; i < inputs.length; i++) {
-    inputs[i].disabled = true;
+  if (billStatus !== 'nacrt') {
+    console.log(billStatus);
+    // Pronađi sve elemente input i select
+    var inputs = document.getElementsByTagName('input');
+    var selects = document.getElementsByTagName('select');
+
+    // Onemogući sve pronađene input elemente osim 'submit'
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].id !== 'submit') {
+        inputs[i].readOnly = true;
+      }
+    }
+
+    // Onemogući promenu izbora, ali omogući submitovanje
+    for (var j = 0; j < selects.length; j++) {
+      selects[j].disabled = true;
+    }
+
+    // Dodaj event listener za svako dugme za podnošenje (submit)
+    var submitButtons = document.querySelectorAll('input[type="submit"], button[type="submit"]');
+    for (var k = 0; k < submitButtons.length; k++) {
+      submitButtons[k].addEventListener('click', function(event) {
+        // Omogući sve selekte koji su bili onemogućeni
+        for (var j = 0; j < selects.length; j++) {
+          selects[j].disabled = false;
+        }
+
+        // Podnesi formu
+        event.target.form.submit();
+      });
+    }
   }
-  
-  for (var j = 0; j < selects.length; j++) {
-    selects[j].disabled = true;
-  }
-}
+</script>
+<script>
+  // Dohvatite referencu na oba select elementa
+  var billTaxCategorySelect = document.getElementById('bill_tax_category');
+  var dependentSelect = document.getElementById('bill_base_code');
+
+  // Definirajte tabelu zavisnosti
+  var dependencyTable = {
+    S: [
+      ''
+    ],
+    AE: [
+      'PDV-RS-10-2-1',
+      'PDV-RS-10-2-2',
+      'PDV-RS-10-2-3',
+      'PDV-RS-10-2-4',
+      'PDV-RS-10-2-5-1',
+      'PDV-RS-10-2-5-2',
+      'PDV-RS-10-2-5-3',
+      'PDV-RS-36b-6'
+    ],
+    Z: [
+      'PDV-RS-24-1-2',
+      'PDV-RS-24-1-3',
+      'PDV-RS-24-1-5',
+      'PDV-RS-24-1-5a',
+      'PDV-RS-24-1-6',
+      'PDV-RS-24-1-6a',
+      'PDV-RS-24-1-7',
+      'PDV-RS-24-1-7a',
+      'PDV-RS-24-1-8',
+      'PDV-RS-24-1-9',
+      'PDV-RS-24-1-10',
+      'PDV-RS-24-1-11',
+      'PDV-RS-24-1-12',
+      'PDV-RS-24-1-13',
+      'PDV-RS-24-1-14',
+      'PDV-RS-24-1-15',
+      'PDV-RS-24-1-16-1',
+      'PDV-RS-24-1-16-2',
+      'PDV-RS-24-1-16-3',
+      'PDV-RS-24-1-16-4',
+      'PDV-RS-24-1-16a',
+      'PDV-RS-24-1-16b',
+      'PDV-RS-24-1-16v',
+      'PDV-RS-24-1-16g',
+      'PDV-RS-24-1-17'
+    ],
+    E: [
+      'PDV-RS-25-1-1a',
+      'PDV-RS-25-1-2',
+      'PDV-RS-25-1-3',
+      'PDV-RS-25-1-4',
+      'PDV-RS-25-1-5',
+      'PDV-RS-25-1-6',
+      'PDV-RS-25-1-7',
+      'PDV-RS-25-1-8',
+      'PDV-RS-25-2-1',
+      'PDV-RS-25-2-2',
+      'PDV-RS-25-2-3',
+      'PDV-RS-25-2-3a',
+      'PDV-RS-25-2-3b',
+      'PDV-RS-25-2-5',
+      'PDV-RS-25-2-6',
+      'PDV-RS-25-2-7',
+      'PDV-RS-25-2-8',
+      'PDV-RS-25-2-9',
+      'PDV-RS-25-2-10',
+      'PDV-RS-25-2-11',
+      'PDV-RS-25-2-12',
+      'PDV-RS-25-2-13',
+      'PDV-RS-25-2-14',
+      'PDV-RS-25-2-15',
+      'PDV-RS-25-2-16',
+      'PDV-RS-25-2-17',
+      'PDV-RS-25-2-18',
+      'PDV-RS-25-2-19'
+    ],
+    R: [
+      'PDV-RS-6a'
+    ],
+    O: [
+      'PDV-RS-11-1-2',
+      'PDV-RS-11-1-3',
+      'PDV-RS-11-1-4',
+      'PDV-RS-11-1-5',
+      'PDV-RS-11-3',
+      'PDV-RS-12-4',
+      'PDV-RS-12-6-1',
+      'PDV-RS-12-6-2',
+      'PDV-RS-12-6-3',
+      'PDV-RS-12-6-4-1',
+      'PDV-RS-12-6-4-2',
+      'PDV-RS-12-6-4-3',
+      'PDV-RS-12-6-4-4',
+      'PDV-RS-12-6-4-5',
+      'PDV-RS-12-6-5',
+      'PDV-RS-12-6-6',
+      'PDV-RS-12-6-7-1',
+      'PDV-RS-12-6-7-2',
+      'PDV-RS-12-6-7-3',
+      'PDV-RS-12-6-7-4',
+      'PDV-RS-12-6-7-5',
+      'PDV-RS-12-6-7-6',
+      'PDV-RS-12-6-7-7',
+      'PDV-RS-12-6-7-8',
+      'PDV-RS-12-6-7-9',
+      'PDV-RS-12-6-7-10',
+      'PDV-RS-12-6-7-11',
+      'PDV-RS-12-6-7-12',
+      'PDV-RS-12-6-8',
+      'PDV-RS-12-9',
+      'PDV-RS-17-4-2',
+      'PDV-RS-61'
+    ],
+    OE: [
+      'PDV-RS-4-4-2NP',
+      'PDV-RS-5-4-2NP',
+      'PDV-RS-3NP-ostalo',
+      'PDV-RS-17-4-2',
+      'PDV-RS-17-4-3',
+      'PDV-RS-9'
+    ],
+    SS: [
+      'PDV-RS-35-7'
+    ],
+    N: [
+      'PDV-RS-3-DZ',
+      'PDV-RS-4',
+      'PDV-RS-5',
+      'PDV-RS-6-1-1 (BN)'
+    ]
+  };
+
+  // Postavite događaj slušanja na promjenu prvog select elementa
+  billTaxCategorySelect.addEventListener('change', function() {
+    // Dohvati odabrani vrijednost prvog select elementa
+    var selectedValue = billTaxCategorySelect.value;
+    
+    // Očisti drugi select element
+    dependentSelect.innerHTML = '';
+    
+    // Dohvati odgovarajuće vrijednosti iz tabele zavisnosti
+    var dependentValues = dependencyTable[selectedValue];
+    
+    // Kreiraj opcije za drugi select element
+    for (var i = 0; i < dependentValues.length; i++) {
+      var option = document.createElement('option');
+      option.value = dependentValues[i];
+      option.text = dependentValues[i];
+      dependentSelect.appendChild(option);
+    }
+  });
 </script>
 {% endblock%}

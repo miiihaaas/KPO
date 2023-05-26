@@ -34,7 +34,7 @@ def register_b(type):
     form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
     if form.validate_on_submit():
         bill_type = 'Faktura' if type == 'faktura' else 'Avansni račun'
-        bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d') if type == 'faktura' else None
+        bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d') if type == 'Faktura' else None
         bill = Bill(
             bill_currency=form.bill_currency.data,
             bill_type=bill_type,
@@ -89,7 +89,6 @@ def register_notes(bill_id, note_type):
             bill_decision_number = form.bill_decision_number.data,
             bill_contract_number = form.bill_contract_number.data,
             bill_purchase_order_number = form.bill_purchase_order_number.data,
-            bill_transaction_date = datetime.strptime(form.bill_transaction_date.data, '%Y-%m-%d'),
             bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d'),
             bill_tax_calculation_date = form.bill_tax_calculation_date.data,
             bill_reference_number = form.bill_reference_number.data,
@@ -108,7 +107,6 @@ def register_notes(bill_id, note_type):
         return redirect(url_for('bills.bill_profile', bill_id=note.id))
     elif request.method == "GET":
         form.bill_currency.data = bill.bill_currency
-        form.bill_type.data = bill.bill_type
         form.bill_number.data = ''
         form.bill_tax_category.data = bill.bill_tax_category
         form.bill_base_code.data = bill.bill_base_code
@@ -116,14 +114,14 @@ def register_notes(bill_id, note_type):
         form.bill_contract_number.data = bill.bill_contract_number
         form.bill_service.data = ''
         form.bill_purchase_order_number.data = bill.bill_purchase_order_number
-        form.bill_transaction_date.data = bill.bill_transaction_date.strftime('%Y-%m-%d')
-        form.bill_due_date.data = bill.bill_due_date.strftime('%Y-%m-%d')
-        form.bill_tax_calculation_date.data = bill.bill_tax_calculation_date
+        if note_type == 'debit_note':
+            form.bill_due_date.data = bill.bill_due_date.strftime('%Y-%m-%d')
+            form.bill_tax_calculation_date.data = bill.bill_tax_calculation_date
         form.bill_reference_number.data = bill.bill_reference_number
         form.bill_model.data = bill.bill_model
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = str(bill.bill_customer_id)
-    return render_template('register_notes.html', title=title, form=form, bill=bill)
+    return render_template('register_notes.html', title=title, form=form, bill=bill, note_type=note_type)
 
 
 
@@ -139,12 +137,12 @@ def bill_profile(bill_id):
         form = EditCreditNoteForm()
         c = Customer.query.get_or_404(bill.bill_customer_id)
         form.bill_customer_id.choices = [(c.id, c.customer_name)]
-        title = f'Detalji knjišnog odobrenja za fakturu {bill.bill_original}'
+        title = f'Detalji knjižnog odobrenja za fakturu {bill.bill_original}'
     elif bill.bill_type == 'Knjižno zaduženje':
         form = EditDebitNoteForm()
         c = Customer.query.get_or_404(bill.bill_customer_id)
         form.bill_customer_id.choices = [(c.id, c.customer_name)]
-        title = f'Detalji knjišnog zadušenja za fakturu {bill.bill_original}'
+        title = f'Detalji knjižnog zaduženja za fakturu {bill.bill_original}'
     elif bill.bill_type == 'Faktura':
         form = EditBillForm()
         form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
@@ -165,8 +163,8 @@ def bill_profile(bill_id):
         bill.bill_contract_number = form.bill_contract_number.data
         bill.bill_service = form.bill_service.data
         bill.bill_purchase_order_number = form.bill_purchase_order_number.data
-        bill.bill_transaction_date = datetime.strptime(form.bill_transaction_date.data, '%Y-%m-%d') if not bill.bill_type in ['Knjižno odobrenje'] else None
-        bill.bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d') if type == 'faktura' else None
+        bill.bill_transaction_date = datetime.strptime(form.bill_transaction_date.data, '%Y-%m-%d') if  bill.bill_type in ['Faktura'] else None
+        bill.bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d') if not bill.bill_type in ['Knjižno odobrenje'] else None
         bill.bill_tax_calculation_date = form.bill_tax_calculation_date.data if not bill.bill_type in ['Knjižno odobrenje'] else None
         bill.bill_reference_number = form.bill_reference_number.data
         bill.bill_model = form.bill_model.data
@@ -228,6 +226,11 @@ def bill_profile(bill_id):
             
             bill.bill_pdf = pdf_gen(bill)
             print(f'{bill.bill_pdf=}')
+        
+        if request.form.get('send') == 'Pošaljite dokument':
+            print('uspeo si brale')
+            bill.bill_status = 'poslat'
+        
         db.session.commit()
         flash(f'Dokument {bill.bill_number} je uspesno izmenjen.', 'success')
         return redirect(url_for('bills.bill_list'))
@@ -240,10 +243,10 @@ def bill_profile(bill_id):
         form.bill_contract_number.data = bill.bill_contract_number
         form.bill_service.data = bill.bill_service
         form.bill_purchase_order_number.data = bill.bill_purchase_order_number
-        if not bill.bill_type in ['Knjižno odobrenje']:
+        if bill.bill_type in ['Faktura']:
             form.bill_transaction_date.data = bill.bill_transaction_date.strftime('%Y-%m-%d')
+        if not bill.bill_type in ['Knjižno odobrenje']:
             form.bill_tax_calculation_date.data = bill.bill_tax_calculation_date
-        if not bill.bill_type in ['Knjižno odobrenje', 'Avansni račun']:
             form.bill_due_date.data = bill.bill_due_date.strftime('%Y-%m-%d')
         
         form.bill_reference_number.data = bill.bill_reference_number
