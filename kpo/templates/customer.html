@@ -171,6 +171,15 @@
                 <tr>
                     <td>
                         <div class="btn-group">
+                            {% if bill.bill_type == 'Faktura' %}
+                            <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Faktura">F</a>
+                            {% elif bill.bill_type == 'Avansni račun' %}
+                            <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Avansni račun">A</a>
+                            {% elif bill.bill_type == 'Knjižno odobrenje' %}
+                            <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Knjižno odobrenje">O</a>
+                            {% elif bill.bill_type == 'Knjižno zaduženje' %}
+                            <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Knjižno zaduženje">Z</a>
+                            {% endif %}
                             <a class="btn btn-primary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }} </a>
                             <a class="btn btn-danger btn-sm" href="#" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
                         </div>

@@ -55,6 +55,8 @@ def register_c():
                             company_site=form.company_site.data,
                             company_mail=form.company_mail.data,
                             company_phone=form.company_phone.data,
+                            company_default_tax_category = form.company_default_tax_category.data,
+                            company_default_base_code = form.company_default_base_code.data,
                             company_logo='',
                             dinar_account_list=dinar_account_list,
                             foreign_account_list=records
@@ -131,6 +133,8 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
         company.company_site=form.company_site.data
         company.company_mail=form.company_mail.data
         company.company_phone=form.company_phone.data
+        company.company_default_tax_category = form.company_default_tax_category.data
+        company.company_default_base_code = form.company_default_base_code.data
         db.session.commit()
         flash(f'Podaci kompanije {company.companyname} su izmenjeni.', 'success')
         return redirect(url_for('companys.company_list', title='Kompanija', companys=companys))
@@ -147,6 +151,8 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
         form.company_site.data=company.company_site
         form.company_mail.data=company.company_mail
         form.company_phone.data=company.company_phone
+        form.company_default_tax_category.data=company.company_default_tax_category
+        form.company_default_base_code.data=company.company_default_base_code
         form.company_logo.data=company.company_logo
 
     elif request.method == 'POST':

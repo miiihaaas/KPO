@@ -30,6 +30,8 @@ class Company(db.Model):
     company_site = db.Column(db.String(120), unique=True, nullable=False) #vidi imali neki model tipa db.Link()
     company_mail = db.Column(db.String(120), unique=True, nullable=False)
     company_phone = db.Column(db.String(20), nullable=False)
+    company_default_tax_category = db.Column(db.String(50))
+    company_default_base_code = db.Column(db.String(50))
     company_logo = db.Column(db.String(60), nullable=False)
     dinar_account_list = db.Column(db.JSON, nullable=True)
     foreign_account_list = db.Column(db.JSON, nullable=True)
@@ -120,6 +122,7 @@ class Bill(db.Model):
     bill_contract_number = db.Column(db.String(50), nullable=True)
     bill_service = db.Column(db.String(400), nullable=True)
     bill_purchase_order_number = db.Column(db.String(50), nullable=True)
+    bill_creation_date = db.Column(db.Date, nullable=True)
     bill_transaction_date = db.Column(db.Date, nullable=True)
     bill_due_date = db.Column(db.Date, nullable=True)
     bill_tax_calculation_date = db.Column(db.String(35), nullable=True)
@@ -133,6 +136,7 @@ class Bill(db.Model):
     total_payments = db.Column(db.Float, nullable=True)
     bill_pdf = db.Column(db.String(60), nullable=True)
     bill_status = db.Column(db.String(20), nullable=True) #! nacrt, poslat, storniran
+    bill_company_account = db.Column(db.String(50), nullable=True) #!
     bill_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     bill_company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
 

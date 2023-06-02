@@ -6,6 +6,7 @@ from sqlalchemy import func
 from kpo import db
 from kpo.models import Invoice, Settings
 from kpo.invoices.forms import DashboardData
+from kpo.bills.forms import Dashboard
 from kpo.main.forms import SettingsForm
 from flask_login import current_user
 
@@ -17,12 +18,17 @@ main = Blueprint('main', __name__)
 def home():
     if current_user.is_authenticated:
         form = DashboardData(current_user.user_company.id)
+        dashboard = Dashboard(current_user.user_company.id)
         print(f'{current_user.user_company.id=}')
+        print(f'{dashboard=}')
+
+        for attr, value in vars(dashboard).items():
+            print(f'{attr} = {value}')
     else:
         print(f'nije ulogovan niko')
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'info')
         return redirect(url_for('main.about'))
-    return render_template('home.html', title='Početna', form=form)
+    return render_template('home.html', title='Početna', form=form, dashboard=dashboard)
 
 
 

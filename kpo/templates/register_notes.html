@@ -12,6 +12,9 @@
         </li>
         </ul>
         <fieldset class="form-group">
+            {% if last_document %}
+            <p>Poslednje kreirani dokument: <strong>{{ last_document.bill_number }}</strong></p>
+            {% endif %}
         <div class="col form-group" style="border: 1px solid black;">
             <div class="row">
             <div class="col-3 form-group">

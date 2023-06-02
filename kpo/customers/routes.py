@@ -19,7 +19,7 @@ def customer_list():
     customers = Customer.query.filter_by(company_id=current_user.company_id).all()
     bills = Bill.query.filter(
         Bill.bill_company_id == current_user.company_id,
-        Bill.bill_transaction_date.between(start_date, end_date)).all()
+        Bill.bill_transaction_date.between(start_date, end_date)).all() #! ako bude dileme bill_due_date vs bill_transaction_date
     company_settings = Settings.query.filter_by(company_id=current_user.company_id).first()
     # print(f'Komitenti: {customers}')
     print(f'Fakture: {bills}')

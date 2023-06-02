@@ -118,8 +118,8 @@ body.Registracija form > div.form-group { text-align: center; }
 footer { display: flex; max-width: 1320px; margin: auto; justify-content: center; font-size: 12px; }
 form > div.form-group { text-align: center; }
 .btn.btn-danger, .btn.btn-secondary { margin-bottom: 10px !important; }
-.btn.btn-secondary { background-image: linear-gradient(#eee, #ccc) !important; color:#555 !important; }
-.btn.btn-secondary:hover { background-image: linear-gradient(#ccc, #ccc) !important; }
+.btn.btn-secondary { background-image: linear-gradient(#25a6dd, #009cdd) !important; color:#ffffff !important; }
+.btn.btn-secondary:hover { background-image: linear-gradient(#009cdd, #009cdd) !important; }
 .btn.btn-danger { background-image: linear-gradient(#d80978, #92004f) !important; }
 .btn.btn-danger:hover { background-image: linear-gradient(#92004f, #92004f) !important; }
 .btn.btn-secondary, .btn.btn-danger { margin: 0 0 0 0 !important; }

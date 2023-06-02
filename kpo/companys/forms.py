@@ -3,6 +3,8 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField, FieldList, FormField
 from wtforms.validators import DataRequired, Length, Email, ValidationError, Optional
 from kpo.models import Company
+from kpo.bills.forms import all_posible_base_code_choices
+from wtforms import SelectField
 
 
 class RegistrationCompanyForm(FlaskForm):
@@ -18,6 +20,8 @@ class RegistrationCompanyForm(FlaskForm):
     company_site = StringField('Veb stranica', validators=[DataRequired(), Length(min=5, max=50)])
     company_mail = StringField('Mejl', validators=[DataRequired(), Email()])
     company_phone = StringField('Broj telefona', validators=[DataRequired(), Length(min=9, max=13)])
+    company_default_tax_category = SelectField('Podrazumevana PDV kategorija', choices=[('S', 'S'), ('AE', 'AE'), ('O', 'O'), ('E', 'E'), ('R', 'R'), ('Z', 'Z'), ('SS', 'SS'), ('OE', 'OE'), ('N', 'N')]) #!
+    company_default_base_code = SelectField('Podrazumevana šifra osnova', validators=[Optional()], choices=all_posible_base_code_choices) #!
     company_logo = "" #na ovom poraditi --->> https://www.youtube.com/watch?v=803Ei2Sq-Zs&list=PL-osiE80TeTs4UjLw5MM6OjgkjFeUxCYH&index=7&ab_channel=CoreySchafer <<--- :)
     submit = SubmitField('Registrujte kompaniju')
 
@@ -39,6 +43,8 @@ class EditCompanyForm(FlaskForm):
     company_jbkjs = StringField('JBKJS', validators=[Optional(), Length(min=5, max=5)])
     company_site = StringField('Veb stranica', validators=[DataRequired(), Length(min=5, max=50)])
     company_mail = StringField('Mejl', validators=[DataRequired(), Email()])
+    company_default_tax_category = SelectField('Podrazumevana PDV kategorija', choices=[('S', 'S'), ('AE', 'AE'), ('O', 'O'), ('E', 'E'), ('R', 'R'), ('Z', 'Z'), ('SS', 'SS'), ('OE', 'OE'), ('N', 'N')]) #!
+    company_default_base_code = SelectField('Podrazumevana šifra osnova', validators=[Optional()], choices=all_posible_base_code_choices) #!
     company_phone = StringField('Broj telefona', validators=[DataRequired(), Length(min=9, max=13)])
     company_logo = FileField('Ažuriranje loga', validators=[FileAllowed(['jpg', 'png'])]) 
     submit = SubmitField('Ažuriraj podatke')

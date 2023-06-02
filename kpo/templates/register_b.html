@@ -12,6 +12,14 @@
       </li>
     </ul>
     <fieldset class="form-group">
+      {% if last_document %}
+      <p>Poslednje kreirani dokument: <strong>{{ last_document.bill_number }}</strong></p>
+      {% endif %}
+      <hr>
+      <div class="form-group">
+        <label class="form-control-label" for="bill_company_account">Račun</label>
+        <select class="form-select" name="bill_company_account" id="bill_company_account"></select>
+      </div>
       <div class="col form-group" style="border: 1px solid black;">
         <div class="row">
           <div class="col-3 form-group">
@@ -24,7 +32,7 @@
                 {% endfor %}
               </div>
             {% else %}
-              {{ form.bill_currency(class="form-select") }}
+              {{ form.bill_currency(class="form-select", onchange="updateBillCompanyAccountOptions()") }}
             {% endif %}
           </div>
           <div class="col form-group">
@@ -235,6 +243,42 @@
 {% endblock content%}
 
 {% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    updateBillCompanyAccountOptions();
+  });
+
+  function updateBillCompanyAccountOptions() {
+    var currencySelect = document.getElementById("bill_currency"); // Element sa ID "bill_currency"
+    var accountSelect = document.getElementById("bill_company_account"); // Element sa ID "bill_company_account"
+    var dinarAccounts = JSON.parse('{{ dinar_accounts|tojson|safe }}'); // Prosleđena lista 'dinar_accounts' iz Flask-a
+    var foreignAccounts = JSON.parse('{{ foreign_accounts|tojson|safe }}'); // Prosleđena lista 'foreign_accounts' iz Flask-a
+
+    var label = document.querySelector("label[for='bill_company_account']"); // Pronalazi labelu preko atributa 'for'
+
+    // Izbriši postojeće opcije
+    accountSelect.innerHTML = "";
+
+    // Dodaj nove opcije na osnovu vrednosti currencySelect
+    if (currencySelect.value === "RSD") {
+      label.textContent = "Dinarski račun";
+      for (var i = 0; i < dinarAccounts.length; i++) {
+        var option = document.createElement("option");
+        option.text = dinarAccounts[i];
+        accountSelect.add(option);
+      }
+    } else {
+      label.textContent = "Devizni račun";
+      for (var i = 0; i < foreignAccounts.length; i++) {
+        var option = document.createElement("option");
+        option.text = foreignAccounts[i].account;
+        accountSelect.add(option);
+      }
+    }
+  }
+</script>
+
+
 <script>
   // Dohvatite referencu na oba select elementa
   var billTaxCategorySelect = document.getElementById('bill_tax_category');

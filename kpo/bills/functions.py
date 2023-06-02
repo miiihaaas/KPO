@@ -14,6 +14,29 @@ def pdf_gen(bill):
     company_phone = bill.bill_company.company_phone
     company_mail = bill.bill_company.company_mail
     company_site = bill.bill_company.company_site
+    company_selected_account = bill.bill_company_account
+    company_dinar_account_list = bill.bill_company.dinar_account_list
+    company_foreign_account_list = bill.bill_company.foreign_account_list
+    
+    print(f'start debug: {company_selected_account=}')
+    if company_selected_account in company_dinar_account_list:
+        print('DINAR')
+        company_selected_iban = None
+        company_selected_swift = None
+    else:
+        for account_info in company_foreign_account_list:
+            if account_info['account'] == company_selected_account:
+                company_selected_iban = account_info['iban']
+                company_selected_swift = account_info['swift']
+                print(f'{company_selected_iban=}')
+                print(f'{company_selected_swift=}')
+            else:
+                company_selected_iban = None
+                company_selected_swift = None
+    
+    
+    print(f'{company_dinar_account_list=}')
+    print(f'{company_foreign_account_list=}')
     if bill.bill_type == 'Faktura':
         broj_dokumenta = 'Broj fakture'
     elif bill.bill_type == 'Avansni račun':
@@ -53,7 +76,7 @@ def pdf_gen(bill):
     pdf.set_font('DejaVuSansCondensed', '', 10)
     pdf.set_y(40)  # Prilagodite Y poziciju prema potrebi
     if bill.bill_transaction_date:
-        pdf.cell(95,6, f"Datum izdavanja: {bill.bill_transaction_date.strftime('%d.%m.%Y')}", ln=False, align='L')
+        pdf.cell(95,6, f"Datum izdavanja: {bill.bill_transaction_date.strftime('%d.%m.%Y.')}", ln=False, align='L')
     else:
         pdf.cell(95,6, f"", ln=False, align='L')
     pdf.set_font('DejaVuSansCondensed', 'B', 10)
@@ -71,12 +94,12 @@ def pdf_gen(bill):
     pdf.set_font('DejaVuSansCondensed', '', 10)
     if bill.bill_transaction_date:
         pdf.cell(48,4, f"Datum prometa", new_y='LAST', align='R')
-        pdf.cell(47,4, f"{bill.bill_transaction_date.strftime('%d.%m.%Y')}", new_y='NEXT', align='L')
+        pdf.cell(47,4, f"{bill.bill_transaction_date.strftime('%d.%m.%Y.')}", new_y='NEXT', align='L')
     pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
     if bill.bill_due_date:
         pdf.cell(48,4, f"Datum dospeća", new_y='LAST', align='R')
         pdf.set_font('DejaVuSansCondensed', 'B', 10)
-        pdf.cell(47,4, f"{bill.bill_due_date.strftime('%d.%m.%Y')}", new_y='NEXT', align='L')
+        pdf.cell(47,4, f"{bill.bill_due_date.strftime('%d.%m.%Y.')}", new_y='NEXT', align='L')
     pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
     pdf.set_font('DejaVuSansCondensed', '', 10)
     pdf.cell(48,4, f"Matični broj kupca", new_y='LAST', align='R')
@@ -106,9 +129,24 @@ def pdf_gen(bill):
     pdf.set_font('DejaVuSansCondensed', 'B', 15)
     pdf.cell(0,10, f'{company_name}', new_x='LMARGIN', new_y='NEXT', align='L')
     pdf.set_font('DejaVuSansCondensed', '', 10)
-    pdf.cell(0,4, f'{company_address} {company_address_number}, {company_zip_code} {company_city}, {company_state}     -----   dodati račun', new_x='LMARGIN', new_y='NEXT', align='L')
-    pdf.cell(0,4, f'Matični broj: {company_mb}', new_x='LMARGIN', new_y='NEXT', align='L')
-    pdf.cell(0,4, f'PIB: {company_pib}', new_x='LMARGIN', new_y='NEXT', align='L')
+    if not bill.bill_type == 'Knjižno odobrenje':
+        pdf.cell(120,4, f'{company_address} {company_address_number}, {company_zip_code} {company_city}, {company_state}', new_y='LAST', align='L')
+        pdf.cell(20,4, f'broj računa: ', new_y='LAST', align='R')
+        pdf.cell(50,4, f'{company_selected_account}', new_x='LMARGIN', new_y='NEXT', align='L')
+    else:
+        pdf.cell(0,4, f'{company_address} {company_address_number}, {company_zip_code} {company_city}, {company_state}', new_x='LMARGIN', new_y='NEXT', align='L')
+    if company_selected_iban:
+        pdf.cell(120,4, f'Matični broj: {company_mb}', new_y='LAST', align='L')
+        pdf.cell(20,4, f'IBAN: ', new_y='LAST', align='R')
+        pdf.cell(50,4, f'{company_selected_iban}', new_x='LMARGIN', new_y='NEXT', align='L')
+    else:
+        pdf.cell(0,4, f'Matični broj: {company_mb}', new_x='LMARGIN', new_y='NEXT', align='L')
+    if company_selected_swift:
+        pdf.cell(120,4, f'PIB: {company_pib}', new_y='LAST', align='L')
+        pdf.cell(20,4, f'SWIFT: ', new_y='LAST', align='R')
+        pdf.cell(50,4, f'{company_selected_swift}', new_x='LMARGIN', new_y='NEXT', align='L')
+    else:
+        pdf.cell(0,4, f'PIB: {company_pib}', new_x='LMARGIN', new_y='NEXT', align='L')
     pdf.cell(0,3, f'', new_x='LMARGIN', new_y='NEXT', align='L')
     pdf.cell(55,4, f'Opis', new_y='LAST', align='L', fill=1)
     pdf.cell(20,4, f'Količina', new_y='LAST', align='R', fill=1)

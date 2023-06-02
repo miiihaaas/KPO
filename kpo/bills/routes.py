@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, date
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for, flash, send_file, current_app
 from flask_login import login_required, current_user
 from kpo import db, app
-from kpo.models import Bill, Customer, Settings
+from kpo.models import Bill, Customer, Settings, Company
 from kpo.bills.forms import RegisterBillForm, EditBillForm, RegisterAdvanceAccountForm, EditAdvanceAccountForm, RegisterCreditNoteForm, EditCreditNoteForm, RegisterDebitNoteForm, EditDebitNoteForm
 from kpo.bills.functions import pdf_gen
 
@@ -28,24 +28,31 @@ def register_b(type):
     if type == 'faktura':
         form = RegisterBillForm()
         title = 'Registracija nove fakture'
+        last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Faktura').order_by(Bill.bill_number.desc()).first()
     elif type == 'avans':
         form = RegisterAdvanceAccountForm() #todo prilagodi posebnu formu za avans
         title = 'Registracija novog avansnog računa'
+        last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Avansni račun').order_by(Bill.bill_number.desc()).first()
+    dinar_accounts = Company.query.filter_by(id=current_user.user_company.id).first().dinar_account_list
+    foreign_accounts = Company.query.filter_by(id=current_user.user_company.id).first().foreign_account_list
+    print(f'{dinar_accounts=}')
+    print(f'{foreign_accounts=}')
     form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
+    form.bill_tax_category.data = current_user.user_company.company_default_tax_category
+    form.bill_base_code.data = current_user.user_company.company_default_base_code
     if form.validate_on_submit():
         bill_type = 'Faktura' if type == 'faktura' else 'Avansni račun'
-        bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d') if type == 'Faktura' else None
         bill = Bill(
-            bill_currency=form.bill_currency.data,
-            bill_type=bill_type,
-            bill_number=form.bill_number.data,
-            bill_tax_category=form.bill_tax_category.data,
+            bill_currency = form.bill_currency.data,
+            bill_type = bill_type,
+            bill_number = form.bill_number.data,
+            bill_tax_category = form.bill_tax_category.data,
             bill_base_code = form.bill_base_code.data,
             bill_decision_number = form.bill_decision_number.data,
             bill_contract_number = form.bill_contract_number.data,
             bill_purchase_order_number = form.bill_purchase_order_number.data,
-            bill_transaction_date = datetime.strptime(form.bill_transaction_date.data, '%Y-%m-%d'),
-            bill_due_date = bill_due_date,
+            bill_transaction_date = datetime.strptime(form.bill_transaction_date.data, '%Y-%m-%d') if type == 'faktura' else None,
+            bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d'),
             bill_tax_calculation_date = form.bill_tax_calculation_date.data,
             bill_reference_number = form.bill_reference_number.data,
             bill_model = form.bill_model.data,
@@ -55,12 +62,13 @@ def register_b(type):
             bill_company_id = current_user.company_id,
             bill_items = [{'sifra': '', 'naziv': '', 'kolicina': '0', 'jedinica_mere': '', 'cena': '0', 'popust': '0'}],
             bill_payments = [{'payment_date': '', 'payment_amount': ''}],
-            bill_status = 'nacrt'
+            bill_status = 'nacrt',
+            bill_company_account = request.form['bill_company_account']
         )
         db.session.add(bill)
         db.session.commit()
         return redirect(url_for('bills.bill_profile', bill_id=bill.id))
-    return render_template('register_b.html', title=title, form=form, type=type)
+    return render_template('register_b.html', title=title, form=form, type=type, last_document=last_document, dinar_accounts=dinar_accounts, foreign_accounts=foreign_accounts)
 
 
 @bills.route("/register_notes/<int:bill_id>/<string:note_type>", methods=['GET', 'POST'])
@@ -73,10 +81,12 @@ def register_notes(bill_id, note_type):
         print('knjižno odobrenje')
         form = RegisterCreditNoteForm()
         title = f'Registracija knjižnog odobrenja za fakturu {bill.bill_number}'
+        last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Knjižno odobrenje').order_by(Bill.bill_number.desc()).first()
     elif note_type == 'debit_note':
         print('knjižno zaduženje')
         form = RegisterDebitNoteForm()
         title = f'Registracija knjižnog zaduženja za fakturu {bill.bill_number}'
+        last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Knjižno zaduženje').order_by(Bill.bill_number.desc()).first()
     c = Customer.query.get_or_404(bill.bill_customer_id)
     form.bill_customer_id.choices = [(c.id, c.customer_name)]
     if form.validate_on_submit():
@@ -121,7 +131,7 @@ def register_notes(bill_id, note_type):
         form.bill_model.data = bill.bill_model
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = str(bill.bill_customer_id)
-    return render_template('register_notes.html', title=title, form=form, bill=bill, note_type=note_type)
+    return render_template('register_notes.html', title=title, form=form, bill=bill, note_type=note_type, last_document=last_document)
 
 
 
@@ -151,7 +161,9 @@ def bill_profile(bill_id):
         form = EditAdvanceAccountForm()
         form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
         title = f'Detalji avansnog računa {bill.bill_number}'
-
+    dinar_accounts = Company.query.filter_by(id=current_user.user_company.id).first().dinar_account_list
+    foreign_accounts = Company.query.filter_by(id=current_user.user_company.id).first().foreign_account_list
+    print(f'{bill.bill_company_account=}')
     units = [('kWh', 'kWh'), ('kom', 'kom'), ('kg', 'kg'), ('km', 'km'), ('g', 'g'), ('m', 'metar'), ('l', 'litar'), ('t', 'tona'), ('m2', 'm2'), ('m3', 'm3'), ('min', 'min'), ('h', 'sat'), ('d', 'dan'), ('M', 'mesec'), ('god', 'godina')]
     taxes = [('0', '0%'), ('10', '10%'), ('20', '20%')]
     if form.validate_on_submit():
@@ -170,6 +182,7 @@ def bill_profile(bill_id):
         bill.bill_model = form.bill_model.data
         bill.bill_attachment = form.bill_attachment.data
         bill.bill_customer_id = form.bill_customer_id.data
+        bill.bill_company_account = request.form.get('bill_company_account')
         
         fullname = request.form.getlist('field[]')
         print(f'{fullname=}')
@@ -224,13 +237,11 @@ def bill_profile(bill_id):
             else:
                 bill.total_payments = total_payments
             
-            bill.bill_pdf = pdf_gen(bill)
-            print(f'{bill.bill_pdf=}')
-        
         if request.form.get('send') == 'Pošaljite dokument':
-            print('uspeo si brale')
             bill.bill_status = 'poslat'
-        
+            bill.bill_creation_date = date.today()
+        db.session.commit()
+        bill.bill_pdf = pdf_gen(bill)
         db.session.commit()
         flash(f'Dokument {bill.bill_number} je uspesno izmenjen.', 'success')
         return redirect(url_for('bills.bill_list'))
@@ -260,6 +271,8 @@ def bill_profile(bill_id):
                             units=units, 
                             taxes=taxes,
                             title=title, 
+                            dinar_accounts=dinar_accounts,
+                            foreign_accounts=foreign_accounts,
                             legend = 'Detalji fakture')
 
 
