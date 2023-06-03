@@ -1,51 +1,57 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if current_user.is_authenticated %}
-  <div class="two-inputs-in-row">
-    <h1>{{ current_user.user_company.companyname }}</h1>
-    <h2>{{ form.end_day.strftime("%d.%m.%Y.") }} </h2>
+
+<div class="row">
+  <div class="col form-group">
+    <div class="two-inputs-in-row">
+      <h1>{{ current_user.user_company.companyname }}</h1>
+      <h2>{{ form.end_day.strftime("%d.%m.%Y.") }} </h2>
+    </div>
+    <hr>
+    <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din</h3>
+      <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</h3>
+      <h3>Fakturisano u prethodnih 365 dana: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_8m[1] + 2000000) }} din</h3>
+    </div>
+    <div class="col form-group">
+      <table id="data" border="1" class="table table-striped">
+        <thead>
+          <tr id="header">
+            <th>Do limita za PDV [8,000,000.00]</th>
+            <th>[din]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>na današnji dan:</td>
+            <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[1]) }}</td>
+          </tr>
+          <tr>
+            <td>na sutrašnju dan:</td>
+            <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[2]) }}</td>
+          </tr>
+          <tr>
+            <td>u narednih 7 dana:</td>
+            <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[3]) }}</td>
+          </tr>
+          <tr>
+            <td>u narednih 15 dana:</td>
+            <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[4]) }}</td>
+          </tr>
+          <tr>
+            <td>u narednih mesec dana:</td>
+            <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[5]) }}</td>
+          </tr>
+          <tr>
+            <td>u naredna 3 meseca:</td>
+            <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[6]) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  
-  <hr>
-  <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit - form.razlika_6m) }} din</h3>
-  <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(form.razlika_6m) }} din</h3>
-  <h3>Fakturisano u prethodnih 365 dana: {{ '{:,.2f}'.format(form.limit - form.razlika_8m[1] + 2000000) }} din</h3>
   <hr>
 
-  <table id="data" border="1" class="table table-striped">
-    <thead>
-      <tr id="header">
-        <th>Do limita za PDV [8,000,000.00]</th>
-        <th>[din]</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>na današnji dan:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[1]) }}</td>
-      </tr>
-      <tr>
-        <td>na sutrašnju dan:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[2]) }}</td>
-      </tr>
-      <tr>
-        <td>u narednih 7 dana:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[3]) }}</td>
-      </tr>
-      <tr>
-        <td>u narednih 15 dana:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[4]) }}</td>
-      </tr>
-      <tr>
-        <td>u narednih mesec dana:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[5]) }}</td>
-      </tr>
-      <tr>
-        <td>u naredna 3 meseca:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[6]) }}</td>
-      </tr>
-    </tbody>
-  </table>
   <legend>Testing:</legend>
   <div id="chartContainer" style="display: flex; flex-wrap: wrap; justify-content: center;">
     <div class="form-group">

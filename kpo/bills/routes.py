@@ -315,7 +315,7 @@ def new_item():
         </td>
         <td><button type="button" hx-delete="/delete_item" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
     </tr>
-    '''
+    '''    
     return new_item_form
 
 

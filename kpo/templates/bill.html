@@ -304,13 +304,13 @@
                       </select>
                     </td>
                     {% if bill.bill_status == 'nacrt' %}
-                    <td><button type="button" hx-delete="/delete_item" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
+                    <td><button type="button" hx-delete="{{ url_for('bills.delete_item') }}" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
                     {% endif %}
                   </tr>
                 {% endfor %}
                 <tr id="new_item" hx-swap="beforebegin">
                   {% if bill.bill_status == 'nacrt' %}
-                  <td><button type="button" hx-get="/new_item" hx-target="#new_item" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i> Nova stavka</button></td>
+                  <td><button type="button" hx-get="{{ url_for('bills.new_item') }}" hx-target="#new_item" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i> Nova stavka</button></td>
                   {% endif %}
                 </tr>
               </tbody>
@@ -344,11 +344,11 @@
                 <tr>
                   <td><input type="date" name="payment[]" class="form-control" value="{{payment['payment_date']}}"></td>
                   <td><input type="text" name="payment[]" class="form-control" value="{{payment['payment_amount']}}"></td>
-                  <td><button type="button" hx-delete="/delete_item" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
+                  <td><button type="button" hx-delete="{{ url_for('bills.delete_item') }}" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
                 </tr>
                 {% endfor %}
                 <tr id="new_payment" hx-swap="beforebegin">
-                  <td><button type="button" hx-get="/new_payment" hx-target="#new_payment" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i></button></td>
+                  <td><button type="button" hx-get="{{ url_for('bills.new_payment') }}" hx-target="#new_payment" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i></button></td>
                   <td>
                     {% set x=0 %}
                     {% for payment in bill.bill_payments %}
