@@ -187,3 +187,29 @@ def pdf_gen(bill):
     file_name = f'{bill.bill_number}_{bill.id}.pdf'
     pdf.output(path + file_name)
     return file_name
+
+
+def bill_list_gen(bills):
+    class PDF(FPDF):
+        def __init__(self, **kwargs):
+            super(PDF, self).__init__(**kwargs)
+            self.add_font('DejaVuSansCondensed', '', './kpo/static/fonts/DejaVuSansCondensed.ttf', uni=True)
+            self.add_font('DejaVuSansCondensed', 'B', './kpo/static/fonts/DejaVuSansCondensed-Bold.ttf', uni=True)
+        def header(self):
+            # Logo
+            self.image(company_logo, 180, 5, 25)
+        def footer(self):
+            # Postavljanje fonta
+            self.set_font('DejaVuSansCondensed', '', 8)
+            
+            # Računanje Y pozicije za footer
+            page_height = self.h  # Dobavljanje visine stranice
+            footer_height = 10  # Visina footera (u mm)
+            footer_ypos = page_height - footer_height - 10  # Izračunavanje Y pozicije
+
+            # Postavljanje pozicije za centriranje teksta
+            self.set_y(footer_ypos + (footer_height - self.font_size) / 2)
+
+            # Footer tekst
+            footer_text = f'{company_name} | {company_city} | {company_mail} | {company_phone} | {company_site}'
+            self.cell(0, footer_height, footer_text, ln=False, align='C')

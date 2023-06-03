@@ -151,6 +151,20 @@
                 {% endif %}
             </div>
         </fieldset>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <label for="start-date" class="form-label">Početni datum:</label>
+                <input class="form-control mb-4" type="date" id="start-date" name="start-date" value="{{ start_date }}">
+            </div>
+            <div class="col">
+                <label for="end-date" class="form-label">Krajnji datum:</label>
+                <input class="form-control mb-4" type="date" id="end-date" name="end-date" value="{{ end_date }}">
+            </div>
+            <div class="col">
+                <a class="btn btn-primary mt-4 mb-4" href="#">Izvoz liste faktura </a>
+            </div>
+        </div>
         <table id="data" class="table table-striped dataTable no-footer invoices" role="grid" aria-describedby="data_info" style="width: 968px;">
             <thead>
                 <tr role="row">
@@ -181,7 +195,7 @@
                             <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Knjižno zaduženje">Z</a>
                             {% endif %}
                             <a class="btn btn-primary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }} </a>
-                            <a class="btn btn-danger btn-sm" href="#" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
+                            <a class="btn btn-danger btn-sm" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
                         </div>
                     </td>
                     {% if bill.bill_transaction_date %}
@@ -287,5 +301,18 @@
         stateSave: true,
         });
     });
+</script>
+<script>
+    // Funkcija koja se poziva pri promeni datuma
+    function handleDateChange() {
+        var startDate = document.getElementById("start-date").value;
+        var endDate = document.getElementById("end-date").value;
+        var url = "{{ url_for('customers.customer_profile', customer_id=customer.id) }}?start_date=" + startDate + "&end_date=" + endDate;
+        window.location.href = url; // Ponovno učitavanje stranice sa novim vrednostima datuma
+    }
+
+    // Dodavanje osluškivača događaja za promenu datuma
+    document.getElementById("start-date").addEventListener("change", handleDateChange);
+    document.getElementById("end-date").addEventListener("change", handleDateChange);
 </script>
 {% endblock %}

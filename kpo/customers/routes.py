@@ -80,8 +80,20 @@ def register_customer():
 
 @customers.route('/customer/<int:customer_id>', methods=['GET', 'POST'])
 def customer_profile(customer_id):
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    if start_date is None or end_date is None:
+        start_date = date.today().replace(day=1, month=1).isoformat()
+        end_date = date.today().isoformat()
     customer = Customer.query.get_or_404(customer_id)
-    bills = Bill.query.filter_by(bill_customer_id=customer_id).all()
+    print(f'{start_date=}, {end_date=}')
+    bills = Bill.query.filter_by(bill_customer_id=customer_id).filter(
+            Bill.bill_transaction_date.between(start_date, end_date)).all()
+    # bills = Bill.query.filter(
+    #     Bill.bill_company_id == current_user.company_id,
+    #     Bill.bill_transaction_date.between(start_date, end_date)).all()
+    for bill in bills:
+        print(f'Faktura: {bill.bill_number=}')
     company_settings = Settings.query.filter_by(company_id=current_user.company_id).first()
     form = EditCustomerForm()
     if form.validate_on_submit():
@@ -115,6 +127,8 @@ def customer_profile(customer_id):
                             company_settings = company_settings, 
                             customer=customer, 
                             bills=bills,
+                            start_date=start_date,
+                            end_date=end_date,
                             legend='Komitent', 
                             title='Komitent',  )
     
