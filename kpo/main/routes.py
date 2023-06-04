@@ -4,26 +4,40 @@ from flask import Blueprint
 from flask import  render_template, redirect, url_for, flash, request
 from sqlalchemy import func
 from kpo import db
-from kpo.models import Invoice, Settings
+from kpo.models import Company, Settings, User
 from kpo.invoices.forms import DashboardData
 from kpo.bills.forms import Dashboard
-from kpo.main.forms import SettingsForm
+from kpo.main.forms import SettingsForm, SelectCompanyForm
 from flask_login import current_user
 
 main = Blueprint('main', __name__)
 
 
 @main.route("/")
-@main.route("/home")
+@main.route("/home", methods=['GET', 'POST'])
 def home():
     if current_user.is_authenticated:
-        form = DashboardData(current_user.user_company.id)
+        form = SelectCompanyForm()
+        companys = Company.query.all()
+        form.company_id.choices = [(company.id, company.companyname) for company in companys]
         dashboard = Dashboard(current_user.user_company.id)
         print(f'{current_user.user_company.id=}')
         print(f'{dashboard=}')
 
         for attr, value in vars(dashboard).items():
             print(f'{attr} = {value}')
+        
+        user=User.query.get(current_user.id)
+        print(f'{form.company_id.choices=}')
+        print(f'{user.company_id=}')
+        print(f'{user.user_company.companyname=}')
+        print(f'{form.company_id.data=}')
+        if form.validate_on_submit():
+            user.company_id = form.company_id.data
+            db.session.commit()
+            return redirect(url_for('main.home'))
+        else:
+            print(f'nije validan form')
     else:
         print(f'nije ulogovan niko')
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'info')

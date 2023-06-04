@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import DecimalField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, NumberRange
+from wtforms import SelectField
 
 
 class SettingsForm(FlaskForm):
@@ -9,3 +10,8 @@ class SettingsForm(FlaskForm):
     synchronization_with_CRF = BooleanField('Sinhronizacija sa CRF-om', default=False)
     forward_invoice_to_customer = BooleanField('Direktno prosleđivanje fakture komitentu na mejl', default=False)
     submit = SubmitField('Ažurirajte podešavanja')
+
+
+class SelectCompanyForm(FlaskForm):
+    company_id = SelectField('Izaberite firmu')
+    submit = SubmitField('Promenite firmu')

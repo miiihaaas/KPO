@@ -1,18 +1,32 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if current_user.is_authenticated %}
-
 <div class="row">
   <div class="col form-group">
     <div class="two-inputs-in-row">
       <h1>{{ current_user.user_company.companyname }}</h1>
-      <h2>{{ form.end_day.strftime("%d.%m.%Y.") }} </h2>
+      <h2>{{ dashboard.end_day.strftime("%d.%m.%Y.") }} </h2>
     </div>
     <hr>
     <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din</h3>
-      <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</h3>
-      <h3>Fakturisano u prethodnih 365 dana: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_8m[1] + 2000000) }} din</h3>
-    </div>
+    <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</h3>
+    <h3>Fakturisano u prethodnih 365 dana: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_8m[1] + 2000000) }} din</h3>
+    {% if current_user.authorization == 's_admin' %}
+    <hr>
+    <form action="" method="post">
+      {{ form.hidden_tag() }}
+      <div class="d-flex">
+        <div class="me-2">
+          {{ form.company_id(class="form-select") }}
+        </div>
+        <div>
+          {{ form.submit(class="btn btn-primary") }}
+        </div>
+      </div>
+      
+    </form>
+    {% endif %}
+  </div>
     <div class="col form-group">
       <table id="data" border="1" class="table table-striped">
         <thead>
