@@ -112,13 +112,13 @@
 
     var maksimalna_vrednost = limit+2000000;
 
-    for (var i = 0; i < razlika_8m.length; i++) {
+    for (var i = 1; i < razlika_8m.length; i++) {
       var preostalo = parseFloat(razlika_8m[i]);
       // var preostalo = 7993036.4;
       var vrednost_faktura = maksimalna_vrednost - preostalo;
       console.log(preostalo, vrednost_faktura)
 
-      var donateChart = new Chart(eval('ctx' + (i + 1)), {
+      var donateChart = new Chart(eval('ctx' + (i)), {
         type: 'doughnut',
         data: {
           labels: ['Fakturisano', 'Preostalo do limita'],
