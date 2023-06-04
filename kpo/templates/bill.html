@@ -25,7 +25,11 @@
           <fieldset class="form-group">
             <div class="form-group">
               <label class="form-control-label" for="bill_company_account">Račun</label>
-              <select class="form-select" name="bill_company_account" id="bill_company_account"></select>
+              {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                <input class="form-control" type="text" value="{{ bill.bill_company_account }}" readonly>
+              {% else %}
+                <select class="form-select" name="bill_company_account" id="bill_company_account"></select>
+              {% endif %}
             </div>
             <div class="col form-group" style="border: 1px solid black;">
               <div class="row">
@@ -39,7 +43,11 @@
                       {% endfor %}
                     </div>
                   {% else %}
-                    {{ form.bill_currency(class="form-select", onchange="updateBillCompanyAccountOptions()") }}
+                    {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                      {{ form.bill_currency(class="form-control", readonly=true) }}
+                    {% else %}
+                      {{ form.bill_currency(class="form-select", onchange="updateBillCompanyAccountOptions()") }}
+                    {% endif %}
                   {% endif %}
                 </div>
                 <div class="col form-group">
@@ -65,24 +73,35 @@
                       {% endfor %}
                     </div>
                   {% else %}
-                    {{ form.bill_contract_number(class="form-control") }}
+                    {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                      {{ form.bill_contract_number(class="form-control", readonly=true) }}
+                    {% else %}
+                      {{ form.bill_contract_number(class="form-control") }}
+                    {% endif %}
                   {% endif %}
                 </div>
               </div>
               <div class="row">
-                <div class="col form-group">
-                  {{ form.bill_customer_id.label(class="form-control-label") }}
-                  {% if form.bill_customer_id.errors %}
-                    {{ form.bill_customer_id(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                      {% for error in form.bill_customer_id.errors %}
-                        <span>{{ error }}</span>
-                      {% endfor %}
-                    </div>
-                  {% else %}
-                    {{ form.bill_customer_id(class="form-select") }}
-                  {% endif %}
-                </div>
+                {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                  <div class="col form-group">
+                    {{ form.bill_customer_id.label(class="form-control-label") }}
+                    <input type="text" class="form-control" value="{{bill.bill_company.companyname}}" readonly>
+                  </div>
+                {% else %}
+                  <div class="col form-group">
+                    {{ form.bill_customer_id.label(class="form-control-label") }}
+                    {% if form.bill_customer_id.errors %}
+                      {{ form.bill_customer_id(class="form-control is-invalid") }}
+                      <div class="invalid-feedback">
+                        {% for error in form.bill_customer_id.errors %}
+                          <span>{{ error }}</span>
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      {{ form.bill_customer_id(class="form-select") }}
+                    {% endif %}
+                  </div>
+                {% endif %}
               </div>
               <dib class="row">
                 <div class="col form-group">
@@ -95,7 +114,11 @@
                       {% endfor %}
                     </div>
                   {% else %}
-                    {{ form.bill_decision_number(class="form-control") }}
+                    {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                      {{ form.bill_decision_number(class="form-control", readonly=true) }}
+                    {% else %}
+                      {{ form.bill_decision_number(class="form-control") }}
+                    {% endif %}
                   {% endif %}
                 </div>
                 <div class="col form-group">
@@ -124,22 +147,33 @@
                     {% endfor %}
                   </div>
                 {% else %}
-                  {{ form.bill_tax_category(class="form-select") }}
+                  {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                    {{ form.bill_tax_category(class="form-control", readonly=true) }}
+                  {% else %}
+                    {{ form.bill_tax_category(class="form-select") }}
+                  {% endif %}
                 {% endif %}
               </div>
-              <div class="col form-group">
-                {{ form.bill_base_code.label(class="form-control-label") }}
-                {% if form.bill_base_code.errors %}
-                  {{ form.bill_base_code(class="form-control is-invalid") }}
-                  <div class="invalid-feedback">
-                    {% for error in form.bill_base_code.errors %}
-                      <span>{{ error }}</span>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  {{ form.bill_base_code(class="form-select") }}
-                {% endif %}
-              </div>
+              {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                <div class="col form-group">
+                  {{ form.bill_base_code.label(class="form-control-label") }}
+                  <input class="form-control" type="text" value="{{bill.bill_base_code}}" readonly>
+                </div>
+              {% else %}
+                <div class="col form-group">
+                  {{ form.bill_base_code.label(class="form-control-label") }}
+                  {% if form.bill_base_code.errors %}
+                    {{ form.bill_base_code(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.bill_base_code.errors %}
+                        <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ form.bill_base_code(class="form-select") }}
+                  {% endif %}
+                </div>
+              {% endif %}
               <div class="col form-group">
                 {{ form.bill_purchase_order_number.label(class="form-control-label") }}
                 {% if form.bill_purchase_order_number.errors %}
@@ -150,7 +184,11 @@
                     {% endfor %}
                   </div>
                 {% else %}
-                  {{ form.bill_purchase_order_number(class="form-control") }}
+                  {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                    {{ form.bill_purchase_order_number(class="form-control", readonly=true) }}
+                  {% else %}
+                    {{ form.bill_purchase_order_number(class="form-control") }}
+                  {% endif %}
                 {% endif %}
               </div>
             </div>
