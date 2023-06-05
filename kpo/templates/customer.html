@@ -212,12 +212,16 @@
                     {% endif %}
                     {% if company_settings.payment_records %}
                     <td>
-                        {% if bill.total_price == bill.total_payments %}
-                            <i class="fa-solid fa-circle-check" title="Plaćeno u celosti"></i>
-                        {% elif bill.total_price < bill.total_payments %}
-                            <i class="fa-solid fa-triangle-exclamation" title="GREŠKA"></i>
+                        {% if bill.bill_status == 'poslat' %}
+                            {% if bill.total_price == bill.total_payments %}
+                                <i class="fa-solid fa-circle-check" title="Plaćeno u celosti"></i>
+                            {% elif bill.total_price < bill.total_payments %}
+                                <i class="fa-solid fa-triangle-exclamation" title="GREŠKA"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-xmark" title="Delimično plaćeno"></i>
+                            {% endif %}
                         {% else %}
-                            <i class="fa-solid fa-circle-xmark" title="Delimično plaćeno"></i>
+                            {{ bill.bill_status }}
                         {% endif %}
                     </td>
                     <td>

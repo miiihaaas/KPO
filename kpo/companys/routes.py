@@ -5,7 +5,7 @@ from flask import  render_template, url_for, flash, redirect, request, abort
 from flask_login import current_user, login_required
 from kpo import db, app
 from kpo.companys.forms import RegistrationCompanyForm, EditCompanyForm
-from kpo.models import Company
+from kpo.models import Company, Settings
 from flask import jsonify
 
 companys = Blueprint('companys', __name__)
@@ -62,6 +62,13 @@ def register_c():
                             foreign_account_list=records
                             )
         db.session.add(company)
+        db.session.commit()
+        settings = Settings(company_id=company.id,
+                            synchronization_with_eFaktura=0,
+                            payment_records=0,
+                            synchronization_with_CRF=0,
+                            forward_invoice_to_customer=0)
+        db.session.add(settings)
         db.session.commit()
         flash(f'Kompanija: {form.companyname.data} je uspešno kreirana.', 'success')
         return redirect(url_for('main.home'))

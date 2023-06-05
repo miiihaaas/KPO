@@ -75,6 +75,9 @@ def pdf_gen(bill):
     pdf.add_page()
     pdf.set_font('DejaVuSansCondensed', '', 10)
     pdf.set_y(40)  # Prilagodite Y poziciju prema potrebi
+    if bill.bill_status == 'storniran':
+        print(f'generisanje pdf fajla - status storniran')
+        pdf.image('kpo/static/img/storno.jpg', 0, 30, 220)
     if bill.bill_transaction_date:
         pdf.cell(95,6, f"Datum izdavanja: {bill.bill_transaction_date.strftime('%d.%m.%Y.')}", ln=False, align='L')
     else:

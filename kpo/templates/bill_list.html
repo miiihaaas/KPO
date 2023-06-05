@@ -10,7 +10,7 @@
   <thead>
       <tr role="row">
           <th>Br dokumenta</th>
-          <th>Tip dokumenta</th>
+          <th>Status dokumenta</th>
           <th>Komitent</th>
           <th>Iznos</th>
           <th>Datum prometa</th>
@@ -36,7 +36,7 @@
               <a class="btn btn-danger btn-sm" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
             </div>
           </td>
-          <td>{{ bill.bill_type }}</td>
+          <td>{{ bill.bill_status }}</td>
           <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('customers.customer_profile', customer_id=bill.bill_customer.id) }}">{{ bill.bill_customer.customer_name }}</a></td>
           <td style="text-align: right;">{{ '%.2f' % bill.total_price }}</td>
           {% if bill.bill_transaction_date %}

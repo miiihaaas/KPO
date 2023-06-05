@@ -240,6 +240,8 @@ def bill_profile(bill_id):
         if request.form.get('send') == 'Pošaljite dokument':
             bill.bill_status = 'poslat'
             bill.bill_creation_date = date.today()
+        elif request.form.get('send') == 'Stornirajte dokument':
+            bill.bill_status = 'storniran'
         db.session.commit()
         bill.bill_pdf = pdf_gen(bill)
         db.session.commit()

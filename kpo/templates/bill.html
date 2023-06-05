@@ -405,14 +405,18 @@
       
       <div class="form-group">
         <a class="btn" href="{{url_for('bills.bill_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
-        {{ form.submit(class="btn btn-outline-info") }}
         {% if bill.bill_status == 'nacrt' %}
+          {{ form.submit(class="btn btn-outline-info") }}
           <input type="submit" class="btn btn-primary" id="send" name="send" value="Pošaljite dokument">
         {% elif bill.bill_status == 'poslat' %}
+          {{ form.submit(class="btn btn-outline-info") }}
           <a class="btn btn-primary" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank">Otvori PDF</a>
           <a class="btn btn-primary" id="credit_note" name="credit_note"  href="{{ url_for('bills.register_notes', bill_id=bill.id, note_type='credit_note') }}">Kreirajte knjižno odobrenje</a>
           <a class="btn btn-primary" id="debit_note" name="debit_note"  href="{{ url_for('bills.register_notes', bill_id=bill.id, note_type='debit_note') }}">Kreirajte knjižno zaduženje</a>
-          <a href="#" class="btn btn-danger">Stornirajte dokument</a>
+          <input type="submit" class="btn btn-danger" id="send" name="send" value="Stornirajte dokument">
+        {% elif bill.bill_status == 'storniran' %}
+          <a class="btn btn-primary" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank">Otvori PDF</a>
+          <legend>Dokumen je storniran </legend>
         {% endif %}
       </div>
     </form>
