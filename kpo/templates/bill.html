@@ -524,6 +524,9 @@
   // Dohvatite referencu na oba select elementa
   var billTaxCategorySelect = document.getElementById('bill_tax_category');
   var dependentSelect = document.getElementById('bill_base_code');
+  var taxCalculationDateLabel = document.querySelector('label[for="bill_tax_calculation_date"]');
+  var taxCalculationDate = document.getElementById('bill_tax_calculation_date');
+  var dependentSelectSelectedValue = dependentSelect.value
 
   // Definirajte tabelu zavisnosti
   var dependencyTable = {
@@ -653,24 +656,29 @@
     ]
   };
 
-  // Postavite događaj slušanja na promjenu prvog select elementa
-  billTaxCategorySelect.addEventListener('change', function() {
-    // Dohvati odabrani vrijednost prvog select elementa
+  function updateDependentSelect() {
     var selectedValue = billTaxCategorySelect.value;
-    
-    // Očisti drugi select element
     dependentSelect.innerHTML = '';
-    
-    // Dohvati odgovarajuće vrijednosti iz tabele zavisnosti
+
+    if (selectedValue === 'S') {
+      taxCalculationDateLabel.classList.remove('hidden');
+      taxCalculationDate.classList.remove('hidden');
+    } else {
+      taxCalculationDateLabel.classList.add('hidden');
+      taxCalculationDate.classList.add('hidden');
+    }
+
     var dependentValues = dependencyTable[selectedValue];
-    
-    // Kreiraj opcije za drugi select element
     for (var i = 0; i < dependentValues.length; i++) {
       var option = document.createElement('option');
       option.value = dependentValues[i];
       option.text = dependentValues[i];
       dependentSelect.appendChild(option);
     }
-  });
+  }
+
+  billTaxCategorySelect.addEventListener('change', updateDependentSelect);
+  updateDependentSelect();
+  dependentSelect.value = dependentSelectSelectedValue;
 </script>
 {% endblock%}
