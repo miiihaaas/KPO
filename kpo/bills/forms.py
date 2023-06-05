@@ -150,7 +150,7 @@ class Dashboard():
                 bill_total = Bill.query.with_entities(
                                                     func.sum(Bill.total_price).label('total_price')
                                                     ).filter_by(bill_status='poslat'
-                                                    ).filter(Bill.bill_due_date.between(self.start_day[value], self.end_day)
+                                                    ).filter(Bill.bill_transaction_date.between(self.start_day[value], self.end_day) #! bill_transaction_date vs bill_due_date?
                                                     ).filter_by(bill_company_id=self.company_id
                                                     ).first()[0]
                 if bill_total is not None:
@@ -158,7 +158,7 @@ class Dashboard():
                     self.razlika_8m.append(self.limit - bill_total + 2_000_000)
                 else:
                     print(f'{bill_total=}')
-                    self.razlika_8m.append(0)
+                    self.razlika_8m.append(8000000)
             except:
                 self.razlika_8m.append(0)
 
