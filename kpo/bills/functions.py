@@ -59,6 +59,8 @@ def import_data_from_pdv(file):
     db = []
     with pdfplumber.open(file) as f:
         for page in f.pages:
+            # Postavite horizontal_text_tolerance na veću vrednost (npr. 10)
+            page.horizontal_text_tolerance = 100
             tables = page.extract_tables()
             counter = 0
             for table in tables:
@@ -409,6 +411,17 @@ def bill_list_gen(bills, customer, start_date, end_date):
             self.image(company_logo, 180, 5, 25)
             pdf.set_font('DejaVuSansCondensed', 'B', 12)
             pdf.multi_cell(0, 8, f'Izvod faktura za klijenta {customer.customer_name}:\r\nPeriod od {datetime.strptime(start_date, "%Y-%m-%d").strftime("%d.%m.%Y.")} do {datetime.strptime(end_date, "%Y-%m-%d").strftime("%d.%m.%Y.")}', new_y='NEXT', new_x='LMARGIN')
+            
+            pdf.set_y(30)
+            pdf.set_font('DejaVuSansCondensed', 'B', 8)
+            pdf.set_fill_color(192, 192, 192)
+            pdf.cell(25, 8, f'Broj fakture', new_y='LAST', align='C', border = 1, fill=True)
+            pdf.cell(30, 8, f'Datum prometa', new_y='LAST', align='C', border = 1, fill=True)
+            pdf.cell(30, 8, f'Datum dospeća', new_y='LAST', align='C', border = 1, fill=True)
+            pdf.cell(35, 8, f'Iznos', new_y='LAST', align='C', border = 1, fill=True)
+            pdf.cell(35, 8, f'Uplaćeno', new_y='LAST', align='C', border = 1, fill=True)
+            pdf.cell(35, 8, f'Preostalo za uplatu', new_y='NEXT', new_x='LMARGIN', align='C', border = 1, fill=True)
+            pdf.set_font('DejaVuSansCondensed', '', 8)
         def footer(self):
             # Postavljanje fonta
             self.set_font('DejaVuSansCondensed', '', 8)
@@ -428,16 +441,6 @@ def bill_list_gen(bills, customer, start_date, end_date):
     pdf=PDF()
     pdf.alias_nb_pages()
     pdf.add_page()
-    pdf.set_y(30)
-    pdf.set_font('DejaVuSansCondensed', 'B', 8)
-    pdf.set_fill_color(192, 192, 192)
-    pdf.cell(25, 8, f'Broj fakture', new_y='LAST', align='C', border = 1, fill=True)
-    pdf.cell(30, 8, f'Datum prometa', new_y='LAST', align='C', border = 1, fill=True)
-    pdf.cell(30, 8, f'Datum dospeća', new_y='LAST', align='C', border = 1, fill=True)
-    pdf.cell(35, 8, f'Iznos', new_y='LAST', align='C', border = 1, fill=True)
-    pdf.cell(35, 8, f'Uplaćeno', new_y='LAST', align='C', border = 1, fill=True)
-    pdf.cell(35, 8, f'Preostalo za uplatu', new_y='NEXT', new_x='LMARGIN', align='C', border = 1, fill=True)
-    pdf.set_font('DejaVuSansCondensed', '', 8)
     total_price = 0
     total_payments = 0
     for bill in bills:
