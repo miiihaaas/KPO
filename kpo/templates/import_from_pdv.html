@@ -4,7 +4,9 @@
 <form method="POST" action="/import_from_pdv" enctype="multipart/form-data">
   <input type="file" name="file" accept=".pdf">
   <input type="submit" value="Učitajte PDF" class="btn btn-primary">
-  <input type="submit" value="Generišite uplatnice" target="_blank" class="btn btn-primary">
+  {% if df %}
+  <a href="static/payment_slips/uplatnice.pdf" target="_blank" class="btn btn-primary">Generišite uplatnice</a>
+  {% endif %}
 </form>
 <hr>
 <h1>Podaci iz PDV fajla</h1>
