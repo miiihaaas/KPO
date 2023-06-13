@@ -19,6 +19,7 @@ all_posible_base_code_choices = [
     'PDV-RS-10-2-5-3',
     'PDV-RS-36b-6',
     
+    'PDV-RS-24-1-1',
     'PDV-RS-24-1-2',
     'PDV-RS-24-1-3',
     'PDV-RS-24-1-5',
@@ -45,6 +46,7 @@ all_posible_base_code_choices = [
     'PDV-RS-24-1-16g',
     'PDV-RS-24-1-17',
     
+    'PDV-RS-25-1-1',
     'PDV-RS-25-1-1a',
     'PDV-RS-25-1-2',
     'PDV-RS-25-1-3',
@@ -74,8 +76,10 @@ all_posible_base_code_choices = [
     'PDV-RS-25-2-18',
     'PDV-RS-25-2-19',
     
+    'PDV-RS-6-1-1',
     'PDV-RS-6a',
     
+    'PDV-RS-11-1-1',
     'PDV-RS-11-1-2',
     'PDV-RS-11-1-3',
     'PDV-RS-11-1-4',
@@ -107,6 +111,7 @@ all_posible_base_code_choices = [
     'PDV-RS-12-6-8',
     'PDV-RS-12-9',
 
+    'PDV-RS-7a-4',
     'PDV-RS-4-4-2NP',
     'PDV-RS-5-4-2NP',
     'PDV-RS-3NP-ostalo',
@@ -114,6 +119,7 @@ all_posible_base_code_choices = [
     'PDV-RS-17-4-3',
     'PDV-RS-9',
     
+    'PDV-RS-33',
     'PDV-RS-35-7',
     
     'PDV-RS-3-DZ',

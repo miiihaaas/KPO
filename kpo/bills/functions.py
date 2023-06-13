@@ -1,5 +1,197 @@
 from fpdf import FPDF
+import pdfplumber
+import pandas as pd
+from datetime import datetime
 
+
+def import_data_from_pdv(file):
+    dependent_dict = [
+    {
+        "Konto": '711122',
+        "Broj računa": "840-711122843-32",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "POREZ - PAUŠAL",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta"
+    },
+    {
+        "Konto": '721313',
+        "Broj računa": "840-721313843-74", #!Marko: da nije 840-721313843-74? vs 840-721313843-83
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "PIO - PAUŠAL",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta"
+    },
+    {
+        "Konto": '721325',
+        "Broj računa": "840-721325843-61",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "ZDRAVSTVENO OSIGURANJE - PAUŠAL",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta"
+    },
+    {
+        "Konto": '721221',
+        "Broj računa": "840-721331843-06",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "NEZAPOSLENOST - PAUŠAL",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta"
+    },
+    {
+        "Konto": '721419',
+        "Broj računa": "840-721419843-40",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "PIO - PAUŠAL - IZ RADNOG ODNOSA",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta"
+    },
+    # {
+    #     "Konto": '721331',
+    #     "Broj računa": "Simke duguje podatke", #! 840-721331843-06?
+    #     "Ukupan dug": "Pročitati iz PDF dokumenta",
+    #     "Opis-svrha uplate": "Simke duguje podatke",
+    #     "Model": '97',
+    #     "Poziv na broj": "Pročitati iz PDF dokumenta"
+    # }
+]
+
+    db = []
+    with pdfplumber.open(file) as f:
+        for page in f.pages:
+            tables = page.extract_tables()
+            counter = 0
+            for table in tables:
+                if counter == 0:
+                    uplatilac = pd.DataFrame(table[0:], columns=table[0])
+                    print(f'ovo bi trebalo da je tabela sa podacima uplatioca: {uplatilac=}')
+                    print(f'{len(uplatilac)}')
+                    print(f'{uplatilac.iloc[1, 0]=}')
+                if counter % 2 == 1:  # Dodaj samo tabele sa neparanim brojem
+                    df = pd.DataFrame(table[1:], columns=table[0])
+                    db.append(df)
+                counter += 1
+    # print(f'{db=}')
+    # print(f'{len(db)=}')
+    # Spajanje svih DataFrame-ova u db
+    combined_df = pd.concat(db)
+    
+    # Resetovanje indeksa u rastućem redosledu
+    combined_df = combined_df.reset_index(drop=True)
+    # print(f'{combined_df=}')
+    # print(f'{len(combined_df)=}')
+    
+    # Konvertovanje kolone 'Ukupandug' u numerički tip podataka
+    combined_df['Ukupandug'] = combined_df['Ukupandug'].str.replace(',', '').astype(float)
+    # print(f'{combined_df["Ukupandug"]=}')
+    
+    # Filtriranje redova na osnovu vrednosti u koloni 'Ukupandug'
+    combined_df = combined_df.loc[combined_df['Ukupandug'] > 0]
+    
+    # Kreiranje DataFrame-a 'uplatnice_df' na osnovu filtriranih vrednosti
+    uplatnice_df = pd.DataFrame(columns=["Konto", "Broj računa", "Ukupan dug", "Opis-svrha uplate", "Model", "Poziv na broj"])
+    
+    for _, row in combined_df.iterrows():
+        konto = row['Konto']
+        matching_dict = next((item for item in dependent_dict if item['Konto'] == konto), None)
+        if matching_dict:
+            new_row = pd.DataFrame([[
+                matching_dict['Konto'],
+                matching_dict['Broj računa'],
+                row['Ukupandug'],
+                matching_dict['Opis-svrha uplate'],
+                matching_dict['Model'],
+                row['Pozivnabroj']
+            ]], columns=["Konto", "Broj računa", "Ukupan dug", "Opis-svrha uplate", "Model", "Poziv na broj"])
+            uplatnice_df = pd.concat([uplatnice_df, new_row], ignore_index=True)
+
+    return uplatnice_df
+
+
+def uplatnice_gen(df_list, qr_code_images):
+    class PDF(FPDF):
+        def __init__(self, **kwargs):
+            super(PDF, self).__init__(**kwargs)
+            self.add_font('DejaVuSansCondensed', '', './kpo/static/fonts/DejaVuSansCondensed.ttf', uni=True)
+            self.add_font('DejaVuSansCondensed', 'B', './kpo/static/fonts/DejaVuSansCondensed-Bold.ttf', uni=True)
+    pdf = PDF()
+    # pdf.add_page()
+    counter = 1
+    for i, uplatnica in enumerate(df_list):
+        print(uplatnica)
+        if counter % 3 == 1:
+            pdf.add_page()
+            y = 0
+            y_qr = 50
+            pdf.line(210/2, 10, 210/2, 237/3)
+        elif counter % 3 == 2:
+            y = 99
+            y_qr = 149
+            pdf.line(210/2, 110, 210/2, 99+237/3)
+        elif counter % 3 == 0:
+            y = 198
+            y_qr = 248
+            pdf.line(210/2, 210, 210/2, 198+237/3)
+        pdf.set_font('DejaVuSansCondensed', 'B', 16)
+        pdf.set_y(y_qr)
+        pdf.set_x(175)
+        pdf.image(f'kpo/static/payment_slips/qr_code/{qr_code_images[i]}' , w=25)
+        pdf.set_y(y+8)
+        pdf.cell(0,8, f"NALOG ZA UPLATU", new_y='NEXT', new_x='LMARGIN', align='R', border=0)
+        pdf.set_font('DejaVuSansCondensed', '', 10)
+        pdf.cell(95,4, f"Uplatilac", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
+        pdf.multi_cell(90,4, f'''Marko Marković\r\n{''}\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
+        pdf.cell(95,4, f"Svrha uplate", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
+        pdf.multi_cell(90,4, f'''{uplatnica[3]}\r\n{''}\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
+        pdf.cell(95,4, f"Primalac", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
+        pdf.multi_cell(90,4, f'''PORESKA UPRAVA\r\n{''}\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
+        pdf.cell(95,1, f"", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
+        pdf.set_font('DejaVuSansCondensed', '', 7)
+        pdf.cell(50,4, f"Pečat i potpis uplatioca", new_y='NEXT', new_x='LMARGIN', align='L', border='T')
+        pdf.cell(95,1, f"", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
+        pdf.set_x(50)
+        pdf.cell(50,4, f"Mesto i datum prijema", new_y='LAST', align='L', border='T')
+        pdf.set_x(110)
+        pdf.cell(40,5, f"Datum valute", align='L', border='T')
+        pdf.set_y(y + 15)
+        pdf.set_x(110)
+        pdf.set_font('DejaVuSansCondensed', '', 8)
+        pdf.multi_cell(13,3, f"Šifra plaćanja", new_y='LAST', align='L', border=0)
+        pdf.multi_cell(7,3, f"", new_y='LAST', align='L', border=0)
+        pdf.multi_cell(13,3, f"Valuta", new_y='LAST', align='L', border=0)
+        pdf.multi_cell(10,3, f"", new_y='LAST', align='L', border=0)
+        pdf.multi_cell(13,3, f"Iznos", new_y='NEXT', align='L', border=0)
+        pdf.set_x(110)
+        pdf.set_font('DejaVuSansCondensed', '', 10)
+        pdf.multi_cell(13,6, f"189", new_y='LAST', align='L', border=1)
+        pdf.multi_cell(7,6, f"", new_y='LAST', align='L', border=0)
+        pdf.multi_cell(13,6, f"RSD", new_y='LAST', align='L', border=1)
+        pdf.multi_cell(10,6, f"", new_y='LAST', align='L', border=0)
+        pdf.multi_cell(47,6, f"{uplatnica[2]}", new_y='NEXT', align='L', border=1)
+        pdf.set_x(110)
+        pdf.set_font('DejaVuSansCondensed', '', 8)
+        pdf.multi_cell(90,5, f"Račun primaoca", new_y='NEXT', align='L', border=0)
+        pdf.set_x(110)
+        pdf.set_font('DejaVuSansCondensed', '', 10)
+        pdf.multi_cell(90,6, f"{uplatnica[1]}", new_y='NEXT', align='L', border=1)
+        pdf.set_x(110)
+        pdf.set_font('DejaVuSansCondensed', '', 8)
+        pdf.multi_cell(90,5, f"Model i poziv na broj (odobrenje)", new_y='NEXT', align='L', border=0)
+        pdf.set_x(110)
+        pdf.set_font('DejaVuSansCondensed', '', 10)
+        pdf.multi_cell(10,6, f"{uplatnica[4]}", new_y='LAST', align='L', border=1)
+        pdf.multi_cell(10,6, f"", new_y='LAST', align='L', border=0)
+        pdf.multi_cell(70,6, f"{uplatnica[5]}", new_y='LAST', align='L', border=1)
+        
+        pdf.line(10, 99, 200, 99)
+        pdf.line(10, 198, 200, 198)
+        counter += 1
+    path = "kpo/static/payment_slips/"
+    file_name = f'uplatnice.pdf'
+    pdf.output(path + file_name)
+    return file_name
+    
+    
 
 def pdf_gen(bill):
     company_logo = 'kpo/static/company_logos/' + bill.bill_company.company_logo
@@ -192,7 +384,21 @@ def pdf_gen(bill):
     return file_name
 
 
-def bill_list_gen(bills):
+def bill_list_gen(bills, customer, start_date, end_date):
+    bill = bills[0]
+    print(f'bill: {bill=}')
+    company_logo = 'kpo/static/company_logos/' + bill.bill_company.company_logo
+    company_name = bill.bill_company.companyname
+    company_city = bill.bill_company.company_city
+    company_mail = bill.bill_company.company_mail
+    company_phone = bill.bill_company.company_phone
+    company_site = bill.bill_company.company_site
+    print(f'{company_logo=}')
+    print(f'{company_name=}')
+    print(f'{company_city=}')
+    print(f'{company_mail=}')
+    print(f'{company_phone=}')
+    print(f'{company_site=}')
     class PDF(FPDF):
         def __init__(self, **kwargs):
             super(PDF, self).__init__(**kwargs)
@@ -201,6 +407,8 @@ def bill_list_gen(bills):
         def header(self):
             # Logo
             self.image(company_logo, 180, 5, 25)
+            pdf.set_font('DejaVuSansCondensed', 'B', 12)
+            pdf.multi_cell(0, 8, f'Izvod faktura za klijenta {customer.customer_name}:\r\nPeriod od {datetime.strptime(start_date, "%Y-%m-%d").strftime("%d.%m.%Y.")} do {datetime.strptime(end_date, "%Y-%m-%d").strftime("%d.%m.%Y.")}', new_y='NEXT', new_x='LMARGIN')
         def footer(self):
             # Postavljanje fonta
             self.set_font('DejaVuSansCondensed', '', 8)
@@ -216,3 +424,36 @@ def bill_list_gen(bills):
             # Footer tekst
             footer_text = f'{company_name} | {company_city} | {company_mail} | {company_phone} | {company_site}'
             self.cell(0, footer_height, footer_text, ln=False, align='C')
+    
+    pdf=PDF()
+    pdf.alias_nb_pages()
+    pdf.add_page()
+    pdf.set_y(30)
+    pdf.set_font('DejaVuSansCondensed', 'B', 8)
+    pdf.set_fill_color(192, 192, 192)
+    pdf.cell(25, 8, f'Broj fakture', new_y='LAST', align='C', border = 1, fill=True)
+    pdf.cell(30, 8, f'Datum prometa', new_y='LAST', align='C', border = 1, fill=True)
+    pdf.cell(30, 8, f'Datum dospeća', new_y='LAST', align='C', border = 1, fill=True)
+    pdf.cell(35, 8, f'Iznos', new_y='LAST', align='C', border = 1, fill=True)
+    pdf.cell(35, 8, f'Uplaćeno', new_y='LAST', align='C', border = 1, fill=True)
+    pdf.cell(35, 8, f'Preostalo za uplatu', new_y='NEXT', new_x='LMARGIN', align='C', border = 1, fill=True)
+    pdf.set_font('DejaVuSansCondensed', '', 8)
+    total_price = 0
+    total_payments = 0
+    for bill in bills:
+        pdf.cell(25, 8, f'{bill.bill_number}', new_y='LAST', align='C', border = 1)
+        pdf.cell(30, 8, f'{bill.bill_transaction_date.strftime("%d.%m.%Y.")}', new_y='LAST', align='C', border = 1)
+        pdf.cell(30, 8, f'{bill.bill_due_date.strftime("%d.%m.%Y.")}', new_y='LAST', align='C', border = 1)
+        pdf.cell(35, 8, f'{bill.total_price:.2f}', new_y='LAST', align='R', border = 1)
+        pdf.cell(35, 8, f'{bill.total_payments:.2f}', new_y='LAST', align='R', border = 1)
+        pdf.cell(35, 8, f'{(bill.total_price - bill.total_payments):.2f}', new_y='NEXT', new_x='LMARGIN', align='R', border = 1)
+        total_price += bill.total_price
+        total_payments += bill.total_payments
+    pdf.line(10, pdf.get_y() +10, 200, pdf.get_y()+ 10)
+    pdf.set_y(pdf.get_y() + 10)
+    pdf.cell(0, 8, f'Ukupno: {total_price:.2f} | Uplaćeno: {total_payments:.2f} | Preostalo: {(total_price - total_payments):.2f}', new_y='NEXT', new_x='LMARGIN', align='R')
+    
+    path = "kpo/static/bills_data/"
+    file_name = f'export.pdf'
+    pdf.output(path + file_name)
+    return file_name

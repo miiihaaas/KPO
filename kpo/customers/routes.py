@@ -1,8 +1,9 @@
 from datetime import date
 from flask import Blueprint
-from flask import  render_template, url_for, flash, redirect, request, abort
+from flask import  render_template, url_for, flash, redirect, request, abort, send_file
 from flask_login import login_required, current_user
-from kpo import db, app
+from kpo import db
+from kpo.bills.functions import bill_list_gen
 from kpo.models import Customer, Bill, Settings
 from kpo.customers.forms import RegisterCustomerForm, EditCustomerForm
 
@@ -132,3 +133,17 @@ def customer_profile(customer_id):
                             legend='Komitent', 
                             title='Komitent',  )
     
+    
+@customers.route('/export_report/<int:customer_id>', methods=['GET', 'POST'])
+def export_report(customer_id):
+    
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    customer = Customer.query.get_or_404(customer_id)
+    bills = Bill.query.filter_by(bill_customer_id=customer_id).filter(
+            Bill.bill_transaction_date.between(start_date, end_date)).all()
+    print(customer.customer_name)
+    print(f'{start_date=}, {end_date=}')
+    print(f'Fakture: {bills}')
+    file = 'static/bills_data/' + bill_list_gen(bills, customer, start_date, end_date)
+    return send_file(file, mimetype='application/pdf', as_attachment=True)

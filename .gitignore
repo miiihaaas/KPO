@@ -14,6 +14,8 @@ kpo/invoices/__pycache__/
 kpo/main/__pycache__/
 kpo/static/bills_data/
 kpo/static/company_logos/
+kpo/static/pdf_import/
+kpo/static/payment_slips/
 kpo/users/__pycache__/
 kpo/qr/
 __pycache__/

@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Izaberite PDF fajl</h1>
+<form method="POST" action="/import_from_pdv" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".pdf">
+  <input type="submit" value="Učitajte PDF" class="btn btn-primary">
+  <input type="submit" value="Generišite uplatnice" target="_blank" class="btn btn-primary">
+</form>
+<hr>
+<h1>Podaci iz PDV fajla</h1>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Konto</th>
+      <th>Broj računa</th>
+      <th>Ukupan dug</th>
+      <th>Opis-svrha uplate</th>
+      <th>Model</th>
+      <th>Poziv na broj</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in df %}
+    <tr>
+      {% for record in row %}
+      <td>{{ record }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}
+
+
