@@ -51,6 +51,9 @@
                     <a class="dropdown-item" href="{{ url_for('main.settings', company_id=current_user.user_company.id) }}" style="color: rgba(255,255,255,.55);">Osnovna podešavanja</a>
                     <a class="dropdown-item" href="{{ url_for('users.user_list') }}" style="color: rgba(255,255,255,.55);">Korisnici</a>
                     <a class="dropdown-item" href="{{ url_for('companys.company_list') }}" style="color: rgba(255,255,255,.55);">Kompanija</a>
+                    {% if current_user.authorization == "s_admin" %}
+                    <a class="dropdown-item" href="{{ url_for('main.import_from_pdv') }}" style="color: rgba(255,255,255,.55);">Testing: import iz PDV</a>
+                    {% endif %}
                   </div>
                 </li>
                 <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Odjavi se</a>
