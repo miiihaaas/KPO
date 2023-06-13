@@ -161,8 +161,7 @@ def import_from_pdv():
 
         
         filename = f'static/payment_slips/uplatnice.pdf'
-        return render_template('import_from_pdv.html', title='Import iz PDVa', df=df.values.tolist()) #! ova dva spojiti
-        return send_file(filename, mimetype='application/pdf', as_attachment=True) #! ova dva spojiti
+        return render_template('import_from_pdv.html', title='Import iz PDVa', df=df.values.tolist())
     return render_template('import_from_pdv.html', title='Import iz PDVa')
 
 

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h1>Izaberite PDF fajl</h1>
-<form method="POST" action="/import_from_pdv" enctype="multipart/form-data">
+<form method="POST" action="" enctype="multipart/form-data">
   <input type="file" name="file" accept=".pdf">
   <input type="submit" value="Učitajte PDF" class="btn btn-primary">
   {% if df %}
