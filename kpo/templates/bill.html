@@ -286,13 +286,13 @@
         <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <div>
             {% if bill.bill_type == 'Faktura' %}
-            <legend id="stavke" class="border-bottom mb-4">Stavke fakture <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            <legend id="stavke_" class="border-bottom mb-4">Stavke fakture <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
             {% elif bill.bill_type == 'Avansni račun' %}
-            <legend id="stavke" class="border-bottom mb-4">Stavke avansnog računa <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            <legend id="stavke_" class="border-bottom mb-4">Stavke avansnog računa <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
             {% elif bill.bill_type == 'Knjižno odobrenje' %}
-            <legend id="stavke" class="border-bottom mb-4">Stavke knjižnog odobrenja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            <legend id="stavke_" class="border-bottom mb-4">Stavke knjižnog odobrenja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
             {% elif bill.bill_type == 'Knjižno zaduženje' %}
-            <legend id="stavke" class="border-bottom mb-4">Stavke knjižnog zaduženja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            <legend id="stavke_" class="border-bottom mb-4">Stavke knjižnog zaduženja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
             {% endif %}
             <table class="mb-4" id="stavke">
               <thead>
@@ -357,10 +357,10 @@
           
           <div class="content-section m-3">
             <ul class="list-group">
-              <li>Zbir stavki - nije predmet oporezivanja PDV: {{ bill.total_price }}</li>
-              <li>Ukupna osnovica - nije predmet oporezivanja PDV: _____</li>
-              <li>Umanjena osnovica - nije predmet oporezivanja PDV: _____</li>
-              <li>Ukupno za uplatu: <strong>{{ bill.total_price }}</strong></li>
+              <li>Zbir stavki - nije predmet oporezivanja PDV: <span id="zbir-stavki"></span></li>
+              <li>Ukupna osnovica - nije predmet oporezivanja PDV: <span id="ukupna-osnovica"></span></li>
+              <li>Umanjena osnovica - nije predmet oporezivanja PDV: <span id="umanjena-osnovica"></span></li>
+              <li>Ukupno za uplatu: <strong><span id="ukupno-za-uplatu"></span></strong></li>
               <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDV-a.</li>
             </ul>
           </div>
@@ -480,8 +480,32 @@
     row.cells[6].querySelector("input").value = product;
     var amountWithoutTax = input1 * input2 - product;
     row.cells[7].querySelector("input").value = amountWithoutTax;
+
+    calculateTotalSum();
   }
+
+  function calculateTotalSum() {
+    var totalSum = 0;
+    var rows = document.getElementById("stavke").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for (var i = 0; i < rows.length - 1; i++) {
+      var value = parseFloat(rows[i].cells[7].querySelector("input").value);
+      if (!isNaN(value)) {
+        totalSum += value;
+      }
+    }
+    console.log('ukupno: ', totalSum);
+    // Postavljanje vrednosti na odgovarajućim pozicijama u HTML-u
+    document.getElementById("zbir-stavki").textContent = totalSum.toFixed(2);
+    document.getElementById("ukupna-osnovica").textContent = totalSum.toFixed(2);
+    document.getElementById("umanjena-osnovica").textContent = totalSum.toFixed(2);
+    document.getElementById("ukupno-za-uplatu").textContent = totalSum.toFixed(2);
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    calculateTotalSum();
+  });
 </script>
+
 <script>
   // Dohvati vrijednost bill_status iz objekta bill u predlošku
   var billStatus = '{{ bill.bill_status }}';

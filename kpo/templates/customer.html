@@ -162,7 +162,7 @@
                 <input class="form-control mb-4" type="date" id="end-date" name="end-date" value="{{ end_date }}">
             </div>
             <div class="col">
-                <a class="btn btn-primary mt-4 mb-4" href="{{ url_for('customers.export_report', customer_id=customer.id, start_date=start_date, end_date=end_date) }}">Izvoz liste faktura </a>
+                <a class="btn btn-primary mt-4 mb-4" href="{{ url_for('customers.export_report', customer_id=customer.id, start_date=start_date, end_date=end_date) }}" target="_blank">Izvoz liste faktura </a>
             </div>
         </div>
         <table id="data" class="table table-striped dataTable no-footer invoices" role="grid" aria-describedby="data_info" style="width: 968px;">

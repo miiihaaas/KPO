@@ -141,9 +141,9 @@ def export_report(customer_id):
     end_date = request.args.get('end_date')
     customer = Customer.query.get_or_404(customer_id)
     bills = Bill.query.filter_by(bill_customer_id=customer_id).filter(
-            Bill.bill_transaction_date.between(start_date, end_date)).all()
+            Bill.bill_transaction_date.between(start_date, end_date)).filter(Bill.bill_status == 'poslat').all()
     print(customer.customer_name)
     print(f'{start_date=}, {end_date=}')
     print(f'Fakture: {bills}')
     file = 'static/bills_data/' + bill_list_gen(bills, customer, start_date, end_date)
-    return send_file(file, mimetype='application/pdf', as_attachment=True)
+    return send_file(file, mimetype='application/pdf')

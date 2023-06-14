@@ -370,14 +370,14 @@ def pdf_gen(bill):
     pdf.cell(35,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='R', border='B')
     pdf.set_x(75)  # Prilagodite X poziciju prema potrebi
     pdf.cell(90,6, f'Ukupna osnovica - nije predmet oporezivanja PDV:', new_y='LAST', align='R')
-    pdf.cell(35,6, f'proračun', new_y='NEXT', align='R')
+    pdf.cell(35,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='R')
     pdf.set_x(75)  # Prilagodite X poziciju prema potrebi
     pdf.cell(90,6, f'Umanjena osnovica - nije predmet oporezivanja PDV:', new_y='LAST', align='R')
-    pdf.cell(35,6, f'proračun', new_y='NEXT', align='R')
+    pdf.cell(35,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='R')
     pdf.set_x(75)  # Prilagodite X poziciju prema potrebi
     pdf.set_font('DejaVuSansCondensed', 'B', 10)
     pdf.cell(90,6, f'Ukupno za uplatu:', new_y='LAST', align='R')
-    pdf.cell(35,6, f'proračun', new_y='NEXT', align='R')
+    pdf.cell(35,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='R')
     
     
     path = "kpo/static/bills_data/"
@@ -409,19 +409,19 @@ def bill_list_gen(bills, customer, start_date, end_date):
         def header(self):
             # Logo
             self.image(company_logo, 180, 5, 25)
-            pdf.set_font('DejaVuSansCondensed', 'B', 12)
-            pdf.multi_cell(0, 8, f'Izvod faktura za klijenta {customer.customer_name}:\r\nPeriod od {datetime.strptime(start_date, "%Y-%m-%d").strftime("%d.%m.%Y.")} do {datetime.strptime(end_date, "%Y-%m-%d").strftime("%d.%m.%Y.")}', new_y='NEXT', new_x='LMARGIN')
+            self.set_font('DejaVuSansCondensed', 'B', 12)
+            self.multi_cell(0, 8, f'Izvod faktura za klijenta {customer.customer_name}:\r\nPeriod od {datetime.strptime(start_date, "%Y-%m-%d").strftime("%d.%m.%Y.")} do {datetime.strptime(end_date, "%Y-%m-%d").strftime("%d.%m.%Y.")}', new_y='NEXT', new_x='LMARGIN')
             
-            pdf.set_y(30)
-            pdf.set_font('DejaVuSansCondensed', 'B', 8)
-            pdf.set_fill_color(192, 192, 192)
-            pdf.cell(25, 8, f'Broj fakture', new_y='LAST', align='C', border = 1, fill=True)
-            pdf.cell(30, 8, f'Datum prometa', new_y='LAST', align='C', border = 1, fill=True)
-            pdf.cell(30, 8, f'Datum dospeća', new_y='LAST', align='C', border = 1, fill=True)
-            pdf.cell(35, 8, f'Iznos', new_y='LAST', align='C', border = 1, fill=True)
-            pdf.cell(35, 8, f'Uplaćeno', new_y='LAST', align='C', border = 1, fill=True)
-            pdf.cell(35, 8, f'Preostalo za uplatu', new_y='NEXT', new_x='LMARGIN', align='C', border = 1, fill=True)
-            pdf.set_font('DejaVuSansCondensed', '', 8)
+            self.set_y(30)
+            self.set_font('DejaVuSansCondensed', 'B', 8)
+            self.set_fill_color(192, 192, 192)
+            self.cell(25, 8, f'Broj fakture', new_y='LAST', align='C', border = 1, fill=True)
+            self.cell(30, 8, f'Datum prometa', new_y='LAST', align='C', border = 1, fill=True)
+            self.cell(30, 8, f'Datum dospeća', new_y='LAST', align='C', border = 1, fill=True)
+            self.cell(35, 8, f'Iznos', new_y='LAST', align='C', border = 1, fill=True)
+            self.cell(35, 8, f'Uplaćeno', new_y='LAST', align='C', border = 1, fill=True)
+            self.cell(35, 8, f'Preostalo za uplatu', new_y='NEXT', new_x='LMARGIN', align='C', border = 1, fill=True)
+            self.set_font('DejaVuSansCondensed', '', 8)
         def footer(self):
             # Postavljanje fonta
             self.set_font('DejaVuSansCondensed', '', 8)
@@ -436,7 +436,8 @@ def bill_list_gen(bills, customer, start_date, end_date):
 
             # Footer tekst
             footer_text = f'{company_name} | {company_city} | {company_mail} | {company_phone} | {company_site}'
-            self.cell(0, footer_height, footer_text, ln=False, align='C')
+            self.cell(0, footer_height, footer_text, ln=True, align='C')
+            self.cell(0, 3, f'{self.page_no()}/{self.page_no()}', align='R')
     
     pdf=PDF()
     pdf.alias_nb_pages()
