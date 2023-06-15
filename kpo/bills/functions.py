@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 def import_data_from_pdv(file):
+    #! konta koja nedostaju: 721331, 4, 721342, 721351, 721361
     dependent_dict = [
     {
         "Konto": '711122',
@@ -48,9 +49,9 @@ def import_data_from_pdv(file):
     },
     # {
     #     "Konto": '721331',
-    #     "Broj računa": "Simke duguje podatke", #! 840-721331843-06?
+    #     "Broj računa": "Marko duguje podatke", #! 840-721331843-06?
     #     "Ukupan dug": "Pročitati iz PDF dokumenta",
-    #     "Opis-svrha uplate": "Simke duguje podatke",
+    #     "Opis-svrha uplate": "Marko duguje podatke",
     #     "Model": '97',
     #     "Poziv na broj": "Pročitati iz PDF dokumenta"
     # }
@@ -59,16 +60,15 @@ def import_data_from_pdv(file):
     db = []
     with pdfplumber.open(file) as f:
         for page in f.pages:
-            # Postavite horizontal_text_tolerance na veću vrednost (npr. 10)
-            page.horizontal_text_tolerance = 100
+            text = page.extract_text(x_tolerance=1, y_tolerance=1)
+            start = text.find('\nPIB:') + 16  # Pronalaženje indeksa početka isečka i pomeraj za 5 karaktera
+            end = text.find('\nSedište:')  # Pronalaženje indeksa kraja isečka
+            uplatilac = text[start:end]
+            
+            print(f'{uplatilac=}')
             tables = page.extract_tables()
             counter = 0
             for table in tables:
-                if counter == 0:
-                    uplatilac = pd.DataFrame(table[0:], columns=table[0])
-                    print(f'ovo bi trebalo da je tabela sa podacima uplatioca: {uplatilac=}')
-                    print(f'{len(uplatilac)}')
-                    print(f'{uplatilac.iloc[1, 0]=}')
                 if counter % 2 == 1:  # Dodaj samo tabele sa neparanim brojem
                     df = pd.DataFrame(table[1:], columns=table[0])
                     db.append(df)
@@ -107,10 +107,10 @@ def import_data_from_pdv(file):
             ]], columns=["Konto", "Broj računa", "Ukupan dug", "Opis-svrha uplate", "Model", "Poziv na broj"])
             uplatnice_df = pd.concat([uplatnice_df, new_row], ignore_index=True)
 
-    return uplatnice_df
+    return uplatnice_df, uplatilac
 
 
-def uplatnice_gen(df_list, qr_code_images):
+def uplatnice_gen(df_list, qr_code_images, uplatilac):
     class PDF(FPDF):
         def __init__(self, **kwargs):
             super(PDF, self).__init__(**kwargs)
@@ -142,7 +142,7 @@ def uplatnice_gen(df_list, qr_code_images):
         pdf.cell(0,8, f"NALOG ZA UPLATU", new_y='NEXT', new_x='LMARGIN', align='R', border=0)
         pdf.set_font('DejaVuSansCondensed', '', 10)
         pdf.cell(95,4, f"Uplatilac", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
-        pdf.multi_cell(90,4, f'''Marko Marković\r\n{''}\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
+        pdf.multi_cell(90,4, f'''{uplatilac}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
         pdf.cell(95,4, f"Svrha uplate", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
         pdf.multi_cell(90,4, f'''{uplatnica[3]}\r\n{''}\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
         pdf.cell(95,4, f"Primalac", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
