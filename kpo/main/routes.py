@@ -89,7 +89,8 @@ def import_from_pdv():
         filename = secure_filename(file.filename)
         file.save(os.path.join('kpo/static/pdf_import/', filename))
         file_path = os.path.join('kpo/static/pdf_import/', filename)
-        df = import_data_from_pdv(file_path)
+        df, uplatilac = import_data_from_pdv(file_path)
+        print(f'iz main route: {uplatilac=}')
         df_list = df.values.tolist()
         qr_code_images = []
         for i, record in enumerate(df_list):
@@ -105,7 +106,7 @@ def import_from_pdv():
                 "R": racun,
                 "N": "PORESKA UPRAVA\r\nSAVE MAŠKOVIĆA 3-5",
                 "I": dug,
-                "P": "UPLATILAC PREZIME\r\nŽUPSKA 13\r\nBEOGRAD 6",
+                "P": uplatilac,
                 "SF": "189", #! šifra plaćanja - Marko
                 "S": record[3],
                 "RO": record[4]+record[5]
@@ -142,7 +143,7 @@ def import_from_pdv():
             #     return Response(qr_code_image, mimetype="image/png")
             # else:
             #     return 'Error generating QR code', response.status_code
-        gen_file = uplatnice_gen(df_list, qr_code_images)
+        gen_file = uplatnice_gen(df_list, qr_code_images, uplatilac)
         
         #! briše QR kodove nakon dodavanja na uplatnice
         folder_path = 'kpo/static/payment_slips/qr_code/'
