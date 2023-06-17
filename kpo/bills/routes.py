@@ -89,6 +89,7 @@ def register_notes(bill_id, note_type):
         form = RegisterDebitNoteForm()
         title = f'Registracija knjižnog zaduženja za fakturu {bill.bill_number}'
         last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Knjižno zaduženje').order_by(Bill.bill_number.desc()).first()
+    dashboard = Dashboard(current_user.user_company.id)
     c = Customer.query.get_or_404(bill.bill_customer_id)
     form.bill_customer_id.choices = [(c.id, c.customer_name)]
     if form.validate_on_submit():
@@ -133,7 +134,7 @@ def register_notes(bill_id, note_type):
         form.bill_model.data = bill.bill_model
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = str(bill.bill_customer_id)
-    return render_template('register_notes.html', title=title, form=form, bill=bill, note_type=note_type, last_document=last_document)
+    return render_template('register_notes.html', title=title, form=form, bill=bill, note_type=note_type, last_document=last_document, dashboard=dashboard)
 
 
 
