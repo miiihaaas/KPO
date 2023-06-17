@@ -9,7 +9,8 @@
   {% endif %}
 </form>
 <hr>
-<h1>Podaci iz PDV fajla</h1>
+{% if df %}
+<h1>{{ uplatilac }}</h1>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -19,6 +20,7 @@
       <th>Opis-svrha uplate</th>
       <th>Model</th>
       <th>Poziv na broj</th>
+      <th>Šifra plaćanja</th>
     </tr>
   </thead>
   <tbody>
@@ -31,6 +33,7 @@
     {% endfor %}
   </tbody>
 </table>
+{% endif %}
 
 {% endblock content %}
 

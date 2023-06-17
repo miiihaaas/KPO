@@ -99,6 +99,7 @@ def import_from_pdv():
             racun = racun[:3] + racun[3:].zfill(15)  # Dodaje nule posle prvih 3 cifre računa do ukupne dužine od 18 cifara
             dug = record[2]
             dug = "RSD" + str(dug).replace('.', ',')
+            print(f'ovo bi trebalo da je šifra plaćanja: {record[6]}')
             data = {
                 "K": "PR",
                 "V": "01",
@@ -107,7 +108,7 @@ def import_from_pdv():
                 "N": "PORESKA UPRAVA\r\nSAVE MAŠKOVIĆA 3-5",
                 "I": dug,
                 "P": uplatilac,
-                "SF": "189", #! šifra plaćanja - Marko
+                "SF": record[6], #"189", #! šifra plaćanja - Marko
                 "S": record[3],
                 "RO": record[4]+record[5]
             }
@@ -162,7 +163,7 @@ def import_from_pdv():
 
         
         filename = f'static/payment_slips/uplatnice.pdf'
-        return render_template('import_from_pdv.html', title='Import iz PDVa', df=df.values.tolist())
+        return render_template('import_from_pdv.html', title='Import iz PDVa', df=df.values.tolist(), uplatilac=uplatilac)
     return render_template('import_from_pdv.html', title='Import iz PDVa')
 
 

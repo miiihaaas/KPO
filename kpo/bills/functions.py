@@ -5,7 +5,6 @@ from datetime import datetime
 
 
 def import_data_from_pdv(file):
-    #! konta koja nedostaju: 721331, 4, 721342, 721351, 721361
     dependent_dict = [
     {
         "Konto": '711122',
@@ -13,23 +12,8 @@ def import_data_from_pdv(file):
         "Ukupan dug": "Pročitati iz PDF dokumenta",
         "Opis-svrha uplate": "POREZ - PAUŠAL",
         "Model": '97',
-        "Poziv na broj": "Pročitati iz PDF dokumenta"
-    },
-    {
-        "Konto": '721313',
-        "Broj računa": "840-721313843-74", #!Marko: da nije 840-721313843-74? vs 840-721313843-83
-        "Ukupan dug": "Pročitati iz PDF dokumenta",
-        "Opis-svrha uplate": "PIO - PAUŠAL",
-        "Model": '97',
-        "Poziv na broj": "Pročitati iz PDF dokumenta"
-    },
-    {
-        "Konto": '721325',
-        "Broj računa": "840-721325843-61",
-        "Ukupan dug": "Pročitati iz PDF dokumenta",
-        "Opis-svrha uplate": "ZDRAVSTVENO OSIGURANJE - PAUŠAL",
-        "Model": '97',
-        "Poziv na broj": "Pročitati iz PDF dokumenta"
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
     },
     {
         "Konto": '721221',
@@ -37,7 +21,35 @@ def import_data_from_pdv(file):
         "Ukupan dug": "Pročitati iz PDF dokumenta",
         "Opis-svrha uplate": "NEZAPOSLENOST - PAUŠAL",
         "Model": '97',
-        "Poziv na broj": "Pročitati iz PDF dokumenta"
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
+    },
+    {
+        "Konto": '721313',
+        "Broj računa": "840-721313843-74",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "PIO - PAUŠAL",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
+    },
+    {
+        "Konto": '721325',
+        "Broj računa": "840-721325843-61",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "ZDRAVSTVENO OSIGURANJE - PAUŠAL",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
+    },
+    {
+        "Konto": '721331',
+        "Broj računa": "840-721331843-06",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "PIO-SAMOOPOREZIVANJE (VODI KNJIGE)",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
     },
     {
         "Konto": '721419',
@@ -45,16 +57,45 @@ def import_data_from_pdv(file):
         "Ukupan dug": "Pročitati iz PDF dokumenta",
         "Opis-svrha uplate": "PIO - PAUŠAL - IZ RADNOG ODNOSA",
         "Model": '97',
-        "Poziv na broj": "Pročitati iz PDF dokumenta"
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
     },
-    # {
-    #     "Konto": '721331',
-    #     "Broj računa": "Marko duguje podatke", #! 840-721331843-06?
-    #     "Ukupan dug": "Pročitati iz PDF dokumenta",
-    #     "Opis-svrha uplate": "Marko duguje podatke",
-    #     "Model": '97',
-    #     "Poziv na broj": "Pročitati iz PDF dokumenta"
-    # }
+    {
+        "Konto": '721342',
+        "Broj računa": "840-721342843-83",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "Marko da dostavi pod", #!
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153" #!
+    },
+    {
+        "Konto": '721351',
+        "Broj računa": "840-721351843-49",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "ZDRAVSTVENO OSIGURANJE-SAMOOP. (VK)",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
+    },
+    {
+        "Konto": '721361',
+        "Broj računa": "840-721361843-22",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "NEZAPOSLENOST-SAMOOPOREZIVANJE (VK)",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "153"
+    },
+    {
+        "Konto": '4848',
+        "Broj računa": "840-4848-37",
+        "Ukupan dug": "Pročitati iz PDF dokumenta",
+        "Opis-svrha uplate": "OBJEDINJENA NAPLATA POREZA I DOP PO OD",
+        "Model": '97',
+        "Poziv na broj": "Pročitati iz PDF dokumenta",
+        "Sifra placanja": "154"
+    }
 ]
 
     db = []
@@ -64,6 +105,8 @@ def import_data_from_pdv(file):
             start = text.find('\nPIB:') + 16  # Pronalaženje indeksa početka isečka i pomeraj za 5 karaktera
             end = text.find('\nSedište:')  # Pronalaženje indeksa kraja isečka
             uplatilac = text[start:end]
+            uplatilac = uplatilac.replace('\n', ' ')
+            uplatilac = uplatilac[:70]
             
             print(f'{uplatilac=}')
             tables = page.extract_tables()
@@ -73,25 +116,20 @@ def import_data_from_pdv(file):
                     df = pd.DataFrame(table[1:], columns=table[0])
                     db.append(df)
                 counter += 1
-    # print(f'{db=}')
-    # print(f'{len(db)=}')
     # Spajanje svih DataFrame-ova u db
     combined_df = pd.concat(db)
     
     # Resetovanje indeksa u rastućem redosledu
     combined_df = combined_df.reset_index(drop=True)
-    # print(f'{combined_df=}')
-    # print(f'{len(combined_df)=}')
     
     # Konvertovanje kolone 'Ukupandug' u numerički tip podataka
     combined_df['Ukupandug'] = combined_df['Ukupandug'].str.replace(',', '').astype(float)
-    # print(f'{combined_df["Ukupandug"]=}')
     
     # Filtriranje redova na osnovu vrednosti u koloni 'Ukupandug'
     combined_df = combined_df.loc[combined_df['Ukupandug'] > 0]
     
     # Kreiranje DataFrame-a 'uplatnice_df' na osnovu filtriranih vrednosti
-    uplatnice_df = pd.DataFrame(columns=["Konto", "Broj računa", "Ukupan dug", "Opis-svrha uplate", "Model", "Poziv na broj"])
+    uplatnice_df = pd.DataFrame(columns=["Konto", "Broj računa", "Ukupan dug", "Opis-svrha uplate", "Model", "Poziv na broj", "Šifra plaćanja"])
     
     for _, row in combined_df.iterrows():
         konto = row['Konto']
@@ -103,8 +141,9 @@ def import_data_from_pdv(file):
                 row['Ukupandug'],
                 matching_dict['Opis-svrha uplate'],
                 matching_dict['Model'],
-                row['Pozivnabroj']
-            ]], columns=["Konto", "Broj računa", "Ukupan dug", "Opis-svrha uplate", "Model", "Poziv na broj"])
+                row['Pozivnabroj'],
+                matching_dict['Sifra placanja']
+            ]], columns=["Konto", "Broj računa", "Ukupan dug", "Opis-svrha uplate", "Model", "Poziv na broj", "Šifra plaćanja"])
             uplatnice_df = pd.concat([uplatnice_df, new_row], ignore_index=True)
 
     return uplatnice_df, uplatilac
@@ -146,7 +185,7 @@ def uplatnice_gen(df_list, qr_code_images, uplatilac):
         pdf.cell(95,4, f"Svrha uplate", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
         pdf.multi_cell(90,4, f'''{uplatnica[3]}\r\n{''}\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
         pdf.cell(95,4, f"Primalac", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
-        pdf.multi_cell(90,4, f'''PORESKA UPRAVA\r\n{''}\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
+        pdf.multi_cell(90,4, f'''PORESKA UPRAVA\r\nSAVE MAŠKOVIĆA 3-5\r\n{''}''', new_y='NEXT', new_x='LMARGIN', align='L', border=1)
         pdf.cell(95,1, f"", new_y='NEXT', new_x='LMARGIN', align='L', border=0)
         pdf.set_font('DejaVuSansCondensed', '', 7)
         pdf.cell(50,4, f"Pečat i potpis uplatioca", new_y='NEXT', new_x='LMARGIN', align='L', border='T')
@@ -165,7 +204,7 @@ def uplatnice_gen(df_list, qr_code_images, uplatilac):
         pdf.multi_cell(13,3, f"Iznos", new_y='NEXT', align='L', border=0)
         pdf.set_x(110)
         pdf.set_font('DejaVuSansCondensed', '', 10)
-        pdf.multi_cell(13,6, f"189", new_y='LAST', align='L', border=1)
+        pdf.multi_cell(13,6, f"{uplatnica[6]}", new_y='LAST', align='L', border=1)
         pdf.multi_cell(7,6, f"", new_y='LAST', align='L', border=0)
         pdf.multi_cell(13,6, f"RSD", new_y='LAST', align='L', border=1)
         pdf.multi_cell(10,6, f"", new_y='LAST', align='L', border=0)

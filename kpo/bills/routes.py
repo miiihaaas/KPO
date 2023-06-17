@@ -2,9 +2,9 @@ from datetime import datetime, date
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for, flash, send_file, current_app
 from flask_login import login_required, current_user
-from kpo import db, app
+from kpo import db
 from kpo.models import Bill, Customer, Settings, Company
-from kpo.bills.forms import RegisterBillForm, EditBillForm, RegisterAdvanceAccountForm, EditAdvanceAccountForm, RegisterCreditNoteForm, EditCreditNoteForm, RegisterDebitNoteForm, EditDebitNoteForm
+from kpo.bills.forms import Dashboard, RegisterBillForm, EditBillForm, RegisterAdvanceAccountForm, EditAdvanceAccountForm, RegisterCreditNoteForm, EditCreditNoteForm, RegisterDebitNoteForm, EditDebitNoteForm
 from kpo.bills.functions import pdf_gen
 
 
@@ -16,8 +16,9 @@ def bill_list():
     if not current_user.is_authenticated:
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
+    dashboard = Dashboard(current_user.user_company.id)
     bills = Bill.query.filter_by(bill_company_id=current_user.company_id).all()
-    return render_template('bill_list.html', title='Lista faktura', bills=bills)
+    return render_template('bill_list.html', title='Lista faktura', bills=bills, dashboard=dashboard)
 
 
 @bills.route("/register_b/<string:type>",  methods=['GET', 'POST'])
@@ -33,6 +34,7 @@ def register_b(type):
         form = RegisterAdvanceAccountForm() #todo prilagodi posebnu formu za avans
         title = 'Registracija novog avansnog računa'
         last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Avansni račun').order_by(Bill.bill_number.desc()).first()
+    dashboard = Dashboard(current_user.user_company.id)
     dinar_accounts = Company.query.filter_by(id=current_user.user_company.id).first().dinar_account_list
     foreign_accounts = Company.query.filter_by(id=current_user.user_company.id).first().foreign_account_list
     print(f'{dinar_accounts=}')
@@ -68,7 +70,7 @@ def register_b(type):
         db.session.add(bill)
         db.session.commit()
         return redirect(url_for('bills.bill_profile', bill_id=bill.id))
-    return render_template('register_b.html', title=title, form=form, type=type, last_document=last_document, dinar_accounts=dinar_accounts, foreign_accounts=foreign_accounts)
+    return render_template('register_b.html', title=title, form=form, type=type, last_document=last_document, dinar_accounts=dinar_accounts, foreign_accounts=foreign_accounts, dashboard=dashboard)
 
 
 @bills.route("/register_notes/<int:bill_id>/<string:note_type>", methods=['GET', 'POST'])
@@ -161,6 +163,7 @@ def bill_profile(bill_id):
         form = EditAdvanceAccountForm()
         form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
         title = f'Detalji avansnog računa {bill.bill_number}'
+    dashboard = Dashboard(current_user.user_company.id)
     dinar_accounts = Company.query.filter_by(id=current_user.user_company.id).first().dinar_account_list
     foreign_accounts = Company.query.filter_by(id=current_user.user_company.id).first().foreign_account_list
     print(f'{bill.bill_company_account=}')
@@ -275,7 +278,8 @@ def bill_profile(bill_id):
                             title=title, 
                             dinar_accounts=dinar_accounts,
                             foreign_accounts=foreign_accounts,
-                            legend = 'Detalji fakture')
+                            legend = 'Detalji fakture',
+                            dashboard=dashboard)
 
 
 @bills.route("/new_item", methods=['GET', 'POST'])

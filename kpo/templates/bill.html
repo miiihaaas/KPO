@@ -354,15 +354,35 @@
               </tbody>
             </table>
           </div>
-          
-          <div class="content-section m-3">
-            <ul class="list-group">
-              <li>Zbir stavki - nije predmet oporezivanja PDV: <span id="zbir-stavki"></span></li>
-              <li>Ukupna osnovica - nije predmet oporezivanja PDV: <span id="ukupna-osnovica"></span></li>
-              <li>Umanjena osnovica - nije predmet oporezivanja PDV: <span id="umanjena-osnovica"></span></li>
-              <li>Ukupno za uplatu: <strong><span id="ukupno-za-uplatu"></span></strong></li>
-              <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDV-a.</li>
-            </ul>
+          <div class="row">
+            <div class="col">
+              <div class="content-section m-3">
+                <ul class="list-group">
+                  <li>Zbir stavki - nije predmet oporezivanja PDV: <span id="zbir-stavki"></span></li>
+                  <li>Ukupna osnovica - nije predmet oporezivanja PDV: <span id="ukupna-osnovica"></span></li>
+                  <li>Umanjena osnovica - nije predmet oporezivanja PDV: <span id="umanjena-osnovica"></span></li>
+                  <li>Ukupno za uplatu: <strong><span id="ukupno-za-uplatu"></span></strong></li>
+                  <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDV-a.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col">
+              <div class="content-section">
+                <h3>Korisni podaci</h3>
+                <p class='text-muted'></p>
+                <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din / ostalo: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</small></li>
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
+                  <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[1]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[2]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[3]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[4]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[5]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(dashboard.razlika_8m[6]) }} din</small></li>
+                </ul>
+                <p></p>
+              </div>
+            </div>
           </div>
         </div>
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
