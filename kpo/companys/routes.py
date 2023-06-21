@@ -104,7 +104,6 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
     form = EditCompanyForm()
     
     if form.validate_on_submit():
-        print('forma je validna')
         if form.company_logo.data:
             picture_file = save_picture(form.company_logo.data)
             company.company_logo=picture_file

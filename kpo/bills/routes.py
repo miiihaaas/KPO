@@ -1,3 +1,4 @@
+import secrets, os
 from datetime import datetime, date
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for, flash, send_file, current_app
@@ -19,6 +20,15 @@ def bill_list():
     dashboard = Dashboard(current_user.user_company.id)
     bills = Bill.query.filter_by(bill_company_id=current_user.company_id).all()
     return render_template('bill_list.html', title='Lista faktura', bills=bills, dashboard=dashboard)
+
+
+def save_contract(form_bill_attachment):
+    file, f_ext = os.path.splitext(form_bill_attachment.filename)
+    f_name = file + secrets.token_hex(8) + f_ext
+    f_path = os.path.join(current_app.root_path, 'static/bills_data/bill_contracts', f_name)
+    print(f'{f_path=}')
+    form_bill_attachment.save(f_path)
+    return f_name
 
 
 @bills.route("/register_b/<string:type>",  methods=['GET', 'POST'])
@@ -79,14 +89,17 @@ def register_notes(bill_id, note_type):
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     bill = Bill.query.get_or_404(bill_id)
+    print(f'debug broj računa: {bill.bill_company_account=}')
     if note_type == 'credit_note':
         print('knjižno odobrenje')
         form = RegisterCreditNoteForm()
+        bill_type = 'Knjižno odobrenje'
         title = f'Registracija knjižnog odobrenja za fakturu {bill.bill_number}'
         last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Knjižno odobrenje').order_by(Bill.bill_number.desc()).first()
     elif note_type == 'debit_note':
         print('knjižno zaduženje')
         form = RegisterDebitNoteForm()
+        bill_type = 'Knjižno zaduženje'
         title = f'Registracija knjižnog zaduženja za fakturu {bill.bill_number}'
         last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Knjižno zaduženje').order_by(Bill.bill_number.desc()).first()
     dashboard = Dashboard(current_user.user_company.id)
@@ -95,15 +108,15 @@ def register_notes(bill_id, note_type):
     if form.validate_on_submit():
         note = Bill(
             bill_currency=form.bill_currency.data,
-            bill_type=form.bill_type.data,
+            bill_type=bill_type,
             bill_number=form.bill_number.data,
             bill_tax_category=form.bill_tax_category.data,
             bill_base_code = form.bill_base_code.data,
             bill_decision_number = form.bill_decision_number.data,
             bill_contract_number = form.bill_contract_number.data,
             bill_purchase_order_number = form.bill_purchase_order_number.data,
-            bill_due_date = datetime.strptime(form.bill_due_date.data, '%Y-%m-%d'),
-            bill_tax_calculation_date = form.bill_tax_calculation_date.data,
+            bill_due_date = None if note_type == 'credit_note' else datetime.strptime(form.bill_due_date.data, '%Y-%m-%d'),
+            bill_tax_calculation_date = bill.bill_tax_calculation_date if note_type == 'credit_note' else form.bill_tax_calculation_date.data,
             bill_reference_number = form.bill_reference_number.data,
             bill_model = form.bill_model.data,
             bill_original = bill.bill_number, #!
@@ -112,9 +125,11 @@ def register_notes(bill_id, note_type):
             bill_company_id = current_user.company_id,
             bill_items = [{'sifra': '', 'naziv': '', 'kolicina': '', 'jedinica_mere': '', 'cena': '', 'popust': '0'}],
             bill_payments = [{'payment_date': '', 'payment_amount': ''}],
-            bill_status = 'nacrt'
+            bill_status = 'nacrt',
+            bill_company_account = bill.bill_company_account
         )
         bill.bill_original = bill.bill_original + f' {note.bill_number}'
+        print(f'{note.bill_company_account}')
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('bills.bill_profile', bill_id=note.id))
@@ -150,11 +165,17 @@ def bill_profile(bill_id):
         form = EditCreditNoteForm()
         c = Customer.query.get_or_404(bill.bill_customer_id)
         form.bill_customer_id.choices = [(c.id, c.customer_name)]
+        # form.bill_base_code.choices = [(f'{bill.bill_base_code}')]
+        # print(f'{bill.bill_base_code=}')
+        # print(f'{form.bill_base_code.choices=}')
         title = f'Detalji knjižnog odobrenja za fakturu {bill.bill_original}'
     elif bill.bill_type == 'Knjižno zaduženje':
         form = EditDebitNoteForm()
         c = Customer.query.get_or_404(bill.bill_customer_id)
         form.bill_customer_id.choices = [(c.id, c.customer_name)]
+        # form.bill_base_code.choices = [(bill.bill_base_code, bill.bill_base_code)]
+        # print(f'{bill.bill_base_code=}')
+        # print(f'{form.bill_base_code.choices=}')
         title = f'Detalji knjižnog zaduženja za fakturu {bill.bill_original}'
     elif bill.bill_type == 'Faktura':
         form = EditBillForm()
@@ -167,7 +188,7 @@ def bill_profile(bill_id):
     dashboard = Dashboard(current_user.user_company.id)
     dinar_accounts = Company.query.filter_by(id=current_user.user_company.id).first().dinar_account_list
     foreign_accounts = Company.query.filter_by(id=current_user.user_company.id).first().foreign_account_list
-    print(f'{bill.bill_company_account=}')
+    print(f'{form.bill_base_code.choices=}')
     units = [('kWh', 'kWh'), ('kom', 'kom'), ('kg', 'kg'), ('km', 'km'), ('g', 'g'), ('m', 'metar'), ('l', 'litar'), ('t', 'tona'), ('m2', 'm2'), ('m3', 'm3'), ('min', 'min'), ('h', 'sat'), ('d', 'dan'), ('M', 'mesec'), ('god', 'godina')]
     taxes = [('0', '0%'), ('10', '10%'), ('20', '20%')]
     if form.validate_on_submit():
@@ -184,9 +205,16 @@ def bill_profile(bill_id):
         bill.bill_tax_calculation_date = form.bill_tax_calculation_date.data if not bill.bill_type in ['Knjižno odobrenje'] else None
         bill.bill_reference_number = form.bill_reference_number.data
         bill.bill_model = form.bill_model.data
-        bill.bill_attachment = form.bill_attachment.data
-        bill.bill_customer_id = form.bill_customer_id.data
-        bill.bill_company_account = request.form.get('bill_company_account')
+        print(f'debug validacija attachment forme: {form.bill_attachment.data=}')
+        if form.bill_attachment.data:
+            contract_file = save_contract(form.bill_attachment.data)
+            bill.bill_attachment = contract_file
+        if bill.bill_type in ['Faktura', 'Avansni račun']:
+            bill.bill_customer_id = form.bill_customer_id.data
+            bill.bill_company_account = request.form.get('bill_company_account')
+        else:
+            print(f'validno: {form.bill_customer_id.data=}')
+            bill.bill_customer_id = bill.bill_customer_id
         
         fullname = request.form.getlist('field[]')
         print(f'{fullname=}')
@@ -270,6 +298,8 @@ def bill_profile(bill_id):
         form.bill_model.data = bill.bill_model
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = str(bill.bill_customer_id)
+    else:
+        print(f'nije validno: {form.errors=}')
         
     return render_template('bill.html', company_settings = company_settings,
                             form=form, 
@@ -280,7 +310,8 @@ def bill_profile(bill_id):
                             dinar_accounts=dinar_accounts,
                             foreign_accounts=foreign_accounts,
                             legend = 'Detalji fakture',
-                            dashboard=dashboard)
+                            dashboard=dashboard,
+                            errors=form.errors)
 
 
 @bills.route("/new_item", methods=['GET', 'POST'])
@@ -349,4 +380,12 @@ def open_pdf(bill_id):
     bill = Bill.query.get_or_404(bill_id)
     print(f'{bill.bill_pdf=}')
     filename = f'static/bills_data/{bill.bill_pdf}'
+    return send_file(filename, mimetype='application/pdf')
+
+
+@bills.route('/open_contract/<int:bill_id>')
+def open_contract(bill_id):
+    bill = Bill.query.get_or_404(bill_id)
+    print(f'{bill.bill_attachment=}')
+    filename = f'static/bills_data/bill_contracts/{bill.bill_attachment}'
     return send_file(filename, mimetype='application/pdf')

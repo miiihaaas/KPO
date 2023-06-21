@@ -185,7 +185,7 @@ class RegisterBillForm(FlaskForm):
     bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('Datum slanja fakture', 'Datum slanja fakture'), ('Datum prometa', 'Datum prometa'), ('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')])
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Dodajte stavke')
 
 
@@ -205,7 +205,7 @@ class EditBillForm(FlaskForm):
     bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('Datum slanja fakture', 'Datum slanja fakture'), ('Datum prometa', 'Datum prometa'), ('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')])
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Ažurirajte dokument')
     
     
@@ -225,7 +225,7 @@ class RegisterAdvanceAccountForm(FlaskForm): #! avansni račun
     bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')])
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Dodajte stavke')
 
 
@@ -245,7 +245,7 @@ class EditAdvanceAccountForm(FlaskForm): #! avansni račun
     bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')])
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl -- radi na ovome :)')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Ažuirajte dokument')
     
     
@@ -265,7 +265,7 @@ class RegisterCreditNoteForm(FlaskForm): #! knjižno odobrenje
     # bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('Datum slanja fakture', 'Datum slanja fakture'), ('Datum prometa', 'Datum prometa'), ('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')]) #! ovo ne treba za knjižno odobrenje
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Dodajte stavke')
 
 
@@ -285,7 +285,7 @@ class EditCreditNoteForm(FlaskForm): #! knjižno odobrenje
     # bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('Datum slanja fakture', 'Datum slanja fakture'), ('Datum prometa', 'Datum prometa'), ('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')]) #! ovo ne treba za knjižno odobrenje
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Ažuirajte dokument')
 
 
@@ -305,7 +305,7 @@ class RegisterDebitNoteForm(FlaskForm): #! knjižno zaduženje
     bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('Datum slanja fakture', 'Datum slanja fakture'), ('Datum prometa', 'Datum prometa'), ('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')])
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Dodajte stavke')
 
 
@@ -325,5 +325,5 @@ class EditDebitNoteForm(FlaskForm): #! knjižno zaduženje
     bill_tax_calculation_date = SelectField('Datum obračuna PDV-a',  choices=[('Datum slanja fakture', 'Datum slanja fakture'), ('Datum prometa', 'Datum prometa'), ('PDV se obračunava na datum plaćanja', 'PDV se obračunava na datum plaćanja')])
     bill_reference_number = StringField('Poziv na broj', validators=[Optional(), Length(min=0, max=50)])
     bill_model = StringField('Model', validators=[Optional(), Length(min=0, max=50)])
-    bill_attachment = StringField('Dodaj fajl')
+    bill_attachment = FileField('Dodajte ugovor', validators=[Optional(), FileAllowed(['pdf'])]) 
     submit = SubmitField('Ažurirajte dokument')

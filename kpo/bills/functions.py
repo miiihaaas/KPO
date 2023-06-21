@@ -328,10 +328,25 @@ def pdf_gen(bill):
     pdf.set_y(56)  # Prilagodite Y poziciju prema potrebi
     pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
     pdf.set_font('DejaVuSansCondensed', '', 10)
+    if bill.bill_contract_number:
+        pdf.cell(48,4, f"Broj ugovora", new_y='LAST', align='R')
+        pdf.cell(47,4, f"{bill.bill_contract_number}", new_y='NEXT', align='L')
+        pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
+    if bill.bill_purchase_order_number:
+        pdf.cell(48,4, f"Broj ugovora", new_y='LAST', align='R')
+        pdf.cell(47,4, f"{bill.bill_purchase_order_number}", new_y='NEXT', align='L')
+        pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
+    if bill.bill_reference_number:
+        pdf.cell(48,4, f"Uplatu izvršiti sa pozivom na broj", new_y='LAST', align='R')
+        if bill.bill_model:
+            pdf.cell(47,4, f"({bill.bill_model}){bill.bill_reference_number}", new_y='NEXT', align='L')
+        else:
+            pdf.cell(47,4, f"{bill.bill_reference_number}", new_y='NEXT', align='L')
+        pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
     if bill.bill_transaction_date:
         pdf.cell(48,4, f"Datum prometa", new_y='LAST', align='R')
         pdf.cell(47,4, f"{bill.bill_transaction_date.strftime('%d.%m.%Y.')}", new_y='NEXT', align='L')
-    pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
+        pdf.set_x(105)  # Prilagodite X poziciju prema potrebi
     if bill.bill_due_date:
         pdf.cell(48,4, f"Datum dospeća", new_y='LAST', align='R')
         pdf.set_font('DejaVuSansCondensed', 'B', 10)
@@ -416,7 +431,14 @@ def pdf_gen(bill):
     pdf.set_x(75)  # Prilagodite X poziciju prema potrebi
     pdf.set_font('DejaVuSansCondensed', 'B', 10)
     pdf.cell(90,6, f'Ukupno za uplatu:', new_y='LAST', align='R')
-    pdf.cell(35,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', align='R')
+    pdf.cell(35,6, "{:,.2f}".format(bill.total_price).replace(",", " ").replace(".", ",").replace(" ", "."), new_y='NEXT', new_x='LMARGIN', align='R')
+    pdf.set_font('DejaVuSansCondensed', '', 10)
+    if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje']:
+        pdf.cell(50,6, f'Brojevi osnovnih faktura:', new_y='LAST', align='L')
+        pdf.set_font('DejaVuSansCondensed', 'B', 10)
+        pdf.cell(140,6, f'{bill.bill_original}', new_y='NEXT', new_x='LMARGIN', align='L')
+    pdf.set_font('DejaVuSansCondensed', '', 10)
+    pdf.cell(0,6, f'Posebni postupci oporezivanja po Zakonu o PDV Član 33;', new_x='LMARGIN', new_y='NEXT', align='L')
     
     
     path = "kpo/static/bills_data/"
@@ -485,8 +507,14 @@ def bill_list_gen(bills, customer, start_date, end_date):
     total_payments = 0
     for bill in bills:
         pdf.cell(25, 8, f'{bill.bill_number}', new_y='LAST', align='C', border = 1)
-        pdf.cell(30, 8, f'{bill.bill_transaction_date.strftime("%d.%m.%Y.")}', new_y='LAST', align='C', border = 1)
-        pdf.cell(30, 8, f'{bill.bill_due_date.strftime("%d.%m.%Y.")}', new_y='LAST', align='C', border = 1)
+        if bill.bill_transaction_date is None:
+            pdf.cell(30, 8, f'---', new_y='LAST', align='C', border = 1)
+        else:
+            pdf.cell(30, 8, f'{bill.bill_transaction_date.strftime("%d.%m.%Y.")}', new_y='LAST', align='C', border = 1)
+        if bill.bill_due_date is None:
+            pdf.cell(30, 8, f'---', new_y='LAST', align='C', border = 1)
+        else:
+            pdf.cell(30, 8, f'{bill.bill_due_date.strftime("%d.%m.%Y.")}', new_y='LAST', align='C', border = 1)
         pdf.cell(35, 8, f'{bill.total_price:.2f}', new_y='LAST', align='R', border = 1)
         pdf.cell(35, 8, f'{bill.total_payments:.2f}', new_y='LAST', align='R', border = 1)
         pdf.cell(35, 8, f'{(bill.total_price - bill.total_payments):.2f}', new_y='NEXT', new_x='LMARGIN', align='R', border = 1)
