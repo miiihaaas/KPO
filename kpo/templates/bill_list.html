@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='faktura') }}">Kreirajte novu fakturu</a>
+  <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='avans') }}">Kreirajte novi avansni račun</a>
+  <hr class="mb-3">
+</div>
+<div class="row">
+  <div class="col-9">
+    <h2 class="">Izlazni dokumenti</h2>
+    <table id="data" class="table table-striped dataTable no-footer invoices" role="grid" aria-describedby="data_info" style="width: 968px;">
+      <thead>
+          <tr role="row">
+              <th>Br dokumenta</th>
+              <th>Status dokumenta</th>
+              <th>Komitent</th>
+              <th>Iznos</th>
+              <th>Datum prometa</th>
+              <th>Datum dospeća</th>
+              <th>bill_original</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for bill in bills %}
+          <tr>
+              <td>
+                <div class="btn-group">
+                  {% if bill.bill_type == 'Faktura' %}
+                  <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Faktura">F</a>
+                  {% elif bill.bill_type == 'Avansni račun' %}
+                  <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Avansni račun">A</a>
+                  {% elif bill.bill_type == 'Knjižno odobrenje' %}
+                  <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Knjižno odobrenje">O</a>
+                  {% elif bill.bill_type == 'Knjižno zaduženje' %}
+                  <a class="btn btn-secondary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Knjižno zaduženje">Z</a>
+                  {% endif %}
+                  <a class="btn btn-primary btn-sm" href="{{ url_for('bills.bill_profile', bill_id=bill.id) }}" title="Izmenite dokument">{{ bill.bill_number }} </a>
+                  <a class="btn btn-danger btn-sm" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank" title="Preuzmite dokument"><i class="fa-solid fa-down-long"></i></a>
+                </div>
+              </td>
+              <td>{{ bill.bill_status }}</td>
+              <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('customers.customer_profile', customer_id=bill.bill_customer.id) }}">{{ bill.bill_customer.customer_name }}</a></td>
+              <td style="text-align: right;">{{ '%.2f' % bill.total_price }}</td>
+              {% if bill.bill_transaction_date %}
+                <td>{{ bill.bill_transaction_date }}</td>
+              {% else %}
+                <td></td>
+              {% endif %}
+              {% if bill.bill_due_date %}
+                <td>{{ bill.bill_due_date }}</td>
+              {% else %}
+                <td></td>
+              {% endif %}
+              <td>{{ bill.bill_original }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="3" style="text-align:right"></th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="col-3">
+    <div class="content-section">
+      <h3>Korisni podaci</h3>
+      <p class='text-muted'></p>
+      <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din / ostalo: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</small></li>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
+        <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[1]) }} din</small></li>
+        <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[2]) }} din</small></li>
+        <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[3]) }} din</small></li>
+        <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[4]) }} din</small></li>
+        <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[5]) }} din</small></li>
+        <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(dashboard.razlika_8m[6]) }} din</small></li>
+      </ul>
+      <p></p>
+    </div>
+  </div>
+</div>
+
+{% endblock content%}
+
+{% block scripts  %}
+<script>
+  $(document).ready(function () {
+  $('#data').DataTable({
+    footerCallback: function (row, data, start, end, display) {
+      var api = this.api();
+
+      // Remove the formatting to get integer data for summation
+      var intVal = function (i) {
+          return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+      };
+
+      // Total over all pages
+      total = api
+          .column(3)
+          .data()
+          .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+          }, 0);
+
+      // Total over this page
+      pageTotal = api
+          .column(3, { page: 'current' })
+          .data()
+          .reduce(function (a, b) {
+              return intVal(a) + intVal(b);
+          }, 0);
+
+      // Update footer
+      $(api.column(3).footer()).html(pageTotal + ' (' + total + ' total)');
+      // Hide the seventh column again
+      api.column(6).visible(false);
+      
+    },
+    columnDefs: [
+      {
+        targets: [6],
+        visible: false,
+        searchable: true,
+      },
+    ],
+    language: {
+      url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
+    },
+    stateSave: true,
+  });
+});
+</script>
+{% endblock %}

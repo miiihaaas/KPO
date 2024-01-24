@@ -3,6 +3,13 @@ h1 { font-size: 1.6rem; color: #999; font-weight: 700; padding: 30px 0 0 0; }
 h2 { font-size: 1.4rem; }
 h3 { font-size: 1.2rem; }
 body.Dodavanje fieldset.form-group { max-width: 100% !important;}
+.hidden {display: none;}
+.nav-link:hover + .dropdown-menu, .dropdown-menu.dropdown-menu-right:hover { display: block; }
+.dropdown-menu-right { right: auto; left: auto; }
+.dropdown-menu.dropdown-menu-right a:hover { background-color: #009dde; color: #fff !important; }
+.bg-steel .dropdown-menu { background-color: #eee; padding: 0; overflow: hidden; }
+a.dropdown-item { color: #104e96 !important; border-bottom: 1px solid #fff; }
+a.dropdown-item:last-child { border-bottom: 0; }
 .alert { display: inline-block; padding: 5px 20px 3px 40px !important; }
 .alert-success { color: #009cdb; background-color: transparent;  border: 1px solid #009cdb; font-weight: 700; font-size: 16px; text-align: left; border-radius: 50px;}
 .alert-success:before { position: absolute; content: '\f058'; font-family: "Font Awesome 6 Free"; left: 0; top: -8px; font-size: 32px; }
@@ -111,11 +118,11 @@ body.Registracija form > div.form-group { text-align: center; }
 footer { display: flex; max-width: 1320px; margin: auto; justify-content: center; font-size: 12px; }
 form > div.form-group { text-align: center; }
 .btn.btn-danger, .btn.btn-secondary { margin-bottom: 10px !important; }
-.btn.btn-secondary { background-image: linear-gradient(#eee, #ccc) !important; color:#555 !important; }
-.btn.btn-secondary:hover { background-image: linear-gradient(#ccc, #ccc) !important; }
-.btn.btn-danger { background-image: linear-gradient(#ff0000, #990000) !important; }
-.btn.btn-danger:hover { background-image: linear-gradient(#990000, #990000) !important; }
-.btn.btn-secondary, .btn.btn-danger { margin: 0 0 10px 0 !important; }
+.btn.btn-secondary { background-image: linear-gradient(#25a6dd, #009cdd) !important; color:#ffffff !important; }
+.btn.btn-secondary:hover { background-image: linear-gradient(#009cdd, #009cdd) !important; }
+.btn.btn-danger { background-image: linear-gradient(#d80978, #92004f) !important; }
+.btn.btn-danger:hover { background-image: linear-gradient(#92004f, #92004f) !important; }
+.btn.btn-secondary, .btn.btn-danger { margin: 0 0 0 0 !important; }
 .form-check-input:checked { background-color: #009cdd; border-color: #009cdd; }
 @media (min-width: 992px) {
 	/*body:not(.Korisnici) .btn-info { width: 100%}*/

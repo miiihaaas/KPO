@@ -4,12 +4,8 @@
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
-            <!-- <legend class="border-bottom mb-4">{{ legend }}</legend> -->
-
-
             <div class="form-group">
                 {{ form.name.label(class="form-control-label") }}
-
                 {% if form.name.errors %}
                     {{ form.name(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
@@ -23,7 +19,6 @@
             </div>
             <div class="form-group">
                 {{ form.surname.label(class="form-control-label") }}
-
                 {% if form.surname.errors %}
                     {{ form.surname(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
@@ -37,7 +32,6 @@
             </div>
             <div class="form-group">
                 {{ form.workplace.label(class="form-control-label") }}
-
                 {% if form.workplace.errors %}
                     {{ form.workplace(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
@@ -51,7 +45,6 @@
             </div>
             <div class="form-group">
                 {{ form.gender.label(class="form-control-label") }}
-
                 {% if form.gender.errors %}
                     {{ form.gender(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
@@ -60,12 +53,11 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.gender(class="form-control form-control-lg") }}
+                    {{ form.gender(class="form-select form-select-lg") }}
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.email.label(class="form-control-label") }}
-
                 {% if form.email.errors %}
                     {{ form.email(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
@@ -77,52 +69,49 @@
                     {{ form.email(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-
             {% if current_user.authorization == 's_admin'%}
-              <div class="form-group">
-                  {{ form.company_id.label(class="form-control-label") }}
-
-                  {% if form.company_id.errors %}
-                      {{ form.company_id(class="form-control form-control-lg is-invalid") }}
-                      <div class="invalid-feedback">
-                          {% for error in form.company_id.errors %}
-                              <span>{{ error }}</span>
-                          {% endfor %}
-                      </div>
-                  {% else %}
-                      {{ form.company_id(class="form-control form-control-lg") }}
-                  {% endif %}
-              </div>
+                <div class="form-group">
+                    {{ form.company_id.label(class="form-control-label") }}
+                    {% if form.company_id.errors %}
+                        {{ form.company_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
             {% else %}
-              {{ form.company_id(class="sr-only form-control form-control-lg") }}
+                {{ form.company_id(class="sr-only form-control form-control-lg") }}
             {% endif %}
             {% if current_user.authorization == 's_admin'%}
-              <div class="form-group">
-                  {{ form.authorization.label(class="form-control-label") }}
-
-                  {% if form.authorization.errors %}
-                      {{ form.authorization(class="form-control form-control-lg is-invalid") }}
-                      <div class="invalid-feedback">
-                          {% for error in form.authorization.errors %}
-                              <span>{{ error }}</span>
-                          {% endfor %}
-                      </div>
-                  {% else %}
-                      {{ form.authorization(class="form-control form-control-lg") }}
-                  {% endif %}
-              </div>
+                <div class="form-group">
+                    {{ form.authorization.label(class="form-control-label") }}
+                    {% if form.authorization.errors %}
+                        {{ form.authorization(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.authorization.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.authorization(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
             {% else %}
-              {{ form.authorization(class="sr-only form-control form-control-lg") }}
+                {{ form.authorization(class="sr-only form-control form-control-lg") }}
             {% endif %}
         </fieldset>
         <div class="form-group">
-            <a class="btn btn-info" href="{{url_for('users.user_list')}}">&#8678; Nazad</a>
+            <a class="btn btn-info" href="{{url_for('users.user_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
             {{ form.submit(class="btn btn-outline-info") }}
             {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
                 <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrišite profil</button>
             {% endif %}
         </div>
-  </form>
+    </form>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">

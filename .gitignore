@@ -7,9 +7,15 @@ kpo\__pycache__/
 #TODO: komanda za brisanje fajlova sa gita: git rm -r --cached .\your\file\destination\file.extension
 kpo/site.db
 kpo/__pycache__/
+kpo/bills/__pycache__/
 kpo/companys/__pycache__/
-kpo/main/__pycache__/
+kpo/customers/__pycache__/
 kpo/invoices/__pycache__/
+kpo/main/__pycache__/
+kpo/static/bills_data/
+kpo/static/company_logos/
+kpo/static/pdf_import/
+kpo/static/payment_slips/
 kpo/users/__pycache__/
 kpo/qr/
 __pycache__/
