@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from flask import Blueprint, Response
 from flask import  render_template, redirect, url_for, flash, send_file, request
 from sqlalchemy import func
-from kpo import db
+from kpo import db, logger
 from kpo.models import Company, Settings, User
 from kpo.invoices.forms import DashboardData
 from kpo.bills.forms import Dashboard
@@ -19,7 +19,6 @@ from flask import jsonify
 
 main = Blueprint('main', __name__)
 
-
 @main.route("/")
 @main.route("/home", methods=['GET', 'POST'])
 def home():
@@ -28,25 +27,25 @@ def home():
         companys = Company.query.all()
         form.company_id.choices = [(company.id, company.companyname) for company in companys]
         dashboard = Dashboard(current_user.user_company.id)
-        print(f'{current_user.user_company.id=}')
-        print(f'{dashboard=}')
+        logger.info(f'{current_user.user_company.id=}')
+        logger.info(f'{dashboard=}')
 
         for attr, value in vars(dashboard).items():
-            print(f'{attr} = {value}')
+            logger.info(f'{attr} = {value}')
         
         user=User.query.get(current_user.id)
-        print(f'{form.company_id.choices=}')
-        print(f'{user.company_id=}')
-        print(f'{user.user_company.companyname=}')
-        print(f'{form.company_id.data=}')
+        logger.info(f'{form.company_id.choices=}')
+        logger.info(f'{user.company_id=}')
+        logger.info(f'{user.user_company.companyname=}')
+        logger.info(f'{form.company_id.data=}')
         if form.validate_on_submit():
             user.company_id = form.company_id.data
             db.session.commit()
             return redirect(url_for('main.home'))
         else:
-            print(f'nije validan form')
+            logger.info(f'nije validan form')
     else:
-        print(f'nije ulogovan niko')
+        logger.info(f'nije ulogovan niko')
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'info')
         return redirect(url_for('main.about'))
     return render_template('home.html', title='Početna', form=form, dashboard=dashboard)
@@ -64,7 +63,7 @@ def settings(company_id):
         flash(f'Nemate ovlašćenje da podešavate parametre drugih kompanija.', 'danger')
         return redirect(url_for('main.home'))
     global_settings = Settings.query.filter_by(company_id=company_id).first()
-    print(f'{global_settings.id=}')
+    logger.info(f'{global_settings.id=}')
     form = SettingsForm()
     if form.validate_on_submit():
         global_settings.synchronization_with_eFaktura = form.synchronization_with_eFaktura.data
@@ -90,7 +89,7 @@ def import_from_pdv():
         file.save(os.path.join('kpo/static/pdf_import/', filename))
         file_path = os.path.join('kpo/static/pdf_import/', filename)
         df, uplatilac = import_data_from_pdv(file_path)
-        print(f'iz main route: {uplatilac=}')
+        logger.info(f'iz main route: {uplatilac=}')
         df_list = df.values.tolist()
         qr_code_images = []
         for i, record in enumerate(df_list):
@@ -99,7 +98,7 @@ def import_from_pdv():
             racun = racun[:3] + racun[3:].zfill(15)  # Dodaje nule posle prvih 3 cifre računa do ukupne dužine od 18 cifara
             dug = record[2]
             dug = "RSD" + str(dug).replace('.', ',')
-            print(f'ovo bi trebalo da je šifra plaćanja: {record[6]}')
+            logger.info(f'ovo bi trebalo da je šifra plaćanja: {record[6]}')
             data = {
                 "K": "PR",
                 "V": "01",
@@ -112,19 +111,20 @@ def import_from_pdv():
                 "S": record[3],
                 "RO": record[4]+record[5]
             }
-            print(f'{data=}')
+            logger.info(f'{data=}')
             #! dokumentacija: https://ips.nbs.rs/PDF/Smernice_Generator_Validator_latinica_feb2023.pdf
             url = 'https://nbs.rs/QRcode/api/qr/v1/gen/250'
             headers = { 'Content-Type': 'application/json' }
             response = requests.post(url, headers=headers, json=data)
-            print(f'{response=}')
+            logger.info(f'{response=}')
             if response.status_code == 500:
-                print(response.content)
-                print(response.headers)
+                logger.warning(f'NBS API greška: {response.status_code}')
+                logger.warning(f'Sadržaj odgovora: {response.content}')
+                logger.warning(f'Headeri: {response.headers}')
                 response_data = response.json()
                 if 'error_message' in response_data:
                     error_message = response_data['error_message']
-                    print(f"Error message: {error_message}")
+                    logger.error(f"NBS API error message: {error_message}")
 
             if response.status_code == 200:
                 qr_code_image = Image.open(io.BytesIO(response.content))
@@ -137,7 +137,7 @@ def import_from_pdv():
             else:
                 pass
                 # return 'Error generating QR code', response.status_code
-        print(f'{qr_code_images=}')
+        logger.info(f'{qr_code_images=}')
             # if response.status_code == 200:
             #     qr_code_image = response.content
             #     qr_code_image = response.content
@@ -157,9 +157,9 @@ def import_from_pdv():
                 if os.path.isfile(file_path):
                     # Obriši fajl
                     os.remove(file_path)
-            print("Svi fajlovi su uspješno obrisani.")
+            logger.info("Svi QR kod fajlovi su uspješno obrisani nakon generisanja uplatnica.")
         else:
-            print("Navedena putanja nije direktorijum.")
+            logger.error(f"Putanja {folder_path} nije direktorijum.")
 
         
         filename = f'static/payment_slips/uplatnice.pdf'

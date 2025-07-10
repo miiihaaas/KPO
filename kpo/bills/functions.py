@@ -2,7 +2,7 @@ from fpdf import FPDF
 import pdfplumber
 import pandas as pd
 from datetime import datetime
-
+from kpo import logger
 
 def import_data_from_pdv(file):
     dependent_dict = [
@@ -108,7 +108,7 @@ def import_data_from_pdv(file):
             uplatilac = uplatilac.replace('\n', ' ')
             uplatilac = uplatilac[:70]
             
-            print(f'{uplatilac=}')
+            logger.info(f'Uplatilac: {uplatilac}')
             tables = page.extract_tables()
             counter = 0
             for table in tables:
@@ -159,7 +159,7 @@ def uplatnice_gen(df_list, qr_code_images, uplatilac):
     # pdf.add_page()
     counter = 1
     for i, uplatnica in enumerate(df_list):
-        print(uplatnica)
+        logger.info(f'Uplatnica: {uplatnica}')
         if counter % 3 == 1:
             pdf.add_page()
             y = 0
@@ -251,9 +251,9 @@ def pdf_gen(bill):
     company_dinar_account_list = bill.bill_company.dinar_account_list
     company_foreign_account_list = bill.bill_company.foreign_account_list
     
-    print(f'start debug: {company_selected_account=}')
+    logger.info(f'Start debug: {company_selected_account=}')
     if company_selected_account in company_dinar_account_list:
-        print('DINAR')
+        logger.info('Tip računa: DINAR')
         company_selected_iban = None
         company_selected_swift = None
     else:
@@ -261,15 +261,15 @@ def pdf_gen(bill):
             if account_info['account'] == company_selected_account:
                 company_selected_iban = account_info['iban']
                 company_selected_swift = account_info['swift']
-                print(f'{company_selected_iban=}')
-                print(f'{company_selected_swift=}')
+                logger.info(f'{company_selected_iban=}')
+                logger.info(f'{company_selected_swift=}')
             else:
                 company_selected_iban = None
                 company_selected_swift = None
     
     
-    print(f'{company_dinar_account_list=}')
-    print(f'{company_foreign_account_list=}')
+    logger.info(f'{company_dinar_account_list=}')
+    logger.info(f'{company_foreign_account_list=}')
     if bill.bill_type == 'Faktura':
         broj_dokumenta = 'Broj fakture'
     elif bill.bill_type == 'Avansni račun':
@@ -309,7 +309,7 @@ def pdf_gen(bill):
     pdf.set_font('DejaVuSansCondensed', '', 10)
     pdf.set_y(40)  # Prilagodite Y poziciju prema potrebi
     if bill.bill_status == 'storniran':
-        print(f'generisanje pdf fajla - status storniran')
+        logger.info(f'Generisanje pdf fajla - status storniran')
         pdf.image('kpo/static/img/storno.jpg', 0, 30, 220)
     if bill.bill_transaction_date:
         pdf.cell(95,6, f"Datum izdavanja: {bill.bill_transaction_date.strftime('%d.%m.%Y.')}", ln=False, align='L')
@@ -407,7 +407,7 @@ def pdf_gen(bill):
     pdf.cell(25,4, f'Iznos bez PDV', new_y='LAST', align='R', fill=1)
     pdf.cell(20,4, f'PDV stopa', new_x='LMARGIN', new_y='NEXT', align='R', fill=1)
     for item in bill.bill_items:
-        print(f'item: {item=}')
+        logger.info(f'Stavka računa: {item=}')
         if item['sifra']:
             pdf.cell(55,4, f"({item['sifra']}) {item['naziv']}", new_y='LAST', align='L', border='B')
         else:
@@ -449,19 +449,19 @@ def pdf_gen(bill):
 
 def bill_list_gen(bills, customer, start_date, end_date):
     bill = bills[0]
-    print(f'bill: {bill=}')
+    logger.info(f'Generisanje liste računa - prvi račun: {bill=}')
     company_logo = 'kpo/static/company_logos/' + bill.bill_company.company_logo
     company_name = bill.bill_company.companyname
     company_city = bill.bill_company.company_city
     company_mail = bill.bill_company.company_mail
     company_phone = bill.bill_company.company_phone
     company_site = bill.bill_company.company_site
-    print(f'{company_logo=}')
-    print(f'{company_name=}')
-    print(f'{company_city=}')
-    print(f'{company_mail=}')
-    print(f'{company_phone=}')
-    print(f'{company_site=}')
+    logger.info(f'{company_logo=}')
+    logger.info(f'{company_name=}')
+    logger.info(f'{company_city=}')
+    logger.info(f'{company_mail=}')
+    logger.info(f'{company_phone=}')
+    logger.info(f'{company_site=}')
     class PDF(FPDF):
         def __init__(self, **kwargs):
             super(PDF, self).__init__(**kwargs)

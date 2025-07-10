@@ -1,3 +1,5 @@
+from kpo import logger
+
 def koren_reci(imenica):
     if imenica[-1] in ["a", "e", "i", "o", "u"]:
         k_i = imenica[:-1]
@@ -57,27 +59,27 @@ def ends_with_o(imenica):
 def padezi(imenica):
     koren_imenice = koren_reci(imenica)
     lista_padeza = []
-    print(f'{koren_imenice=}')
+    logger.info(f'{koren_imenice=}')
     if imenica[-1] not in ["a", "e", "i", "o", "u"]:
         lista_padeza = not_vocal(imenica)
-        print(f'{lista_padeza=}')
+        logger.info(f'{lista_padeza=}')
         return lista_padeza
     elif imenica[-1] == "a":
         lista_padeza = ends_with_a(imenica)
-        print(f'{lista_padeza=}')
+        logger.info(f'{lista_padeza=}')
         return lista_padeza
     elif imenica[-1] == "e":
         lista_padeza = ends_with_e(imenica)
-        print(f'{lista_padeza=}')
+        logger.info(f'{lista_padeza=}')
         return lista_padeza
     elif imenica[-1] == "o":
         lista_padeza = ends_with_o(imenica)
-        print(f'{lista_padeza=}')
+        logger.info(f'{lista_padeza=}')
         return lista_padeza
 
 
 #todo: raskomentariši dnjie redove da bi mogao da ispituješ funkcije u terminalu:
 # while True:
 #     imenica = input('unesi imenicu: ')
-#     print(imenica)
+#     logger.info(imenica)
 #     padezi(imenica)

@@ -3,7 +3,7 @@ from PIL import Image
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort
 from flask_login import current_user, login_required
-from kpo import db, app
+from kpo import db, app, logger
 from kpo.companys.forms import RegistrationCompanyForm, EditCompanyForm
 from kpo.models import Company, Settings
 from flask import jsonify

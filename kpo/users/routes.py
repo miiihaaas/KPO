@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort
-from kpo import db, bcrypt, mail
+from kpo import db, bcrypt, mail, logger
 from kpo.padezi import padezi
 from kpo.users.forms import RegistrationUserForm, LoginForm, UpdateUserForm, RequestResetForm, ResetPasswordForm
 from kpo.models import Company, User
@@ -139,7 +139,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            print (user.name)
+            logger.info(f'Korisnik prijavljen: {user.name}')
             name_vokativ = padezi(user.name)[5]
             flash(f'Dobro došli, {name_vokativ}!', 'success')
             return redirect(next_page) if next_page else redirect(url_for('main.home'))
@@ -162,7 +162,7 @@ def delete_user(user_id):
         flash('Morate da budete ulogovani da biste pristupili ovoj stranici', 'danger')
         return redirect(url_for('users.login'))
     elif not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):
-        print('nije dobar password')
+        logger.warning('Pokušaj brisanja korisnika sa pogrešnom lozinkom.')
         abort(403)
     else:
         if current_user.authorization == 'c_user':

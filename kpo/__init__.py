@@ -1,4 +1,6 @@
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -62,6 +64,32 @@ app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer   ////// os.environ.get vs os.getenv
 app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer -- za 2 step verification: https://support.google.com/accounts/answer/185833
 mail = Mail(app)
+
+# Konfiguracija loggera sa rotacijom 9 fajlova
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+logger = logging.getLogger('kpo')
+logger.setLevel(logging.INFO)
+
+# Kreiranje formatera za log poruke
+log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+# Kreiranje RotatingFileHandler sa rotacijom 9 fajlova
+file_handler = RotatingFileHandler('logs/kpo.log', maxBytes=1024*1024, backupCount=9)
+file_handler.setFormatter(log_formatter)
+file_handler.setLevel(logging.INFO)
+
+# Dodavanje handlera loggeru
+logger.addHandler(file_handler)
+
+# Dodavanje konzolnog handlera za prikaz logova u konzoli
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+console_handler.setLevel(logging.INFO)
+logger.addHandler(console_handler)
+
+logger.info('Aplikacija pokrenuta')
 
 from kpo.companys.routes import companys
 from kpo.invoices.routes import invoices

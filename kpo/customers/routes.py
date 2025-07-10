@@ -2,7 +2,7 @@ from datetime import date
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort, send_file
 from flask_login import login_required, current_user
-from kpo import db
+from kpo import db, logger
 from kpo.bills.functions import bill_list_gen
 from kpo.models import Customer, Bill, Settings
 from kpo.customers.forms import RegisterCustomerForm, EditCustomerForm
@@ -22,8 +22,8 @@ def customer_list():
         Bill.bill_company_id == current_user.company_id,
         Bill.bill_transaction_date.between(start_date, end_date)).all() #! ako bude dileme bill_due_date vs bill_transaction_date
     company_settings = Settings.query.filter_by(company_id=current_user.company_id).first()
-    # print(f'Komitenti: {customers}')
-    print(f'Fakture: {bills}')
+    # logger.info(f'Komitenti: {customers}')
+    logger.info(f'Fakture: {bills}')
     table_data = []
     for customer in customers:
         total_price_by_customer = 0
@@ -31,7 +31,7 @@ def customer_list():
         total_payments_by_customer = 0
         total_depts_by_customer = 0
         for bill in bills:
-            print(f'{bill=}, {bill.total_payments}')
+            logger.info(f'{bill=}, {bill.total_payments}')
             if int(bill.bill_customer_id) == int(customer.id):
                 total_price_by_customer += bill.total_price
                 count_bills_by_customer += 1
@@ -46,7 +46,7 @@ def customer_list():
                             'total_payments': total_payments_by_customer,
                             'saldo': total_price_by_customer - total_payments_by_customer,
                             'total_depts': total_depts_by_customer})
-    print(f'Table data: {table_data}')
+    logger.info(f'Table data: {table_data}')
     
     return render_template('customer_list.html', 
                             customers=customers, 
@@ -95,7 +95,7 @@ def customer_profile(customer_id):
     #     Bill.bill_company_id == current_user.company_id,
     #     Bill.bill_transaction_date.between(start_date, end_date)).all()
     for bill in bills:
-        print(f'Faktura: {bill.bill_number=}')
+        logger.info(f'Faktura: {bill.bill_number=}')
     company_settings = Settings.query.filter_by(company_id=current_user.company_id).first()
     form = EditCustomerForm()
     if form.validate_on_submit():

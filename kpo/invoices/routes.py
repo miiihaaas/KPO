@@ -3,7 +3,7 @@ from dateutil.relativedelta import relativedelta
 from flask import Blueprint
 from flask import  render_template, url_for, flash, redirect, request, abort, send_file
 from sqlalchemy import func
-from kpo import app, db, bcrypt
+from kpo import app, db, bcrypt, logger
 from kpo.invoices.forms import  RegistrationInvoiceForm, UpdateInvoiceForm, DashboardData
 from kpo.models import Company, Invoice, User
 from flask_login import current_user, login_required
@@ -47,8 +47,8 @@ def register_i():
     customer_list = [i.customer for i in db.session.query(Invoice.customer).filter(Invoice.company_id == current_user.user_company.id).distinct()]
     service_list = [i.service for i in db.session.query(Invoice.service).filter(Invoice.company_id == current_user.user_company.id).distinct()]
     
-    print(customer_list)
-    print(service_list)
+    logger.info(f'Lista kupaca: {customer_list}')
+    logger.info(f'Lista usluga: {service_list}')
     form = RegistrationInvoiceForm()
     form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
     form.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]
@@ -93,7 +93,7 @@ def register_n(invoice_id, type):
         return redirect(url_for('main.home'))
     invoice = Invoice.query.get_or_404(invoice_id)
     customer_list = [i.customer for i in db.session.query(Invoice.customer).distinct()]
-    print(customer_list)
+    logger.info(f'Lista kupaca: {customer_list}')
     data = DashboardData(current_user.user_company.id)
     form = RegistrationInvoiceForm()
     form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
@@ -164,7 +164,7 @@ def register_n(invoice_id, type):
 def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
     invoice = Invoice.query.get_or_404(invoice_id)
 
-    print(f'{invoice.date=}')
+    logger.info(f'{invoice.date=}')
     if not current_user.is_authenticated:
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
@@ -173,7 +173,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
     elif current_user.authorization == 'c_admin':
         if current_user.user_company.id != invoice.invoice_company.id:
             abort(403)
-    print(Company.query.filter_by(id=invoice.company_id).first().id)
+    logger.info(f'ID kompanije: {Company.query.filter_by(id=invoice.company_id).first().id}')
     form = UpdateInvoiceForm()
     form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
     form.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]
@@ -196,7 +196,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
         flash(f'Faktura: {form.invoice_number.data} je ažurirana.', 'success')
         return redirect(url_for('invoices.invoice_list'))
     elif request.method == 'GET':
-        print(f'{invoice.cancelled=}')
+        logger.info(f'{invoice.cancelled=}')
         form.date.data = invoice.date
         form.invoice_number.data = invoice.invoice_number
         form.customer.data = invoice.customer
@@ -228,7 +228,7 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
 @login_required
 def delete_invoice(invoice_id):
     invoice = Invoice.query.get_or_404(invoice_id)
-    print(f'debug - {request.form.get("input_password")}')
+    logger.debug('Password verification attempt')
     if not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):
         flash('Pogrešna lozinka.', 'danger')
         return redirect(url_for('invoices.invoice_list'))

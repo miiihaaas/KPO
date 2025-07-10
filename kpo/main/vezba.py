@@ -1,6 +1,7 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
 # from kpo.models import Invoice
+from kpo import logger
 
 
 class Data():
@@ -26,7 +27,7 @@ class Data():
                 self.razlika = [0, 0, 0, 0, 0, 0, 0]
 
 form = Data(2)
-print(form.razlika)
+logger.info(f'Razlika: {form.razlika}')
 
 # class Sabiranje:
 #     def __init__(self, a, b):
