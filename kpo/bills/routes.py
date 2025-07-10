@@ -223,6 +223,8 @@ def bill_profile(bill_id):
         print(f'{split_fullname=}')
         records = []
         for list in split_fullname:
+            if len(list) < 9:
+                continue
             item = {'sifra': list[0], 
                     'naziv': list[1], 
                     'kolicina': list[2], 

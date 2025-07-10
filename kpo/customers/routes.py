@@ -31,6 +31,7 @@ def customer_list():
         total_payments_by_customer = 0
         total_depts_by_customer = 0
         for bill in bills:
+            print(f'{bill=}, {bill.total_payments}')
             if int(bill.bill_customer_id) == int(customer.id):
                 total_price_by_customer += bill.total_price
                 count_bills_by_customer += 1

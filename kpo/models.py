@@ -154,5 +154,5 @@ class Item(db.Model):
     item_tax = db.Column(db.Float, nullable=True)
     item_tax_category = db.Column(db.String(2), nullable=False)
 
-db.create_all()
-db.session.commit()
+# db.create_all()
+# db.session.commit()

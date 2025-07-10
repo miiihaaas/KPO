@@ -50,6 +50,8 @@ def register_i():
     print(customer_list)
     print(service_list)
     form = RegistrationInvoiceForm()
+    form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
+    form.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]
     form.reset()
     if form.validate_on_submit():
         if current_user.authorization == 'c_admin':
@@ -94,6 +96,8 @@ def register_n(invoice_id, type):
     print(customer_list)
     data = DashboardData(current_user.user_company.id)
     form = RegistrationInvoiceForm()
+    form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
+    form.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]
     if type == 'odobrenje':
         form.invoice_number.label.text = 'Broj knjižnog odobrenja'
         form.submit.label.text = 'Dodajte knjižno odobrenje'
@@ -171,6 +175,8 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
             abort(403)
     print(Company.query.filter_by(id=invoice.company_id).first().id)
     form = UpdateInvoiceForm()
+    form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
+    form.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]
     if form.validate_on_submit():
         invoice.date = form.date.data
         invoice.invoice_number = form.invoice_number.data

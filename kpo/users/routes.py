@@ -31,6 +31,7 @@ def register_u():
         flash('Nemate autorizaciju da pristupite ovoj stranici', 'danger')
         return redirect(url_for('main.home'))
     form = RegistrationUserForm()
+    form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
     form.reset()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -77,6 +78,7 @@ def user_profile(user_id): #ovo je funkcija za editovanje user-a
         abort(403)
 
     form = UpdateUserForm()
+    form.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
     form.reset()
 
     if form.validate_on_submit():
