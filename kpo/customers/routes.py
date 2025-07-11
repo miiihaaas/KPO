@@ -150,5 +150,5 @@ def export_report(customer_id):
     print(customer.customer_name)
     print(f'{start_date=}, {end_date=}')
     print(f'Fakture: {bills}')
-    file = 'static/bills_data/' + bill_list_gen(notes, customer, start_date, end_date)
+    file = 'static/bills_data/' + bill_list_gen( notes + bills, customer, start_date, end_date)
     return send_file(file, mimetype='application/pdf')
