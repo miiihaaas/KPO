@@ -70,7 +70,7 @@ if not os.path.exists('logs'):
     os.makedirs('logs')
 
 logger = logging.getLogger('kpo')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 # Kreiranje formatera za log poruke
 log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')

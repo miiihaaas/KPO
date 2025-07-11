@@ -3,7 +3,7 @@ from datetime import datetime, date
 from flask import Blueprint
 from flask import render_template, request, redirect, url_for, flash, send_file, current_app
 from flask_login import login_required, current_user
-from kpo import db
+from kpo import db, logger
 from kpo.models import Bill, Customer, Settings, Company
 from kpo.bills.forms import Dashboard, RegisterBillForm, EditBillForm, RegisterAdvanceAccountForm, EditAdvanceAccountForm, RegisterCreditNoteForm, EditCreditNoteForm, RegisterDebitNoteForm, EditDebitNoteForm
 from kpo.bills.functions import pdf_gen
@@ -26,7 +26,7 @@ def save_contract(form_bill_attachment):
     file, f_ext = os.path.splitext(form_bill_attachment.filename)
     f_name = file + secrets.token_hex(8) + f_ext
     f_path = os.path.join(current_app.root_path, 'static/bills_data/bill_contracts', f_name)
-    print(f'{f_path=}')
+    logger.info(f'{f_path=}')
     form_bill_attachment.save(f_path)
     return f_name
 
@@ -47,8 +47,8 @@ def register_b(type):
     dashboard = Dashboard(current_user.user_company.id)
     dinar_accounts = Company.query.filter_by(id=current_user.user_company.id).first().dinar_account_list
     foreign_accounts = Company.query.filter_by(id=current_user.user_company.id).first().foreign_account_list
-    print(f'{dinar_accounts=}')
-    print(f'{foreign_accounts=}')
+    logger.info(f'{dinar_accounts=}')
+    logger.info(f'{foreign_accounts=}')
     form.bill_customer_id.choices = [(c.id, c.customer_name) for c in Customer.query.filter_by(company_id=current_user.company_id).all()]
     form.bill_tax_category.data = current_user.user_company.company_default_tax_category
     form.bill_base_code.data = current_user.user_company.company_default_base_code
@@ -89,15 +89,15 @@ def register_notes(bill_id, note_type):
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
         return redirect(url_for('users.login'))
     bill = Bill.query.get_or_404(bill_id)
-    print(f'debug broj računa: {bill.bill_company_account=}')
+    logger.info(f'debug broj računa: {bill.bill_company_account=}')
     if note_type == 'credit_note':
-        print('knjižno odobrenje')
+        logger.info('knjižno odobrenje')
         form = RegisterCreditNoteForm()
         bill_type = 'Knjižno odobrenje'
         title = f'Registracija knjižnog odobrenja za fakturu {bill.bill_number}'
         last_document = Bill.query.filter_by(bill_company_id=current_user.company_id).filter_by(bill_type='Knjižno odobrenje').order_by(Bill.bill_number.desc()).first()
     elif note_type == 'debit_note':
-        print('knjižno zaduženje')
+        logger.info('knjižno zaduženje')
         form = RegisterDebitNoteForm()
         bill_type = 'Knjižno zaduženje'
         title = f'Registracija knjižnog zaduženja za fakturu {bill.bill_number}'
@@ -129,7 +129,7 @@ def register_notes(bill_id, note_type):
             bill_company_account = bill.bill_company_account
         )
         bill.bill_original = bill.bill_original + f' {note.bill_number}'
-        print(f'{note.bill_company_account}')
+        logger.info(f'{note.bill_company_account}')
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('bills.bill_profile', bill_id=note.id))
@@ -160,7 +160,7 @@ def bill_profile(bill_id):
         return redirect(url_for('users.login'))
     bill = Bill.query.get_or_404(bill_id)
     company_settings = Settings.query.filter_by(company_id=current_user.company_id).first()
-    print(f'{bill.bill_type=}')
+    logger.info(f'{bill.bill_type=}')
     if bill.bill_type == 'Knjižno odobrenje':
         form = EditCreditNoteForm()
         c = Customer.query.get_or_404(bill.bill_customer_id)
@@ -188,7 +188,7 @@ def bill_profile(bill_id):
     dashboard = Dashboard(current_user.user_company.id)
     dinar_accounts = Company.query.filter_by(id=current_user.user_company.id).first().dinar_account_list
     foreign_accounts = Company.query.filter_by(id=current_user.user_company.id).first().foreign_account_list
-    print(f'{form.bill_base_code.choices=}')
+    logger.info(f'{form.bill_base_code.choices=}')
     units = [('kWh', 'kWh'), ('kom', 'kom'), ('kg', 'kg'), ('km', 'km'), ('g', 'g'), ('m', 'metar'), ('l', 'litar'), ('t', 'tona'), ('m2', 'm2'), ('m3', 'm3'), ('min', 'min'), ('h', 'sat'), ('d', 'dan'), ('M', 'mesec'), ('god', 'godina')]
     taxes = [('0', '0%'), ('10', '10%'), ('20', '20%')]
     if form.validate_on_submit():
@@ -205,7 +205,7 @@ def bill_profile(bill_id):
         bill.bill_tax_calculation_date = form.bill_tax_calculation_date.data if not bill.bill_type in ['Knjižno odobrenje'] else None
         bill.bill_reference_number = form.bill_reference_number.data
         bill.bill_model = form.bill_model.data
-        print(f'debug validacija attachment forme: {form.bill_attachment.data=}')
+        logger.info(f'debug validacija attachment forme: {form.bill_attachment.data=}')
         if form.bill_attachment.data:
             contract_file = save_contract(form.bill_attachment.data)
             bill.bill_attachment = contract_file
@@ -213,14 +213,14 @@ def bill_profile(bill_id):
             bill.bill_customer_id = form.bill_customer_id.data
             bill.bill_company_account = request.form.get('bill_company_account')
         else:
-            print(f'validno: {form.bill_customer_id.data=}')
+            logger.info(f'validno: {form.bill_customer_id.data=}')
             bill.bill_customer_id = bill.bill_customer_id
         
         fullname = request.form.getlist('field[]')
-        print(f'{fullname=}')
+        logger.info(f'{fullname=}')
         #split fullname list into many lists of 5
         split_fullname = [fullname[i:i + 9] for i in range(0, len(fullname), 9)]
-        print(f'{split_fullname=}')
+        logger.info(f'{split_fullname=}')
         records = []
         for list in split_fullname:
             if len(list) < 9:
@@ -235,14 +235,14 @@ def bill_profile(bill_id):
                     'iznos_bez_pdv': list[7],
                     'pdv': list[8]}
             records.append(item)
-        print(f'{records=}')
+        logger.info(f'{records=}')
         total_price = 0
         try:
             for record in records:
                 total_price += (float(record['cena']) * float(record['kolicina']) * (1 - float(record['popust']) / 100))
         except:
             total_price = 0
-        print(f'{total_price=}')
+        logger.info(f'{total_price=}')
         bill.bill_items = records
         if bill.bill_type == 'Knjižno odobrenje':
             bill.total_price = -total_price
@@ -250,21 +250,21 @@ def bill_profile(bill_id):
             bill.total_price = total_price
         if company_settings.payment_records:
             payments_list = request.form.getlist('payment[]')
-            print(f'{payments_list=}')
+            logger.info(f'{payments_list=}')
             split_payments_list = [payments_list[i:i + 2] for i in range(0, len(payments_list), 2)]
-            print(f'{split_payments_list=}')
+            logger.info(f'{split_payments_list=}')
             records = []
             for list in split_payments_list:
                 item = {'payment_date': list[0], 'payment_amount': list[1]}
                 records.append(item)
-            print(f'{records=}')
+            logger.info(f'{records=}')
             total_payments = 0
             try:
                 for record in records:
                     total_payments += int(record['payment_amount'])
             except:
                 total_payments = 0
-            print(f'{total_payments=}')
+            logger.info(f'{total_payments=}')
             bill.bill_payments = records
             if bill.bill_type == 'Knjižno odobrenje':
                 bill.total_payments = -total_payments
@@ -301,7 +301,7 @@ def bill_profile(bill_id):
         form.bill_attachment.data = bill.bill_attachment
         form.bill_customer_id.data = str(bill.bill_customer_id)
     else:
-        print(f'nije validno: {form.errors=}')
+        logger.info(f'nije validno: {form.errors=}')
         
     return render_template('bill.html', company_settings = company_settings,
                             form=form, 
@@ -380,14 +380,32 @@ def delete_item():
 @bills.route('/open_pdf/<int:bill_id>')
 def open_pdf(bill_id):
     bill = Bill.query.get_or_404(bill_id)
-    print(f'{bill.bill_pdf=}')
-    filename = f'static/bills_data/{bill.bill_pdf}'
-    return send_file(filename, mimetype='application/pdf')
+    logger.info(f'{bill.bill_pdf=}')
+    if bill.bill_pdf == None:
+        flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
+        return redirect(url_for('bills.bill_list'))
+    try:
+        filename = f'static/bills_data/{bill.bill_pdf}'
+        logger.info(f'{filename=}')
+        return send_file(filename, mimetype='application/pdf')
+    except Exception as e:
+        logger.error(f'Greska prilikom otvaranja PDF dokumenta: {e}')
+        flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
+        return redirect(url_for('bills.bill_list'))
 
 
 @bills.route('/open_contract/<int:bill_id>')
 def open_contract(bill_id):
     bill = Bill.query.get_or_404(bill_id)
-    print(f'{bill.bill_attachment=}')
-    filename = f'static/bills_data/bill_contracts/{bill.bill_attachment}'
-    return send_file(filename, mimetype='application/pdf')
+    logger.info(f'{bill.bill_attachment=}')
+    if bill.bill_attachment == None:
+        flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
+        return redirect(url_for('bills.bill_list'))
+    try:
+        filename = f'static/bills_data/bill_contracts/{bill.bill_attachment}'
+        logger.info(f'{filename=}')
+        return send_file(filename, mimetype='application/pdf')
+    except Exception as e:
+        logger.error(f'Greska prilikom otvaranja PDF dokumenta: {e}')
+        flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
+        return redirect(url_for('bills.bill_list'))
