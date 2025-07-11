@@ -131,9 +131,9 @@ class Bill(db.Model):
     bill_original = db.Column(db.String(60), nullable=True)
     bill_attachment = db.Column(db.String(60), nullable=True)
     bill_items = db.Column(db.JSON, nullable=True)
-    total_price = db.Column(db.Float, nullable=True)
+    total_price = db.Column(db.Float, nullable=True, default=0)
     bill_payments = db.Column(db.JSON, nullable=True)
-    total_payments = db.Column(db.Float, nullable=True)
+    total_payments = db.Column(db.Float, nullable=True, default=0)
     bill_pdf = db.Column(db.String(60), nullable=True)
     bill_status = db.Column(db.String(20), nullable=True) #! nacrt, poslat, storniran
     bill_company_account = db.Column(db.String(50), nullable=True) #!
