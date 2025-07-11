@@ -379,6 +379,7 @@ def delete_item():
 
 @bills.route('/open_pdf/<int:bill_id>')
 def open_pdf(bill_id):
+    logger.info(f'debuging: {bill_id=}')
     try:
         bill = Bill.query.get_or_404(bill_id)
     except Exception as e:
