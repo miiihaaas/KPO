@@ -379,7 +379,12 @@ def delete_item():
 
 @bills.route('/open_pdf/<int:bill_id>')
 def open_pdf(bill_id):
-    bill = Bill.query.get_or_404(bill_id)
+    try:
+        bill = Bill.query.get_or_404(bill_id)
+    except Exception as e:
+        logger.error(f'Greska prilikom otvaranja PDF dokumenta: {e}')
+        flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
+        return redirect(url_for('bills.bill_list'))
     logger.info(f'{bill.bill_pdf=}')
     if bill.bill_pdf == None:
         flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
