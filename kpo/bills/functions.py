@@ -448,6 +448,7 @@ def pdf_gen(bill):
 
 
 def bill_list_gen(bills, customer, start_date, end_date):
+    logger.info(f'{bills=}\n{customer=}\n{start_date=}\n{end_date=}')
     bill = bills[0]
     logger.info(f'Generisanje liste računa - prvi račun: {bill=}')
     company_logo = 'kpo/static/company_logos/' + bill.bill_company.company_logo
