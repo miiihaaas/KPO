@@ -34,7 +34,9 @@
       <nav class="navbar navbar-expand-md navbar-dark bg-implicit-deepblue bg-steel "> <!--fixed-top: ipak treba da se podvlači pod navbar-->
         <div class="container">
           <a href="{{ url_for('main.home') }}"><img class="rounded-circle" src="/static/img/KPO_Favicon.png" width="50" ></a>
+          {% if current_user.is_authenticated %}
           {{ current_user.user_company.companyname }}
+          {% endif %}
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
