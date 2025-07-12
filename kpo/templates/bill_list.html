@@ -1,9 +1,28 @@
 {% extends "layout.html" %}
 {% block content %}
-<div>
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='faktura') }}">Kreirajte novu fakturu</a>
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='avans') }}">Kreirajte novi avansni račun</a>
-  <hr class="mb-3">
+<div class="d-flex flex-wrap justify-content-between align-items-center">
+  <div>
+    <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='faktura') }}">Kreirajte novu fakturu</a>
+    <a class="btn btn-info btn-sm m-1" href="{{ url_for('bills.register_b', type='avans') }}">Kreirajte novi avansni račun</a>
+  </div>
+  <div class="d-flex flex-wrap align-items-center">
+    <form class="form-inline" action="{{ url_for('bills.generate_kpo') }}" method="post" target="_blank">
+      <div class="input-group mr-2">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Datum od</span>
+        </div>
+        <input type="date" class="form-control" name="date_from" required>
+      </div>
+      <div class="input-group mr-2">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Datum do</span>
+        </div>
+        <input type="date" class="form-control" name="date_to" required>
+      </div>
+      <button type="submit" class="btn btn-success btn-sm">Generišite KPO knjigu</button>
+    </form>
+  </div>
+  <hr class="mb-3 w-100 mt-2">
 </div>
 <div class="row">
   <div class="col-9">

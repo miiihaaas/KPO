@@ -1,12 +1,13 @@
 import secrets, os
 from datetime import datetime, date
 from flask import Blueprint
-from flask import render_template, request, redirect, url_for, flash, send_file, current_app
+from flask import render_template, request, redirect, url_for, flash, send_file, current_app, send_from_directory
 from flask_login import login_required, current_user
 from kpo import db, logger
 from kpo.models import Bill, Customer, Settings, Company
 from kpo.bills.forms import Dashboard, RegisterBillForm, EditBillForm, RegisterAdvanceAccountForm, EditAdvanceAccountForm, RegisterCreditNoteForm, EditCreditNoteForm, RegisterDebitNoteForm, EditDebitNoteForm
 from kpo.bills.functions import pdf_gen
+from kpo.bills.generate_kpo import generate_kpo_book
 
 
 bills = Blueprint('bills', __name__)
@@ -395,7 +396,6 @@ def open_pdf(bill_id):
         logger.info(f'{filename=}')
         return send_file(filename, mimetype='application/pdf')
     except Exception as e:
-        logger.error(f'Greska prilikom otvaranja PDF dokumenta: {e}')
         flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
         return redirect(url_for('bills.bill_list'))
 
@@ -414,4 +414,66 @@ def open_contract(bill_id):
     except Exception as e:
         logger.error(f'Greska prilikom otvaranja PDF dokumenta: {e}')
         flash(f'Nema PDF dokumenta za ovaj račun.', 'warning')
+        return redirect(url_for('bills.bill_list'))
+
+
+# Ovi importi su već definisani na vrhu fajla
+
+@bills.route("/open_bill_list_pdf/<filename>", methods=['GET'])
+def open_bill_list_pdf(filename):
+    if not current_user.is_authenticated:
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
+        return redirect(url_for('users.login'))
+    
+    try:
+        # Otvaranje fajla i vraćanje kao PDF response
+        return send_from_directory(os.path.join(current_app.root_path, 'static/bills_data/'), filename, as_attachment=False)
+    except Exception as e:
+        flash('Greška pri otvaranju PDF-a: ' + str(e), 'danger')
+        return redirect(url_for('bills.bill_list'))
+
+
+@bills.route("/generate_kpo", methods=['POST'])
+def generate_kpo():
+    if not current_user.is_authenticated:
+        flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
+        return redirect(url_for('users.login'))
+    
+    try:
+        # Dobavljanje parametara iz forme
+        date_from = request.form.get('date_from')
+        date_to = request.form.get('date_to')
+        
+        if not date_from or not date_to:
+            flash('Morate uneti period za generisanje KPO knjige.', 'warning')
+            return redirect(url_for('bills.bill_list'))
+        
+        # Konverzija stringova u datetime objekte za filtriranje
+        date_from_obj = datetime.strptime(date_from + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
+        date_to_obj = datetime.strptime(date_to + ' 23:59:59', '%Y-%m-%d %H:%M:%S')
+        
+        # Filtriranje faktura po tipu (samo fakture), statusu (samo poslat) i datumu
+        bills = Bill.query.filter(
+            Bill.bill_company_id == current_user.company_id,
+            Bill.bill_type == 'Faktura',
+            Bill.bill_status == 'poslat',
+            Bill.bill_transaction_date.between(date_from_obj, date_to_obj)
+        ).all()
+        
+        if not bills:
+            flash('Nema faktura koje zadovoljavaju zadate kriterijume za ovaj period.', 'info')
+            return redirect(url_for('bills.bill_list'))
+        
+        # Generisanje PDF-a
+        file_name = generate_kpo_book(bills, date_from, date_to)
+        
+        if not file_name:
+            flash('Došlo je do greške pri generisanju KPO knjige.', 'danger')
+            return redirect(url_for('bills.bill_list'))
+        
+        # Otvaranje generisanog PDF-a u novom tabu
+        return redirect(url_for('bills.open_bill_list_pdf', filename=file_name))
+    
+    except Exception as e:
+        flash(f'Greška pri generisanju KPO knjige: {str(e)}.', 'danger')
         return redirect(url_for('bills.bill_list'))

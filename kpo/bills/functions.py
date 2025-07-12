@@ -231,8 +231,8 @@ def uplatnice_gen(df_list, qr_code_images, uplatilac):
     file_name = f'uplatnice.pdf'
     pdf.output(path + file_name)
     return file_name
-    
-    
+
+
 
 def pdf_gen(bill):
     company_logo = 'kpo/static/company_logos/' + bill.bill_company.company_logo
@@ -445,6 +445,7 @@ def pdf_gen(bill):
     file_name = f'{bill.bill_number}_{bill.id}.pdf'
     pdf.output(path + file_name)
     return file_name
+
 
 
 def bill_list_gen(bills, customer, start_date, end_date):
