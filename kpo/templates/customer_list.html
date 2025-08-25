@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+    <a class="btn btn-info btn-sm m-1" href="{{ url_for('customers.register_customer') }}">Registracija novog komitenta</a>
+    <hr class="mb-3">
+</div>
+<div class="row">
+    <div class="col">
+        <label for="start-date" class="form-label">Početni datum:</label>
+        <input class="form-control mb-2" type="date" id="start-date" name="start-date" value="{{ start_date }}">
+    </div>
+    <div class="col">
+        <label for="end-date" class="form-label">Krajnji datum:</label>
+        <input class="form-control mb-4" type="date" id="end-date" name="end-date" value="{{ end_date }}">
+    </div>
+</div>
+
+<table id="data" class="table table-striped dataTable no-footer invoices" role="grid" aria-describedby="data_info" style="width: 968px;">
+    <thead>
+        <tr role="row">
+            <th>Naziv</th>
+            <th>Br faktura</th>
+            <th>Ukupno zaduženje</th>
+            {% if company_settings.payment_records %}
+                <th>Ukupne uplate</th>
+                <th>Saldo</th>
+                <th>Iznos izašao iz valute</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td><a class="btn btn-info btn-sm mr-2" href="{{ url_for('customers.customer_profile', customer_id=customer.id) }}" title="Izmenite korisnika">{{ customer.customer_name }} </a></td>
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ data['count_bills'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ '%.2f' % data['total_price'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            {% if company_settings.payment_records %}
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ '%.2f' % data['total_payments'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ '%.2f' % data['saldo'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% for data in table_data %}
+                    {% if customer.id == data['customer_id'] %}
+                        {{ '%.2f' % data['total_depts'] }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="4" style="text-align:right"></th>
+            <th></th>
+        </tr>
+    </tfoot>
+</table>
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+        $('#data').DataTable({
+            footerCallback: function (row, data, start, end, display) {
+                var api = this.api();
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+                    return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                };
+
+                // Total over all pages
+                total = api
+                    .column(4)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Total over this page
+                pageTotal = api
+                    .column(4, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Update footer
+                $(api.column(4).footer()).html(pageTotal.toFixed(2) + ' (' + total.toFixed(2) + ' total)');
+            },
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/sr-SP.json"
+            },
+            stateSave: true,
+            });
+        });
+    </script>
+    <script>
+        // Funkcija koja se poziva pri promeni datuma
+        function handleDateChange() {
+            var startDate = document.getElementById("start-date").value;
+            var endDate = document.getElementById("end-date").value;
+            var url = "{{ url_for('customers.customer_list') }}?start_date=" + startDate + "&end_date=" + endDate;
+            window.location.href = url; // Ponovno učitavanje stranice sa novim vrednostima datuma
+        }
+    
+        // Dodavanje osluškivača događaja za promenu datuma
+        document.getElementById("start-date").addEventListener("change", handleDateChange);
+        document.getElementById("end-date").addEventListener("change", handleDateChange);
+    </script>
+{% endblock %}

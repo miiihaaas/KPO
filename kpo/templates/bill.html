@@ -1,0 +1,775 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="contetn-section">
+  {% if errors %}
+  <ul class="errors">
+      {% for error in errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+    <form action="" method="post" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <ul class="nav nav-tabs justify-content-center mb-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link " id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dokument</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Stavke</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          {% if company_settings.payment_records %}
+            {% if bill.bill_type != 'Knjižno odobrenje' %}
+            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" >Uplate</a>
+            {% endif %}
+          {% else %}
+          <a class="nav-link hidden" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" >Uplate</a>
+          {% endif %}
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <fieldset class="form-group">
+            <div class="form-group">
+              <label class="form-control-label" for="bill_company_account">Račun</label>
+              {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                <input class="form-control" type="text" value="{{ bill.bill_company_account }}" readonly>
+              {% else %}
+                <select class="form-select" name="bill_company_account" id="bill_company_account"></select>
+              {% endif %}
+            </div>
+            <div class="col form-group" style="border: 1px solid black;">
+              <div class="row">
+                <div class="col-3 form-group">
+                  {{ form.bill_currency.label(class="form-control-label") }}
+                  {% if form.bill_currency.errors %}
+                    {{ form.bill_currency(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.bill_currency.errors %}
+                        <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                      {{ form.bill_currency(class="form-control", readonly=true) }}
+                    {% else %}
+                      {{ form.bill_currency(class="form-select", onchange="updateBillCompanyAccountOptions()") }}
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="col form-group">
+                  {{ form.bill_number.label(class="form-control-label") }}
+                  {% if form.bill_number.errors %}
+                    {{ form.bill_number(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.bill_number.errors %}
+                        <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ form.bill_number(class="form-control") }}
+                  {% endif %}
+                </div>
+                <div class="col form-group">
+                  {{ form.bill_contract_number.label(class="form-control-label") }}
+                  {% if form.bill_contract_number.errors %}
+                    {{ form.bill_contract_number(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.bill_contract_number.errors %}
+                        <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                      {{ form.bill_contract_number(class="form-control") }}
+                  {% endif %}
+                </div>
+              </div>
+              <div class="row">
+                {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                  <div class="col form-group">
+                    {{ form.bill_customer_id.label(class="form-control-label") }}
+                    {{ form.bill_customer_id(class="form-control", readonly=True) }}
+                  </div>
+                {% else %}
+                  <div class="col form-group">
+                    {{ form.bill_customer_id.label(class="form-control-label") }}
+                    {% if form.bill_customer_id.errors %}
+                      {{ form.bill_customer_id(class="form-control is-invalid") }}
+                      <div class="invalid-feedback">
+                        {% for error in form.bill_customer_id.errors %}
+                          <span>{{ error }}</span>
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      {{ form.bill_customer_id(class="form-select") }}
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+              <dib class="row">
+                <div class="col form-group">
+                  {{ form.bill_decision_number.label(class="form-control-label") }}
+                  {% if form.bill_decision_number.errors %}
+                    {{ form.bill_decision_number(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.bill_decision_number.errors %}
+                        <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                      {{ form.bill_decision_number(class="form-control", readonly=true) }}
+                    {% else %}
+                      {{ form.bill_decision_number(class="form-control") }}
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="col form-group">
+                  {{ form.bill_service.label(class="form-control-label") }}
+                  {% if form.bill_service.errors %}
+                    {{ form.bill_service(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.bill_service.errors %}
+                        <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ form.bill_service(class="form-control") }}
+                  {% endif %}
+                </div>
+              </dib>
+            </div>
+            <div class="row">
+              <div class="col-3 form-group">
+                {{ form.bill_tax_category.label(class="form-control-label") }}
+                {% if form.bill_tax_category.errors %}
+                  {{ form.bill_tax_category(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_tax_category.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                    {{ form.bill_tax_category(class="form-control", readonly=true) }}
+                  {% else %}
+                    {{ form.bill_tax_category(class="form-select") }}
+                  {% endif %}
+                {% endif %}
+              </div>
+              {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                <div class="col form-group">
+                  {{ form.bill_base_code.label(class="form-control-label") }}
+                  {{ form.bill_base_code(class="form-control", readonly=true) }}
+                </div>
+              {% else %}
+                <div class="col form-group">
+                  {{ form.bill_base_code.label(class="form-control-label") }}
+                  {% if form.bill_base_code.errors %}
+                    {{ form.bill_base_code(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.bill_base_code.errors %}
+                        <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ form.bill_base_code(class="form-select") }}
+                  {% endif %}
+                </div>
+              {% endif %}
+              <div class="col form-group">
+                {{ form.bill_purchase_order_number.label(class="form-control-label") }}
+                {% if form.bill_purchase_order_number.errors %}
+                  {{ form.bill_purchase_order_number(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_purchase_order_number.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {% if bill.bill_type in ['Knjižno odobrenje', 'Knjižno zaduženje'] %}
+                    {{ form.bill_purchase_order_number(class="form-control", readonly=true) }}
+                  {% else %}
+                    {{ form.bill_purchase_order_number(class="form-control") }}
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+
+              <div class="row">
+                {% if bill.bill_type in ['Faktura'] %}
+                  <div class="col-3 form-group">
+                    {{ form.bill_transaction_date.label(class="form-control-label") }}
+                    {% if form.bill_transaction_date.errors %}
+                      {{ form.bill_transaction_date(class="form-control is-invalid") }}
+                      <div class="invalid-feedback">
+                        {% for error in form.bill_transaction_date.errors %}
+                          <span>{{ error }}</span>
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      {{ form.bill_transaction_date(class="form-control", type="date") }}
+                    {% endif %}
+                  </div>
+                {% endif %}
+                {% if bill.bill_type in ['Faktura', 'Knjižno zaduženje', 'Avansni račun'] %}
+                  <div class="col-3 form-group">
+                    {{ form.bill_due_date.label(class="form-control-label") }}
+                    {% if form.bill_due_date.errors %}
+                      {{ form.bill_due_date(class="form-control is-invalid") }}
+                      <div class="invalid-feedback">
+                        {% for error in form.bill_due_date.errors %}
+                          <span>{{ error }}</span>
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      {{ form.bill_due_date(class="form-control", type="date") }}
+                    {% endif %}
+                  </div>
+                  <div class="col form-group">
+                    {{ form.bill_tax_calculation_date.label(class="form-control-label") }}
+                    {% if form.bill_tax_calculation_date.errors %}
+                      {{ form.bill_tax_calculation_date(class="form-control is-invalid") }}
+                      <div class="invalid-feedback">
+                        {% for error in form.bill_tax_calculation_date.errors %}
+                          <span>{{ error }}</span>
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      {{ form.bill_tax_calculation_date(class="form-select") }}
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+            <div class="row">
+              <div class="col form-group">
+                {{ form.bill_reference_number.label(class="form-control-label") }}
+                {% if form.bill_reference_number.errors %}
+                  {{ form.bill_reference_number(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_reference_number.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_reference_number(class="form-control") }}
+                {% endif %}
+              </div>
+              <div class="col-2 form-group">
+                {{ form.bill_model.label(class="form-control-label") }}
+                {% if form.bill_model.errors %}
+                  {{ form.bill_model(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_model.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_model(class="form-control") }}
+                {% endif %}
+              </div>
+              <div class="col form-group">
+                {{ form.bill_attachment.label(class="form-control-label") }}
+                {% if form.bill_attachment.errors %}
+                  {{ form.bill_attachment(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_attachment.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_attachment(class="form-control") }}
+                {% endif %}
+              </div>
+              {% if bill.bill_attachment != None %}
+              <div class="col-1 form-group">
+                <a class="btn btn-danger btn-sm" href="{{url_for('bills.open_contract', bill_id=bill.id)}}" target="_blank" title="Preuzmite ugovor"><i class="fa-solid fa-down-long"></i></a>
+              </div>
+                {% endif %}
+            </div>
+          </fieldset>
+        </div>
+        <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <div>
+            {% if bill.bill_type == 'Faktura' %}
+            <legend id="stavke_" class="border-bottom mb-4">Stavke fakture <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% elif bill.bill_type == 'Avansni račun' %}
+            <legend id="stavke_" class="border-bottom mb-4">Stavke avansnog računa <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% elif bill.bill_type == 'Knjižno odobrenje' %}
+            <legend id="stavke_" class="border-bottom mb-4">Stavke knjižnog odobrenja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% elif bill.bill_type == 'Knjižno zaduženje' %}
+            <legend id="stavke_" class="border-bottom mb-4">Stavke knjižnog zaduženja <strong>{{ bill.bill_number }}</strong> za komitenta <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            {% endif %}
+            <table class="mb-4" id="stavke">
+              <thead>
+                <tr>
+                  <th>Šifra</th>
+                  <th>Naziv</th>
+                  <th>Količina</th>
+                  <th>Jedinica mere</th>
+                  <th>Cena</th>
+                  <th>Popust (%)</th>
+                  <th>Iznos popusta</th>
+                  <th>Iznos bez PDV</th>
+                  <th>PDV (%)</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
+                {% for record in bill.bill_items %}
+                  <tr>
+                    <td><input class="form-control" type="text" name="field[]" value="{{record['sifra']}}"></td>
+                    <td><input class="form-control" type="text" name="field[]" value="{{record['naziv']}}"></td>
+                    <td><input class="form-control" type="number" name="field[]" value="{{record['kolicina']}}" oninput="updateCalculation(this)"></td>
+                    <td>
+                      <select class="form-select" name="field[]">
+                        {% for unit in units %}
+                          {% if record['jedinica_mere'] == unit[0] %}
+                            <option value="{{unit[0]}}" selected>{{unit[1]}}</option>
+                          {% else %}
+                            <option value="{{unit[0]}}">{{unit[1]}}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                    </td>
+                    <td><input class="form-control" type="number" name="field[]" value="{{record['cena']}}" oninput="updateCalculation(this)"></td>
+                    <td><input class="form-control" type="number" name="field[]" value="{{record['popust']}}" oninput="updateCalculation(this)"></td>
+                    <td><input class="form-control" type="text" name="field[]" value="{{record['iznos_popusta']}}" readonly></td>
+                    <td><input class="form-control" type="text" name="field[]" value="{{record['iznos_bez_pdv']}}" readonly></td>
+                    <td>
+                      <select class="form-select" name="field[]" id="">
+                        {% for tax in taxes %}
+                          {% if record['pdv'] == tax[0] %}
+                            <option value="{{tax[0]}}" selected>{{tax[1]}}</option>
+                          {% else %}
+                            <option value="{{tax[0]}}">{{tax[1]}}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                    </td>
+                    {% if bill.bill_status == 'nacrt' %}
+                    <td><button type="button" hx-delete="{{ url_for('bills.delete_item') }}" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+                <tr id="new_item" hx-swap="beforebegin">
+                  {% if bill.bill_status == 'nacrt' %}
+                  <td><button type="button" hx-get="{{ url_for('bills.new_item') }}" hx-target="#new_item" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i> Nova stavka</button></td>
+                  {% endif %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row">
+            <div class="col">
+              {% if bill.bill_type == 'Faktura' %}
+              <div>
+                <legend id="stavke_" class="border-bottom mb-4">Avansni računi:</strong></legend>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Broj dokumenta</th>
+                      <th>Iznos</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><input class="form-control" type="text" name="field[]" value="2023-AR01" readonly></td>
+                      <td><input class="form-control" type="text" name="field[]" value="500 {{ bill.bill_currency }}" readonly></td>
+                      {% if bill.bill_status == 'nacrt' %}
+                      <td><button type="button" hx-delete="{{ url_for('bills.delete_item') }}" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
+                      {% endif %}
+                    </tr>
+                    <tr id="new_item" hx-swap="beforebegin">
+                      {% if bill.bill_status == 'nacrt' %}
+                      <td><button type="button" hx-get="{{ url_for('bills.new_item') }}" hx-target="#new_item" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i> Dodajte avansni račun</button></td>
+                      {% endif %}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              {% endif %}
+              <div class="content-section m-3">
+                <ul class="list-group">
+                  <li>Zbir stavki - nije predmet oporezivanja PDV: <span id="zbir-stavki"></span> {{ bill.bill_currency }}</li>
+                  <li>Ukupna osnovica - nije predmet oporezivanja PDV: <span id="ukupna-osnovica"></span> {{ bill.bill_currency }}</li>
+                  <li>Umanjena osnovica - nije predmet oporezivanja PDV: <span id="umanjena-osnovica"></span> {{ bill.bill_currency }}</li>
+                  <li>Ukupno za uplatu: <strong><span id="ukupno-za-uplatu"></span></strong> {{ bill.bill_currency }}</li>
+                  <li>Poresko oslobođenje: preduzetnik se oporezuje paušalno i nije u sistemu PDV-a.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col">
+              <div class="content-section">
+                <h3>Korisni podaci</h3>
+                <p class='text-muted'></p>
+                <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din / ostalo: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</small></li>
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
+                  <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[1]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[2]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[3]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[4]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[5]) }} din</small></li>
+                  <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(dashboard.razlika_8m[6]) }} din</small></li>
+                </ul>
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+          {% if company_settings.payment_records %}
+          <div>
+            <legend id="" class="border-bottom mb-4">Uplate po fakturi <strong>{{ bill.bill_number }}</strong> za kupca <strong>{{ bill.bill_customer.customer_name }}</strong></legend>
+            <table>
+              <thead>
+                <tr>
+                  <th>Datum uplate</th>
+                  <th>Iznos uplate</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody hx-target="closest tr" hx-swap="outerHTML swap:1s">
+                {% for payment in bill.bill_payments %}
+                <tr>
+                  <td><input type="date" name="payment[]" class="form-control" value="{{payment['payment_date']}}"></td>
+                  <td><input type="text" name="payment[]" class="form-control" value="{{payment['payment_amount']}}"></td>
+                  <td><button type="button" hx-delete="{{ url_for('bills.delete_item') }}" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button></td>
+                </tr>
+                {% endfor %}
+                <tr id="new_payment" hx-swap="beforebegin">
+                  <td><button type="button" hx-get="{{ url_for('bills.new_payment') }}" hx-target="#new_payment" class="btn btn-primary mb-4"><i class="fa-solid fa-plus"></i></button></td>
+                  <td>
+                    {% set x=0 %}
+                    {% for payment in bill.bill_payments %}
+                      {% set x = x + payment['payment_amount']|int %}
+                    {% endfor %}
+                    <input class="form-control mb-4" type="text" value="{{ x }}" readonly>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      
+      <div class="form-group">
+        <a class="btn" href="{{url_for('bills.bill_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
+        {% if bill.bill_status == 'nacrt' %}
+          {{ form.submit(class="btn btn-outline-info") }}
+          <input type="submit" class="btn btn-primary" id="send" name="send" value="Pošaljite dokument">
+        {% elif bill.bill_status == 'poslat' %}
+          {{ form.submit(class="btn btn-outline-info") }}
+          <a class="btn btn-primary" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank">Otvori PDF</a>
+          <a class="btn btn-primary" id="credit_note" name="credit_note"  href="{{ url_for('bills.register_notes', bill_id=bill.id, note_type='credit_note') }}">Kreirajte knjižno odobrenje</a>
+          <a class="btn btn-primary" id="debit_note" name="debit_note"  href="{{ url_for('bills.register_notes', bill_id=bill.id, note_type='debit_note') }}">Kreirajte knjižno zaduženje</a>
+          <input type="submit" class="btn btn-danger" id="send" name="send" value="Stornirajte dokument">
+        {% elif bill.bill_status == 'storniran' %}
+          <a class="btn btn-primary" href="{{ url_for('bills.open_pdf', bill_id=bill.id) }}" target="_blank">Otvori PDF</a>
+          <legend>Dokumen je storniran </legend>
+        {% endif %}
+      </div>
+    </form>
+  </div>  
+
+{% endblock content%}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    updateBillCompanyAccountOptions();
+  });
+
+  function updateBillCompanyAccountOptions() {
+    var currencySelect = document.getElementById("bill_currency");
+    var accountSelect = document.getElementById("bill_company_account");
+    var dinarAccounts = JSON.parse('{{ dinar_accounts|tojson|safe }}');
+    var foreignAccounts = JSON.parse('{{ foreign_accounts|tojson|safe }}');
+
+    var accountValue = '{{ bill.bill_company_account }}';
+    console.log('vrednost računa: ',accountValue)
+
+    var label = document.querySelector("label[for='bill_company_account']");
+
+    // Izbriši postojeće opcije
+    accountSelect.innerHTML = "";
+
+    // Dodaj nove opcije na osnovu vrednosti currencySelect
+    if (currencySelect.value === "RSD") {
+      label.textContent = "Dinarski račun";
+      for (var i = 0; i < dinarAccounts.length; i++) {
+        var option = document.createElement("option");
+        option.text = dinarAccounts[i];
+        accountSelect.add(option);
+        if (dinarAccounts[i] === accountValue) {
+          option.selected = true;
+        }
+      }
+    } else {
+      label.textContent = "Devizni račun";
+      for (var i = 0; i < foreignAccounts.length; i++) {
+        var option = document.createElement("option");
+        option.text = foreignAccounts[i].account;
+        accountSelect.add(option);
+        if (foreignAccounts[i].account === accountValue) {
+          option.selected = true;
+        }
+      }
+    }
+  }
+</script>
+
+<script>
+  function updateCalculation(input) {
+    console.log('Promenjen je input');
+    var row = input.parentNode.parentNode;
+    var input1 = parseFloat(row.cells[2].querySelector("input").value);
+    var input2 = parseFloat(row.cells[4].querySelector("input").value);
+    var input3 = parseFloat(row.cells[5].querySelector("input").value);
+    var product = input1 * input2 * input3 / 100;
+    row.cells[6].querySelector("input").value = product;
+    var amountWithoutTax = input1 * input2 - product;
+    row.cells[7].querySelector("input").value = amountWithoutTax;
+
+    calculateTotalSum();
+  }
+
+  function calculateTotalSum() {
+    var totalSum = 0;
+    var rows = document.getElementById("stavke").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for (var i = 0; i < rows.length - 1; i++) {
+      var value = parseFloat(rows[i].cells[7].querySelector("input").value);
+      if (!isNaN(value)) {
+        totalSum += value;
+      }
+    }
+    console.log('ukupno: ', totalSum);
+    // Postavljanje vrednosti na odgovarajućim pozicijama u HTML-u
+    document.getElementById("zbir-stavki").textContent = totalSum.toFixed(2);
+    document.getElementById("ukupna-osnovica").textContent = totalSum.toFixed(2);
+    document.getElementById("umanjena-osnovica").textContent = totalSum.toFixed(2);
+    document.getElementById("ukupno-za-uplatu").textContent = totalSum.toFixed(2);
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    calculateTotalSum();
+  });
+</script>
+
+<script>
+  // Dohvati vrijednost bill_status iz objekta bill u predlošku
+  var billStatus = '{{ bill.bill_status }}';
+
+  // Provjeri status računa
+  if (billStatus !== 'nacrt') {
+    console.log(billStatus);
+    // Pronađi sve elemente input i select
+    var inputs = document.getElementsByTagName('input');
+    var selects = document.getElementsByTagName('select');
+
+    // Onemogući sve pronađene input elemente osim 'submit'
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].id !== 'submit') {
+        inputs[i].readOnly = true;
+      }
+    }
+
+    // Onemogući promenu izbora, ali omogući submitovanje
+    for (var j = 0; j < selects.length; j++) {
+      selects[j].disabled = true;
+    }
+
+    // Dodaj event listener za svako dugme za podnošenje (submit)
+    var submitButtons = document.querySelectorAll('input[type="submit"], button[type="submit"]');
+    for (var k = 0; k < submitButtons.length; k++) {
+      submitButtons[k].addEventListener('click', function(event) {
+        // Omogući sve selekte koji su bili onemogućeni
+        for (var j = 0; j < selects.length; j++) {
+          selects[j].disabled = false;
+        }
+
+        // Podnesi formu
+        event.target.form.submit();
+      });
+    }
+  }
+</script>
+<script>
+  // Dohvatite referencu na oba select elementa
+  var billTaxCategorySelect = document.getElementById('bill_tax_category');
+  var dependentSelect = document.getElementById('bill_base_code');
+  var taxCalculationDateLabel = document.querySelector('label[for="bill_tax_calculation_date"]');
+  var taxCalculationDate = document.getElementById('bill_tax_calculation_date');
+  var dependentSelectSelectedValue = dependentSelect.value
+
+  console.log('selektovana vrednost: ', dependentSelectSelectedValue)
+  console.log('element taxCalculationDate: ', taxCalculationDate)
+  // Definisana tabela zavisnosti
+  var dependencyTable = {
+    S: [
+      ''
+    ],
+    AE: [
+      'PDV-RS-10-2-1',
+      'PDV-RS-10-2-2',
+      'PDV-RS-10-2-3',
+      'PDV-RS-10-2-4',
+      'PDV-RS-10-2-5-1',
+      'PDV-RS-10-2-5-2',
+      'PDV-RS-10-2-5-3',
+      'PDV-RS-36b-6'
+    ],
+    Z: [
+      'PDV-RS-24-1-1',
+      'PDV-RS-24-1-2',
+      'PDV-RS-24-1-3',
+      'PDV-RS-24-1-5',
+      'PDV-RS-24-1-5a',
+      'PDV-RS-24-1-6',
+      'PDV-RS-24-1-6a',
+      'PDV-RS-24-1-7',
+      'PDV-RS-24-1-7a',
+      'PDV-RS-24-1-8',
+      'PDV-RS-24-1-9',
+      'PDV-RS-24-1-10',
+      'PDV-RS-24-1-11',
+      'PDV-RS-24-1-12',
+      'PDV-RS-24-1-13',
+      'PDV-RS-24-1-14',
+      'PDV-RS-24-1-15',
+      'PDV-RS-24-1-16-1',
+      'PDV-RS-24-1-16-2',
+      'PDV-RS-24-1-16-3',
+      'PDV-RS-24-1-16-4',
+      'PDV-RS-24-1-16a',
+      'PDV-RS-24-1-16b',
+      'PDV-RS-24-1-16v',
+      'PDV-RS-24-1-16g',
+      'PDV-RS-24-1-17'
+    ],
+    E: [
+      'PDV-RS-25-1-1',
+      'PDV-RS-25-1-1a',
+      'PDV-RS-25-1-2',
+      'PDV-RS-25-1-3',
+      'PDV-RS-25-1-4',
+      'PDV-RS-25-1-5',
+      'PDV-RS-25-1-6',
+      'PDV-RS-25-1-7',
+      'PDV-RS-25-1-8',
+      'PDV-RS-25-2-1',
+      'PDV-RS-25-2-2',
+      'PDV-RS-25-2-3',
+      'PDV-RS-25-2-3a',
+      'PDV-RS-25-2-3b',
+      'PDV-RS-25-2-5',
+      'PDV-RS-25-2-6',
+      'PDV-RS-25-2-7',
+      'PDV-RS-25-2-8',
+      'PDV-RS-25-2-9',
+      'PDV-RS-25-2-10',
+      'PDV-RS-25-2-11',
+      'PDV-RS-25-2-12',
+      'PDV-RS-25-2-13',
+      'PDV-RS-25-2-14',
+      'PDV-RS-25-2-15',
+      'PDV-RS-25-2-16',
+      'PDV-RS-25-2-17',
+      'PDV-RS-25-2-18',
+      'PDV-RS-25-2-19'
+    ],
+    R: [
+      'PDV-RS-6-1-1',
+      'PDV-RS-6a'
+    ],
+    O: [
+      'PDV-RS-11-1-1',
+      'PDV-RS-11-1-2',
+      'PDV-RS-11-1-3',
+      'PDV-RS-11-1-4',
+      'PDV-RS-11-1-5',
+      'PDV-RS-11-3',
+      'PDV-RS-12-4',
+      'PDV-RS-12-6-1',
+      'PDV-RS-12-6-2',
+      'PDV-RS-12-6-3',
+      'PDV-RS-12-6-4-1',
+      'PDV-RS-12-6-4-2',
+      'PDV-RS-12-6-4-3',
+      'PDV-RS-12-6-4-4',
+      'PDV-RS-12-6-4-5',
+      'PDV-RS-12-6-5',
+      'PDV-RS-12-6-6',
+      'PDV-RS-12-6-7-1',
+      'PDV-RS-12-6-7-2',
+      'PDV-RS-12-6-7-3',
+      'PDV-RS-12-6-7-4',
+      'PDV-RS-12-6-7-5',
+      'PDV-RS-12-6-7-6',
+      'PDV-RS-12-6-7-7',
+      'PDV-RS-12-6-7-8',
+      'PDV-RS-12-6-7-9',
+      'PDV-RS-12-6-7-10',
+      'PDV-RS-12-6-7-11',
+      'PDV-RS-12-6-7-12',
+      'PDV-RS-12-6-8',
+      'PDV-RS-12-9',
+      'PDV-RS-17-4-2',
+      'PDV-RS-61'
+    ],
+    OE: [
+      'PDV-RS-7a-4',
+      'PDV-RS-4-4-2NP',
+      'PDV-RS-5-4-2NP',
+      'PDV-RS-3NP-ostalo',
+      'PDV-RS-17-4-2',
+      'PDV-RS-17-4-3',
+      'PDV-RS-9'
+    ],
+    SS: [
+      'PDV-RS-33',
+      'PDV-RS-35-7'
+    ],
+    N: [
+      'PDV-RS-3-DZ',
+      'PDV-RS-4',
+      'PDV-RS-5',
+      'PDV-RS-6-1-1 (BN)'
+    ]
+  };
+
+  function updateDependentSelect() {
+    var selectedValue = billTaxCategorySelect.value;
+    dependentSelect.innerHTML = '';
+    console.log('function-updateDependentSelect-selectedValue: ', selectedValue)
+
+
+    if (taxCalculationDate !== null){
+      if (selectedValue === 'S') {
+        taxCalculationDateLabel.classList.remove('hidden');
+        taxCalculationDate.classList.remove('hidden');
+      } else {
+        taxCalculationDateLabel.classList.add('hidden');
+        taxCalculationDate.classList.add('hidden');
+      }
+    }
+
+    var dependentValues = dependencyTable[selectedValue];
+    console.log('function-updateDependentSelect-dependentValues: ', dependentValues)
+    for (var i = 0; i < dependentValues.length; i++) {
+      var option = document.createElement('option');
+      option.value = dependentValues[i];
+      option.text = dependentValues[i];
+      dependentSelect.appendChild(option);
+    }
+  }
+
+  billTaxCategorySelect.addEventListener('change', updateDependentSelect);
+  updateDependentSelect();
+  dependentSelect.value = dependentSelectSelectedValue;
+</script>
+{% endblock%}

@@ -1,0 +1,472 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="contetn-section">
+  <form action="" method="post">
+    {{ form.hidden_tag() }}
+    <ul class="nav nav-tabs justify-content-center mb-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dokument</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link disabled" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Stavke</a>
+      </li>
+    </ul>
+    <fieldset class="">
+      <div class="row">
+        <div class="col-8">
+          <div class="form-group">
+            <label class="form-control-label" for="bill_company_account">Račun</label>
+            <select class="form-select" name="bill_company_account" id="bill_company_account"></select>
+          </div>
+          <div class="col form-group" style="border: 1px solid black;">
+            <div class="row">
+              <div class="col-3 form-group">
+                {{ form.bill_currency.label(class="form-control-label") }}
+                {% if form.bill_currency.errors %}
+                  {{ form.bill_currency(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_currency.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_currency(class="form-select", onchange="updateBillCompanyAccountOptions()") }}
+                {% endif %}
+              </div>
+              <div class="col form-group">
+                {{ form.bill_number.label(class="form-control-label") }}
+                {% if form.bill_number.errors %}
+                  {{ form.bill_number(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_number.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_number(class="form-control") }}
+                {% endif %}
+              </div>
+              <div class="col form-group">
+                {{ form.bill_contract_number.label(class="form-control-label") }}
+                {% if form.bill_contract_number.errors %}
+                  {{ form.bill_contract_number(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_contract_number.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_contract_number(class="form-control") }}
+                {% endif %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col form-group">
+                {{ form.bill_customer_id.label(class="form-control-label") }}
+                {% if form.bill_customer_id.errors %}
+                  {{ form.bill_customer_id(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_customer_id.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_customer_id(class="form-select") }}
+                {% endif %}
+                <a href="{{url_for('customers.register_customer')}}">registruje novog komitenta</a>
+              </div>
+            </div>
+            <dib class="row">
+              <div class="col form-group">
+                {{ form.bill_decision_number.label(class="form-control-label") }}
+                {% if form.bill_decision_number.errors %}
+                  {{ form.bill_decision_number(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_decision_number.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_decision_number(class="form-control") }}
+                {% endif %}
+              </div>
+              <div class="col form-group">
+                {{ form.bill_service.label(class="form-control-label") }}
+                {% if form.bill_service.errors %}
+                  {{ form.bill_service(class="form-control is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.bill_service.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.bill_service(class="form-control") }}
+                {% endif %}
+              </div>
+            </dib>
+          </div>
+          <div class="row">
+            <div class="col-3 form-group">
+              {{ form.bill_tax_category.label(class="form-control-label") }}
+              {% if form.bill_tax_category.errors %}
+                {{ form.bill_tax_category(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_tax_category.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_tax_category(class="form-select") }}
+              {% endif %}
+            </div>
+            <div class="col form-group">
+              {{ form.bill_base_code.label(class="form-control-label") }}
+              {% if form.bill_base_code.errors %}
+                {{ form.bill_base_code(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_base_code.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_base_code(class="form-select") }}
+              {% endif %}
+            </div>
+            <div class="col form-group">
+              {{ form.bill_purchase_order_number.label(class="form-control-label") }}
+              {% if form.bill_purchase_order_number.errors %}
+                {{ form.bill_purchase_order_number(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_purchase_order_number.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_purchase_order_number(class="form-control") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="row">
+            {% if type == 'faktura' %}
+            <div class="col-3 form-group">
+              {{ form.bill_transaction_date.label(class="form-control-label") }}
+              {% if form.bill_transaction_date.errors %}
+                {{ form.bill_transaction_date(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_transaction_date.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_transaction_date(class="form-control", type="date") }}
+              {% endif %}
+            </div>
+            {% endif %}
+            <div class="col-3 form-group">
+              {{ form.bill_due_date.label(class="form-control-label") }}
+              {% if form.bill_due_date.errors %}
+                {{ form.bill_due_date(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_due_date.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_due_date(class="form-control", type="date") }}
+              {% endif %}
+            </div>
+            
+            <div class="col form-group">
+              {{ form.bill_tax_calculation_date.label(class="form-control-label") }}
+              {% if form.bill_tax_calculation_date.errors %}
+                {{ form.bill_tax_calculation_date(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_tax_calculation_date.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_tax_calculation_date(class="form-select") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col form-group">
+              {{ form.bill_reference_number.label(class="form-control-label") }}
+              {% if form.bill_reference_number.errors %}
+                {{ form.bill_reference_number(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_reference_number.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_reference_number(class="form-control") }}
+              {% endif %}
+            </div>
+            <div class="col form-group">
+              {{ form.bill_model.label(class="form-control-label") }}
+              {% if form.bill_model.errors %}
+                {{ form.bill_model(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_model.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_model(class="form-control") }}
+              {% endif %}
+            </div>
+            <div class="col form-group">
+              {{ form.bill_attachment.label(class="form-control-label") }}
+              {% if form.bill_attachment.errors %}
+                {{ form.bill_attachment(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.bill_attachment.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.bill_attachment(class="form-control") }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          test 4
+          {% if last_document %}
+          <p>Poslednje kreirani dokument: <strong>{{ last_document.bill_number }}</strong></p>
+          {% endif %}
+          <hr>
+          <div class="content-section">
+            <h3>Korisni podaci</h3>
+            <p class='text-muted'></p>
+            <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din / ostalo: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</small></li>
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
+              <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[1]) }} din</small></li>
+              <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[2]) }} din</small></li>
+              <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[3]) }} din</small></li>
+              <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[4]) }} din</small></li>
+              <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[5]) }} din</small></li>
+              <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(dashboard.razlika_8m[6]) }} din</small></li>
+            </ul>
+            <p></p>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <div class="form-group">
+      <a class="btn" href="{{url_for('bills.bill_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+
+{% endblock content%}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    updateBillCompanyAccountOptions();
+  });
+
+  function updateBillCompanyAccountOptions() {
+    var currencySelect = document.getElementById("bill_currency"); // Element sa ID "bill_currency"
+    var accountSelect = document.getElementById("bill_company_account"); // Element sa ID "bill_company_account"
+    var dinarAccounts = JSON.parse('{{ dinar_accounts|tojson|safe }}'); // Prosleđena lista 'dinar_accounts' iz Flask-a
+    var foreignAccounts = JSON.parse('{{ foreign_accounts|tojson|safe }}'); // Prosleđena lista 'foreign_accounts' iz Flask-a
+
+    var label = document.querySelector("label[for='bill_company_account']"); // Pronalazi labelu preko atributa 'for'
+
+    // Izbriši postojeće opcije
+    accountSelect.innerHTML = "";
+
+    // Dodaj nove opcije na osnovu vrednosti currencySelect
+    if (currencySelect.value === "RSD") {
+      label.textContent = "Dinarski račun";
+      for (var i = 0; i < dinarAccounts.length; i++) {
+        var option = document.createElement("option");
+        option.text = dinarAccounts[i];
+        accountSelect.add(option);
+      }
+    } else {
+      label.textContent = "Devizni račun";
+      for (var i = 0; i < foreignAccounts.length; i++) {
+        var option = document.createElement("option");
+        option.text = foreignAccounts[i].account;
+        accountSelect.add(option);
+      }
+    }
+  }
+</script>
+
+
+<script>
+  // Dohvatite referencu na oba select elementa
+  var billTaxCategorySelect = document.getElementById('bill_tax_category');
+  var dependentSelect = document.getElementById('bill_base_code');
+  var taxCalculationDateLabel = document.querySelector('label[for="bill_tax_calculation_date"]');
+  var taxCalculationDate = document.getElementById('bill_tax_calculation_date');
+  var dependentSelectSelectedValue = dependentSelect.value
+
+  // Definirajte tabelu zavisnosti
+  var dependencyTable = {
+    S: [
+      ''
+    ],
+    AE: [
+      'PDV-RS-10-2-1',
+      'PDV-RS-10-2-2',
+      'PDV-RS-10-2-3',
+      'PDV-RS-10-2-4',
+      'PDV-RS-10-2-5-1',
+      'PDV-RS-10-2-5-2',
+      'PDV-RS-10-2-5-3',
+      'PDV-RS-36b-6'
+    ],
+    Z: [
+      'PDV-RS-24-1-1',
+      'PDV-RS-24-1-2',
+      'PDV-RS-24-1-3',
+      'PDV-RS-24-1-5',
+      'PDV-RS-24-1-5a',
+      'PDV-RS-24-1-6',
+      'PDV-RS-24-1-6a',
+      'PDV-RS-24-1-7',
+      'PDV-RS-24-1-7a',
+      'PDV-RS-24-1-8',
+      'PDV-RS-24-1-9',
+      'PDV-RS-24-1-10',
+      'PDV-RS-24-1-11',
+      'PDV-RS-24-1-12',
+      'PDV-RS-24-1-13',
+      'PDV-RS-24-1-14',
+      'PDV-RS-24-1-15',
+      'PDV-RS-24-1-16-1',
+      'PDV-RS-24-1-16-2',
+      'PDV-RS-24-1-16-3',
+      'PDV-RS-24-1-16-4',
+      'PDV-RS-24-1-16a',
+      'PDV-RS-24-1-16b',
+      'PDV-RS-24-1-16v',
+      'PDV-RS-24-1-16g',
+      'PDV-RS-24-1-17'
+    ],
+    E: [
+      'PDV-RS-25-1-1',
+      'PDV-RS-25-1-1a',
+      'PDV-RS-25-1-2',
+      'PDV-RS-25-1-3',
+      'PDV-RS-25-1-4',
+      'PDV-RS-25-1-5',
+      'PDV-RS-25-1-6',
+      'PDV-RS-25-1-7',
+      'PDV-RS-25-1-8',
+      'PDV-RS-25-2-1',
+      'PDV-RS-25-2-2',
+      'PDV-RS-25-2-3',
+      'PDV-RS-25-2-3a',
+      'PDV-RS-25-2-3b',
+      'PDV-RS-25-2-5',
+      'PDV-RS-25-2-6',
+      'PDV-RS-25-2-7',
+      'PDV-RS-25-2-8',
+      'PDV-RS-25-2-9',
+      'PDV-RS-25-2-10',
+      'PDV-RS-25-2-11',
+      'PDV-RS-25-2-12',
+      'PDV-RS-25-2-13',
+      'PDV-RS-25-2-14',
+      'PDV-RS-25-2-15',
+      'PDV-RS-25-2-16',
+      'PDV-RS-25-2-17',
+      'PDV-RS-25-2-18',
+      'PDV-RS-25-2-19'
+    ],
+    R: [
+      'PDV-RS-6-1-1',
+      'PDV-RS-6a'
+    ],
+    O: [
+      'PDV-RS-11-1-1',
+      'PDV-RS-11-1-2',
+      'PDV-RS-11-1-3',
+      'PDV-RS-11-1-4',
+      'PDV-RS-11-1-5',
+      'PDV-RS-11-3',
+      'PDV-RS-12-4',
+      'PDV-RS-12-6-1',
+      'PDV-RS-12-6-2',
+      'PDV-RS-12-6-3',
+      'PDV-RS-12-6-4-1',
+      'PDV-RS-12-6-4-2',
+      'PDV-RS-12-6-4-3',
+      'PDV-RS-12-6-4-4',
+      'PDV-RS-12-6-4-5',
+      'PDV-RS-12-6-5',
+      'PDV-RS-12-6-6',
+      'PDV-RS-12-6-7-1',
+      'PDV-RS-12-6-7-2',
+      'PDV-RS-12-6-7-3',
+      'PDV-RS-12-6-7-4',
+      'PDV-RS-12-6-7-5',
+      'PDV-RS-12-6-7-6',
+      'PDV-RS-12-6-7-7',
+      'PDV-RS-12-6-7-8',
+      'PDV-RS-12-6-7-9',
+      'PDV-RS-12-6-7-10',
+      'PDV-RS-12-6-7-11',
+      'PDV-RS-12-6-7-12',
+      'PDV-RS-12-6-8',
+      'PDV-RS-12-9',
+      'PDV-RS-17-4-2',
+      'PDV-RS-61'
+    ],
+    OE: [
+      'PDV-RS-7a-4',
+      'PDV-RS-4-4-2NP',
+      'PDV-RS-5-4-2NP',
+      'PDV-RS-3NP-ostalo',
+      'PDV-RS-17-4-2',
+      'PDV-RS-17-4-3',
+      'PDV-RS-9'
+    ],
+    SS: [
+      'PDV-RS-33',
+      'PDV-RS-35-7'
+    ],
+    N: [
+      'PDV-RS-3-DZ',
+      'PDV-RS-4',
+      'PDV-RS-5',
+      'PDV-RS-6-1-1 (BN)'
+    ]
+  };
+
+  function updateDependentSelect() {
+    var selectedValue = billTaxCategorySelect.value;
+    dependentSelect.innerHTML = '';
+
+    if (selectedValue === 'S') {
+      taxCalculationDateLabel.classList.remove('hidden');
+      taxCalculationDate.classList.remove('hidden');
+    } else {
+      taxCalculationDateLabel.classList.add('hidden');
+      taxCalculationDate.classList.add('hidden');
+    }
+
+    var dependentValues = dependencyTable[selectedValue];
+    for (var i = 0; i < dependentValues.length; i++) {
+      var option = document.createElement('option');
+      option.value = dependentValues[i];
+      option.text = dependentValues[i];
+      dependentSelect.appendChild(option);
+    }
+  }
+
+  billTaxCategorySelect.addEventListener('change', updateDependentSelect);
+  updateDependentSelect();
+  dependentSelect.value = dependentSelectSelectedValue;
+</script>
+{% endblock %}

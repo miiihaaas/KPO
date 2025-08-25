@@ -14,8 +14,10 @@ class RegistrationInvoiceForm(FlaskForm):
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
     service = StringField('Opis knjiženja', validators=[Length(min=0, max=500)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])
-    company_id = SelectField('Company ID', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()])
-    user_id = SelectField('User ID', choices=[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
+    company_id = SelectField('Company ID', choices=[])
+    user_id = SelectField('User ID', choices=[]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
+    # company_id = SelectField('Company ID', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()])
+    # user_id = SelectField('User ID', choices=[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
     international_invoice = BooleanField('Ino faktura')
     submit = SubmitField('Dodaj fakturu')
 
@@ -29,8 +31,8 @@ class UpdateInvoiceForm(FlaskForm):
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
     service = StringField('Opis knjiženja', validators=[Length(min=0, max=500)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])
-    company_id = SelectField('Company ID', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()])
-    user_id = SelectField('User ID', choices=[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
+    company_id = SelectField('Company ID', choices=[]) #[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]
+    user_id = SelectField('User ID', choices=[]) #[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]
     cancelled = BooleanField('Storno')
     international_invoice = BooleanField('Ino faktura')
     submit = SubmitField('Ažuriraj')
@@ -55,11 +57,6 @@ class DashboardData():
             self.razlika_6m = self.limit - invoice_total
         else:
             self.razlika_6m = 0
-        # self.razlika_6m = self.limit - Invoice.query.with_entities(
-        #                     func.sum(Invoice.amount).label("suma")
-        #                     ).filter_by(cancelled=False).filter(Invoice.date.between(self.start_day[0], self.end_day)).filter_by(
-        #                     company_id=self.company_id
-        #                     ).first()[0]
         self.company_id = company_id
         self.last_input = Invoice.query.filter_by(company_id=company_id).order_by(Invoice.id.desc()).first() # dodati filter po preduzeću i porežati silazno --- ovo treba da predstavlja pslednju unetu fakturu
         list = [0, 1, 7, 15, 30, 90] # broj dana za proračun do limita

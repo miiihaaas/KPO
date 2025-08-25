@@ -1,4 +1,6 @@
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -18,35 +20,35 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     "pool_recycle": 300,
 }
 
-@app.errorhandler(401)
-def unauthorized(e):
-    error_info = "An error occurred: " + str(e)
-    return render_template('401.html', error_info=error_info), 401
+# @app.errorhandler(401)
+# def unauthorized(e):
+#     error_info = "An error occurred: " + str(e)
+#     return render_template('401.html', error_info=error_info), 401
 
-@app.errorhandler(403)
-def forbidden(e):
-    error_info = "An error occurred: " + str(e)
-    return render_template('403.html', error_info=error_info), 403
+# @app.errorhandler(403)
+# def forbidden(e):
+#     error_info = "An error occurred: " + str(e)
+#     return render_template('403.html', error_info=error_info), 403
 
-@app.errorhandler(404)
-def page_not_found(e):
-    error_info = "An error occurred: " + str(e)
-    return render_template('404.html', error_info=error_info), 404
+# @app.errorhandler(404)
+# def page_not_found(e):
+#     error_info = "An error occurred: " + str(e)
+#     return render_template('404.html', error_info=error_info), 404
 
-@app.errorhandler(500)
-def internal_server_error(e):
-    error_info = "An error occurred: " + str(e)
-    return render_template('500.html', error_info=error_info), 500
+# @app.errorhandler(500)
+# def internal_server_error(e):
+#     error_info = "An error occurred: " + str(e)
+#     return render_template('500.html', error_info=error_info), 500
 
-@app.errorhandler(502)
-def bad_gateway(e):
-    error_info = "An error occurred: " + str(e)
-    return render_template('502.html', error_info=error_info), 502
+# @app.errorhandler(502)
+# def bad_gateway(e):
+#     error_info = "An error occurred: " + str(e)
+#     return render_template('502.html', error_info=error_info), 502
 
-@app.errorhandler(Exception)
-def handle_error(e):
-    error_info = "An error occurred: " + str(e)
-    return render_template('500.html', error_info=error_info), 500
+# @app.errorhandler(Exception)
+# def handle_error(e):
+#     error_info = "An error occurred: " + str(e)
+#     return render_template('500.html', error_info=error_info), 500
 
 
 db = SQLAlchemy(app)
@@ -63,10 +65,38 @@ app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER') # https://www.youtube.com/
 app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer -- za 2 step verification: https://support.google.com/accounts/answer/185833
 mail = Mail(app)
 
+# Konfiguracija loggera sa rotacijom 9 fajlova
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+logger = logging.getLogger('kpo')
+logger.setLevel(logging.DEBUG)
+
+# Kreiranje formatera za log poruke
+log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+# Kreiranje RotatingFileHandler sa rotacijom 9 fajlova
+file_handler = RotatingFileHandler('logs/kpo.log', maxBytes=1024*1024, backupCount=9)
+file_handler.setFormatter(log_formatter)
+file_handler.setLevel(logging.INFO)
+
+# Dodavanje handlera loggeru
+logger.addHandler(file_handler)
+
+# Dodavanje konzolnog handlera za prikaz logova u konzoli
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+console_handler.setLevel(logging.INFO)
+logger.addHandler(console_handler)
+
+logger.info('Aplikacija pokrenuta')
+
 from kpo.companys.routes import companys
 from kpo.invoices.routes import invoices
 from kpo.users.routes import users
 from kpo.main.routes import main
+from kpo.customers.routes import customers
+from kpo.bills.routes import bills
 # from kpo.qr.routes import qr
 
 
@@ -74,4 +104,6 @@ app.register_blueprint(companys)
 app.register_blueprint(invoices)
 app.register_blueprint(users)
 app.register_blueprint(main)
+app.register_blueprint(customers)
+app.register_blueprint(bills)
 # app.register_blueprint(qr)

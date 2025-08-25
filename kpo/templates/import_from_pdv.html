@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Izaberite PDF fajl</h1>
+<form method="POST" action="" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".pdf">
+  <input type="submit" value="Učitajte PDF" class="btn btn-primary">
+  {% if df %}
+  <a href="static/payment_slips/uplatnice.pdf" target="_blank" class="btn btn-primary">Generišite uplatnice</a>
+  {% endif %}
+</form>
+<hr>
+{% if df %}
+<h1>{{ uplatilac }}</h1>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Konto</th>
+      <th>Broj računa</th>
+      <th>Ukupan dug</th>
+      <th>Opis-svrha uplate</th>
+      <th>Model</th>
+      <th>Poziv na broj</th>
+      <th>Šifra plaćanja</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in df %}
+    <tr>
+      {% for record in row %}
+      <td>{{ record }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% endblock content %}
+
+

@@ -1,52 +1,150 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if current_user.is_authenticated %}
-  <div class="two-inputs-in-row">
-    <h1>{{ current_user.user_company.companyname }}</h1>
-    <h2>{{ form.end_day.strftime("%d.%m.%Y.") }} </h2>
+<div class="row">
+  <div class="col-6 form-group">
+    <div class="two-inputs-in-row">
+      <h1>{{ current_user.user_company.companyname }}</h1>
+      <h2>{{ dashboard.end_day.strftime("%d.%m.%Y.") }} </h2>
+    </div>
+    <hr>
+    <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din</h3>
+    <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</h3>
+    <h3>Fakturisano u prethodnih 365 dana: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_8m[1] + 2000000) }} din</h3>
+    {% if current_user.authorization == 's_admin' %}
+    <hr>
+    <form action="" method="post">
+      {{ form.hidden_tag() }}
+      <div class="d-flex">
+        <div class="me-2">
+          {{ form.company_id(class="form-select") }}
+        </div>
+        <div>
+          {{ form.submit(class="btn btn-primary") }}
+        </div>
+      </div>
+      
+    </form>
+    {% endif %}
   </div>
+  <div class="col form-group">
+    <div id="chartContainer" style="display: flex; flex-wrap: wrap; justify-content: center;">
+      <div class="form-group">
+        <!-- <label for="donateChart1">na današnji dan:</label> -->
+        <canvas id="donateChart1" style="height: 190px;; width: 190px;"></canvas>
+      </div>
+      <div class="form-group">
+        <!-- <label for="donateChart2">na sutrašnji dan</label> -->
+        <canvas id="donateChart2" style="height: 190px; width: 190px;"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 form-group">
+    <table id="data" border="1" class="table table-striped">
+      <thead>
+        <tr id="header">
+          <th>Do limita za PDV [8,000,000.00]</th>
+          <th>[din]</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>na današnji dan:</td>
+          <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[1]) }}</td>
+        </tr>
+        <tr>
+          <td>na sutrašnju dan:</td>
+          <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[2]) }}</td>
+        </tr>
+        <tr>
+          <td>u narednih 7 dana:</td>
+          <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[3]) }}</td>
+        </tr>
+        <tr>
+          <td>u narednih 15 dana:</td>
+          <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[4]) }}</td>
+        </tr>
+        <tr>
+          <td>u narednih mesec dana:</td>
+          <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[5]) }}</td>
+        </tr>
+        <tr>
+          <td>u naredna 3 meseca:</td>
+          <td>{{ '{:,.2f}'.format(dashboard.razlika_8m[6]) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
   <hr>
-  <h3>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(form.limit - form.razlika_6m) }} din</h3>
-  <h3>Do limita od 6M u kalendarskoj godini ostalo je: {{ '{:,.2f}'.format(form.razlika_6m) }} din</h3>
-  <h3>Fakturisano u prethodnih 365 dana: {{ '{:,.2f}'.format(form.limit - form.razlika_8m[1] + 2000000) }} din</h3>
-  <hr>
-
-  <table id="data" border="1" class="table table-striped">
-    <thead>
-      <tr id="header">
-        <th>Do limita za PDV [8,000,000.00]</th>
-        <th>[din]</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>na današnji dan:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[1]) }}</td>
-      </tr>
-      <tr>
-        <td>na sutrašnju dan:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[2]) }}</td>
-      </tr>
-      <tr>
-        <td>u narednih 7 dana:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[3]) }}</td>
-      </tr>
-      <tr>
-        <td>u narednih 15 dana:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[4]) }}</td>
-      </tr>
-      <tr>
-        <td>u narednih mesec dana:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[5]) }}</td>
-      </tr>
-      <tr>
-        <td>u naredna 3 meseca:</td>
-        <td>{{ '{:,.2f}'.format(form.razlika_8m[6]) }}</td>
-      </tr>
-    </tbody>
-  </table>
+  
   <br>
-  <a class="btn btn-info btn-lg m-1" href="{{ url_for('invoices.invoice_list') }}">Fakture</a>
 {% endif %}
 
 {% endblock content%}
+
+{% block scripts %}
+
+<script>
+  window.onload = function() {
+    var company_id = '{{ dashboard.company_id }}';
+    var limit = parseFloat("{{ dashboard.limit }}");
+    var end_day = "{{ dashboard.end_day }}";
+    var start_day = "{{ dashboard.start_day }}";
+    var razlika_8m = JSON.parse("{{ dashboard.razlika_8m }}");
+    var razlika_6m = parseFloat("{{ dashboard.razlika_6m }}");
+    console.log('kompanija: ',company_id)
+    console.log('limit: ',limit)
+    console.log('poslednji dan: ',end_day)
+    console.log('startni dani: ',start_day)
+    console.log('8M ',razlika_8m)
+    console.log('6M ',razlika_6m)
+
+    // var ctx0 = document.getElementById('donateChart1').getContext('2d');
+    var ctx1 = document.getElementById('donateChart1').getContext('2d');
+    var ctx2 = document.getElementById('donateChart2').getContext('2d');
+
+    var maksimalna_vrednost_1 = limit+2000000;
+    var maksimalna_vrednost_2 = limit;
+
+    var preostalo = parseFloat(razlika_8m[1]);
+      var vrednost_faktura = maksimalna_vrednost_1 - preostalo;
+      console.log(preostalo, vrednost_faktura)
+
+      var donateChart = new Chart(eval('ctx' + (1)), {
+        type: 'doughnut',
+        data: {
+          labels: ['Fakturisano', 'Preostalo do 8M'],
+          datasets: [{
+            data: [vrednost_faktura, preostalo],
+            backgroundColor: ['#25cff2', '#104e97']
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false
+        }
+      });
+
+      var preostalo = parseFloat(razlika_6m);
+      var vrednost_faktura = maksimalna_vrednost_2 - preostalo;
+      console.log(preostalo, vrednost_faktura)
+
+      var donateChart = new Chart(eval('ctx' + (2)), {
+        type: 'doughnut',
+        data: {
+          labels: ['Fakturisano', 'Preostalo do 6M'],
+          datasets: [{
+            data: [vrednost_faktura, preostalo],
+            backgroundColor: ['#25cff2', '#104e97']
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false
+        }
+      });
+  };
+  </script>
+  
+{% endblock %}

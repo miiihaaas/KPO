@@ -1,0 +1,251 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="contetn-section">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <ul class="nav nav-tabs justify-content-center mb-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dokument</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link disabled" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Stavke</a>
+        </li>
+        </ul>
+        <fieldset class="">
+            <div class="row">
+                <div class="col-8">
+                    test 8
+                    <div class="col form-group" style="border: 1px solid black;">
+                        <div class="row">
+                        <div class="col-3 form-group">
+                            {{ form.bill_currency.label(class="form-control-label") }}
+                            {% if form.bill_currency.errors %}
+                            {{ form.bill_currency(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.bill_currency.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.bill_currency(class="form-control", readonly=True) }}
+                            {% endif %}
+                        </div>
+                        <div class="col form-group">
+                            {{ form.bill_number.label(class="form-control-label") }}
+                            {% if form.bill_number.errors %}
+                            {{ form.bill_number(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.bill_number.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.bill_number(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="col form-group">
+                            {{ form.bill_contract_number.label(class="form-control-label") }}
+                            {% if form.bill_contract_number.errors %}
+                            {{ form.bill_contract_number(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.bill_contract_number.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.bill_contract_number(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col form-group">
+                            {{ form.bill_customer_id.label(class="form-control-label") }}
+                            {% if form.bill_customer_id.errors %}
+                            {{ form.bill_customer_id(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.bill_customer_id.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.bill_customer_id(class="form-control", readonly=True) }}
+                            {% endif %}
+                        </div>
+                        </div>
+                        <dib class="row">
+                        <div class="col form-group">
+                            {{ form.bill_decision_number.label(class="form-control-label") }}
+                            {% if form.bill_decision_number.errors %}
+                            {{ form.bill_decision_number(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.bill_decision_number.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.bill_decision_number(class="form-control", readonly="true") }}
+                            {% endif %}
+                        </div>
+                        <div class="col form-group">
+                            {{ form.bill_service.label(class="form-control-label") }}
+                            {% if form.bill_service.errors %}
+                            {{ form.bill_service(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.bill_service.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.bill_service(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        </dib>
+                    </div>
+                    <div class="row">
+                        <div class="col-3 form-group">
+                        {{ form.bill_tax_category.label(class="form-control-label") }}
+                        {% if form.bill_tax_category.errors %}
+                            {{ form.bill_tax_category(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_tax_category.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_tax_category(class="form-control", readonly=True) }}
+                        {% endif %}
+                        </div>
+                        <div class="col form-group">
+                        {{ form.bill_base_code.label(class="form-control-label") }}
+                        {% if form.bill_base_code.errors %}
+                            {{ form.bill_base_code(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_base_code.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_base_code(class="form-control", readonly=True) }}
+                        {% endif %}
+                        </div>
+                        <div class="col form-group">
+                        {{ form.bill_purchase_order_number.label(class="form-control-label") }}
+                        {% if form.bill_purchase_order_number.errors %}
+                            {{ form.bill_purchase_order_number(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_purchase_order_number.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_purchase_order_number(class="form-control", readonly="true") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    {% if note_type == 'debit_note'  %}
+                    <div class="row">
+                        <div class="col-3 form-group">
+                        {{ form.bill_due_date.label(class="form-control-label") }}
+                        {% if form.bill_due_date.errors %}
+                            {{ form.bill_due_date(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_due_date.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_due_date(class="form-control", type="date") }}
+                        {% endif %}
+                        </div>
+                        <div class="col form-group">
+                        {{ form.bill_tax_calculation_date.label(class="form-control-label") }}
+                        {% if form.bill_tax_calculation_date.errors %}
+                            {{ form.bill_tax_calculation_date(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_tax_calculation_date.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_tax_calculation_date(class="form-select") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col form-group">
+                        {{ form.bill_reference_number.label(class="form-control-label") }}
+                        {% if form.bill_reference_number.errors %}
+                            {{ form.bill_reference_number(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_reference_number.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_reference_number(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="col form-group">
+                        {{ form.bill_model.label(class="form-control-label") }}
+                        {% if form.bill_model.errors %}
+                            {{ form.bill_model(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_model.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_model(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="col form-group">
+                        {{ form.bill_attachment.label(class="form-control-label") }}
+                        {% if form.bill_attachment.errors %}
+                            {{ form.bill_attachment(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for error in form.bill_attachment.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.bill_attachment(class="form-control") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    {% if last_document %}
+                    <p>Poslednje kreirani dokument: <strong>{{ last_document.bill_number }}</strong></p>
+                    {% endif %}
+                    <hr>
+                    <div class="content-section">
+                        <h3>Korisni podaci</h3>
+                        <p class='text-muted'></p>
+                        <li class="list-group-item list-group-item-light"><small>Fakturisano u tekućoj godini: {{ '{:,.2f}'.format(dashboard.limit - dashboard.razlika_6m) }} din / ostalo: {{ '{:,.2f}'.format(dashboard.razlika_6m) }} din</small></li>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-light">Do limita za PDV [8,000,000.00]</li>
+                            <li class="list-group-item list-group-item-light"><small>na današnji dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[1]) }} din</small></li>
+                            <li class="list-group-item list-group-item-light"><small>na sutrašnju dan: {{ '{:,.2f}'.format(dashboard.razlika_8m[2]) }} din</small></li>
+                            <li class="list-group-item list-group-item-light"><small>u narednih 7 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[3]) }} din</small></li>
+                            <li class="list-group-item list-group-item-light"><small>u narednih 15 dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[4]) }} din</small></li>
+                            <li class="list-group-item list-group-item-light"><small>u narednih mesec dana: {{ '{:,.2f}'.format(dashboard.razlika_8m[5]) }} din</small></li>
+                            <li class="list-group-item list-group-item-light"><small>u naredna 3 meseca: {{ '{:,.2f}'.format(dashboard.razlika_8m[6]) }} din</small></li>
+                        </ul>
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+        <a class="btn" href="{{url_for('bills.bill_list')}}"><i class="fa-solid fa-left-long"></i> Nazad</a>
+        {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+
+{% endblock content%}
+
+{% block scripts %}
+<script></script>
+{% endblock %}
