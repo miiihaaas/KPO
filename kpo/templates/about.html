@@ -1,26 +1,64 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>O Softveru</h1>
-<br>
-<h3>KPO.digital je softver za digitalno vođenje KPO obrasca. On olakšava paušalnim preduzetnicima vođenje evidencije o prihodima, što je njihova zakonska obaveza. Softver je razvio Studio Implicit, firma sa bogatim iskustvom u razvoju poslovnih rešenja.</h3>
-<br>
-<div class="content-section">
-  <h3>Zašto da koristite naš softver?</h3>
-  <p class='text-muted'>
-    <ul class="list-group">
-      <li class="list-group-item list-group-item-light"><small> - Softver je jednostavan za korišćenje</small></li>
-      <li class="list-group-item list-group-item-light"><small> - Izgled je prilagođen svim mobilnim i desktop uređajima</small></li>
-      <li class="list-group-item list-group-item-light"><small> - Pristup softveru je moguć u bilo kom trenutku i odakle god da radite</small></li>
-      <li class="list-group-item list-group-item-light"><small> - Prikazivanje godišnjeg limita i limita za PDV na dnevnom nivou</small></li>
-      <li class="list-group-item list-group-item-light"><small> - Opcija izvoza i štampanja KPO obrasca</small></li>
-      <li class="list-group-item list-group-item-light"><small> - Podaci u softveru su bezbedni</small></li>
-      <li class="list-group-item list-group-item-light"><small> - Omogućen rad većem broju korisnika</small></li>
-      <li class="list-group-item list-group-item-light"><small> - Softver radi u cloud-u, nije potrebno instaliranje</small></li>
-    </ul>
+
+<div class="about-page">
+  <div class="about-hero">
+    <h1 class="about-hero__title">KPO.digital</h1>
+    <p class="about-hero__subtitle">Softver za digitalno vođenje KPO obrasca</p>
+  </div>
+
+  <p class="about-intro">
+    KPO.digital olakšava paušalnim preduzetnicima vođenje evidencije o prihodima, što je njihova zakonska obaveza. Softver je razvio <strong>Studio Implicit</strong>, firma sa bogatim iskustvom u razvoju poslovnih rešenja.
   </p>
+
+  <div class="about-features">
+    <div class="about-features__header">
+      <i class="fa-solid fa-star"></i>
+      Zašto da koristite naš softver?
+    </div>
+    <div class="about-features__grid">
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-hand-pointer"></i></div>
+        <div class="about-feature__text">Jednostavan za korišćenje</div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-mobile-screen"></i></div>
+        <div class="about-feature__text">Prilagođen svim uređajima</div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-cloud"></i></div>
+        <div class="about-feature__text">Radi u cloud-u, bez instaliranja</div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-gauge-high"></i></div>
+        <div class="about-feature__text">Prikaz limita na dnevnom nivou</div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-file-pdf"></i></div>
+        <div class="about-feature__text">Izvoz i štampanje KPO obrasca</div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="about-feature__text">Bezbedni podaci</div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-users"></i></div>
+        <div class="about-feature__text">Rad većeg broja korisnika</div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature__icon"><i class="fa-solid fa-globe"></i></div>
+        <div class="about-feature__text">Pristup odakle god da radite</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-cta">
+    <p class="about-cta__text">Uz naš softver napišite knjigu koja će se rado čitati u poreskoj upravi!</p>
+    <a class="dash-btn" href="{{url_for('users.login')}}">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      Prijavi se
+    </a>
+  </div>
 </div>
 
-<h2>Uz naš softver napišite knjigu koja će se rado čitati u poreskoj upravi!</h2>
-
-<a class = "btn btn-info btn-sm m-1" href="{{url_for('users.login')}}"> Prijavi se</a>
 {% endblock content%}

@@ -2,13 +2,18 @@
 {% block content %}
 
 {% if current_user.authorization != 'c_user' and not g.get('license_expired') %}
-<div>
-  <a class="btn btn-info btn-sm m-1" href="{{ url_for('users.register_u') }}">Registracija novog korisnika</a>
-  <hr>
-</div>
+  <div class="inv-toolbar">
+    <div class="inv-toolbar__actions">
+      <a class="inv-btn inv-btn--primary" href="{{ url_for('users.register_u') }}">
+        <i class="fa-solid fa-user-plus"></i> Novi korisnik
+      </a>
+    </div>
+  </div>
+{% else %}
+  <div style="padding-top: 20px;"></div>
 {% endif %}
 
-<table id="data" border="1" class="table table-striped">
+<table id="data" class="table table-striped">
   {% if current_user.authorization == 's_admin' %}
     <thead>
       <tr id="header">
@@ -21,7 +26,7 @@
     <tbody>
       {% for user in users %}
         <tr>
-          <td> <a class="btn btn-info btn-sm mr-2" href="{{ url_for('users.user_profile', user_id=user.id) }}" title="Izmenite korisnika">{{ user.name }} {{ user.surname }}</a> </td>
+          <td><a class="inv-link-btn" href="{{ url_for('users.user_profile', user_id=user.id) }}" title="Izmenite korisnika">{{ user.name }} {{ user.surname }}</a></td>
           <td>{{ user.user_company.companyname }}</td>
           <td>{{ user.authorization }}</td>
           <td>{{ user.email }}</td>
@@ -39,7 +44,7 @@
       {% for user in users %}
         {% if user.user_company.id == current_user.user_company.id %}
           <tr>
-            <td> <a class="btn btn-info btn-sm mr-2" href="{{ url_for('users.user_profile', user_id=user.id) }}" title="Edit User">{{ user.name }} {{ user.surname }}</a> </td>
+            <td><a class="inv-link-btn" href="{{ url_for('users.user_profile', user_id=user.id) }}" title="Edit User">{{ user.name }} {{ user.surname }}</a></td>
             <td>{{ user.email }}</td>
           </tr>
         {% endif %}
@@ -56,7 +61,7 @@
       {% for user in users %}
         {% if user.id == current_user.id %}
           <tr>
-            <td> <a class="btn btn-info btn-sm mr-2" href="{{ url_for('users.user_profile', user_id=user.id) }}" title="Edit User">{{ user.name }} {{ user.surname }}</a> </td>
+            <td><a class="inv-link-btn" href="{{ url_for('users.user_profile', user_id=user.id) }}" title="Edit User">{{ user.name }} {{ user.surname }}</a></td>
             <td>{{ user.email }}</td>
           </tr>
         {% endif %}

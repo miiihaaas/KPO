@@ -1,40 +1,49 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div class="content-section">
-    <form method="POST" action="">
-      {{ form.hidden_tag() }}
-      <fieldset class="form-group">
-        <legend class="border-bottom mb-4">Reset Password</legend>
-        <div class="form-group">
-          {{ form.password.label(class="form-control-label") }}
-          {% if form.password.errors %}
+
+<div class="reg-layout" style="justify-content: center;">
+  <div style="max-width: 480px; width: 100%;">
+    <div class="reg-form-card">
+      <div class="reg-form-card__header">
+        <i class="fa-solid fa-lock-open"></i>
+        Nova lozinka
+      </div>
+      <div class="reg-form-card__body">
+        <form method="POST" action="">
+          {{ form.hidden_tag() }}
+          <div class="reg-field">
+            {{ form.password.label(class="reg-label") }}
+            {% if form.password.errors %}
               {{ form.password(class="form-control form-control-lg is-invalid") }}
               <div class="invalid-feedback">
-                  {% for error in form.password.errors %}
-                      <span>{{ error }}</span>
-                  {% endfor %}
+                {% for error in form.password.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
               </div>
-          {% else %}
-              {{ form.password(class="form-control form-control-lg") }}
-          {% endif %}
-        </div>
-        <div class="form-group">
-            {{ form.confirm_password.label(class="form-control-label") }}
-            {% if form.confirm_password.errors %}
-                {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.confirm_password.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
             {% else %}
-                {{ form.confirm_password(class="form-control form-control-lg") }}
+              {{ form.password(class="form-control form-control-lg") }}
             {% endif %}
-        </div>
-      </fieldset>
-      <div class="form-group">
-        {{ form.submit(class="btn btn-outline-info") }}
+          </div>
+          <div class="reg-field">
+            {{ form.confirm_password.label(class="reg-label") }}
+            {% if form.confirm_password.errors %}
+              {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.confirm_password.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            {% else %}
+              {{ form.confirm_password(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="reg-form-card__footer" style="margin: 0 -24px -24px -24px; padding: 16px 24px;">
+            {{ form.submit(class="inv-btn inv-btn--primary") }}
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   </div>
+</div>
+
 {% endblock content%}

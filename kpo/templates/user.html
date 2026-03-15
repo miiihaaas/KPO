@@ -1,153 +1,154 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="content-section">
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <!-- <legend class="border-bottom mb-4">{{ legend }}</legend> -->
 
+<div class="reg-layout">
+  <div class="reg-layout__main">
+    <div class="reg-form-card">
+      <div class="reg-form-card__header">
+        <i class="fa-solid fa-user-pen"></i>
+        {{ legend }}
+      </div>
+      <div class="content-section" style="border:0; padding:0;">
+        <form method="POST" action="">
+          {{ form.hidden_tag() }}
+          <div class="reg-form-card__body">
 
-            <div class="form-group">
-                {{ form.name.label(class="form-control-label") }}
-
+            <div class="reg-row">
+              <div class="reg-field">
+                {{ form.name.label(class="reg-label") }}
                 {% if form.name.errors %}
-                    {{ form.name(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.name.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
+                  {{ form.name(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.name.errors %}<span>{{ error }}</span>{% endfor %}
+                  </div>
                 {% else %}
-                    {{ form.name(class="form-control form-control-lg") }}
+                  {{ form.name(class="form-control form-control-lg") }}
                 {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.surname.label(class="form-control-label") }}
-
+              </div>
+              <div class="reg-field">
+                {{ form.surname.label(class="reg-label") }}
                 {% if form.surname.errors %}
-                    {{ form.surname(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.surname.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
+                  {{ form.surname(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.surname.errors %}<span>{{ error }}</span>{% endfor %}
+                  </div>
                 {% else %}
-                    {{ form.surname(class="form-control form-control-lg") }}
+                  {{ form.surname(class="form-control form-control-lg") }}
                 {% endif %}
+              </div>
             </div>
-            <div class="form-group">
-                {{ form.workplace.label(class="form-control-label") }}
 
-                {% if form.workplace.errors %}
-                    {{ form.workplace(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.workplace.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.workplace(class="form-control form-control-lg") }}
-                {% endif %}
+            <div class="reg-field">
+              {{ form.workplace.label(class="reg-label") }}
+              {% if form.workplace.errors %}
+                {{ form.workplace(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.workplace.errors %}<span>{{ error }}</span>{% endfor %}
+                </div>
+              {% else %}
+                {{ form.workplace(class="form-control form-control-lg") }}
+              {% endif %}
             </div>
-            <div class="form-group">
-                {{ form.gender.label(class="form-control-label") }}
 
+            <div class="reg-row">
+              <div class="reg-field">
+                {{ form.gender.label(class="reg-label") }}
                 {% if form.gender.errors %}
-                    {{ form.gender(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.gender.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
+                  {{ form.gender(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.gender.errors %}<span>{{ error }}</span>{% endfor %}
+                  </div>
                 {% else %}
-                    {{ form.gender(class="form-control form-control-lg") }}
+                  {{ form.gender(class="form-control form-control-lg") }}
                 {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.email.label(class="form-control-label") }}
-
+              </div>
+              <div class="reg-field">
+                {{ form.email.label(class="reg-label") }}
                 {% if form.email.errors %}
-                    {{ form.email(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.email.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
+                  {{ form.email(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.email.errors %}<span>{{ error }}</span>{% endfor %}
+                  </div>
                 {% else %}
-                    {{ form.email(class="form-control form-control-lg") }}
+                  {{ form.email(class="form-control form-control-lg") }}
                 {% endif %}
+              </div>
             </div>
 
             {% if current_user.authorization == 's_admin'%}
-              <div class="form-group">
-                  {{ form.company_id.label(class="form-control-label") }}
-
+              <div class="reg-row">
+                <div class="reg-field">
+                  {{ form.company_id.label(class="reg-label") }}
                   {% if form.company_id.errors %}
-                      {{ form.company_id(class="form-control form-control-lg is-invalid") }}
-                      <div class="invalid-feedback">
-                          {% for error in form.company_id.errors %}
-                              <span>{{ error }}</span>
-                          {% endfor %}
-                      </div>
+                    {{ form.company_id(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.company_id.errors %}<span>{{ error }}</span>{% endfor %}
+                    </div>
                   {% else %}
-                      {{ form.company_id(class="form-control form-control-lg") }}
+                    {{ form.company_id(class="form-control form-control-lg") }}
                   {% endif %}
+                </div>
+                <div class="reg-field">
+                  {{ form.authorization.label(class="reg-label") }}
+                  {% if form.authorization.errors %}
+                    {{ form.authorization(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in form.authorization.errors %}<span>{{ error }}</span>{% endfor %}
+                    </div>
+                  {% else %}
+                    {{ form.authorization(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
               </div>
             {% else %}
               {{ form.company_id(class="sr-only form-control form-control-lg") }}
-            {% endif %}
-            {% if current_user.authorization == 's_admin'%}
-              <div class="form-group">
-                  {{ form.authorization.label(class="form-control-label") }}
-
-                  {% if form.authorization.errors %}
-                      {{ form.authorization(class="form-control form-control-lg is-invalid") }}
-                      <div class="invalid-feedback">
-                          {% for error in form.authorization.errors %}
-                              <span>{{ error }}</span>
-                          {% endfor %}
-                      </div>
-                  {% else %}
-                      {{ form.authorization(class="form-control form-control-lg") }}
-                  {% endif %}
-              </div>
-            {% else %}
               {{ form.authorization(class="sr-only form-control form-control-lg") }}
             {% endif %}
-        </fieldset>
-        <div class="form-group">
-            <a class="btn btn-info" href="{{url_for('users.user_list')}}">&#8678; Nazad</a>
+          </div>
+
+          <div class="reg-form-card__footer">
+            <a class="inv-btn inv-btn--outline" href="{{url_for('users.user_list')}}">
+              <i class="fa-solid fa-arrow-left"></i> Nazad
+            </a>
             {% if not g.get('license_expired') %}
-              {{ form.submit(class="btn btn-outline-info") }}
+              {{ form.submit(class="inv-btn inv-btn--primary") }}
               {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
-                  <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrišite profil</button>
+                <button type="button" class="inv-btn inv-btn--danger" data-toggle="modal" data-target="#DeleteModal">
+                  <i class="fa-solid fa-trash"></i> Obrišite profil
+                </button>
               {% endif %}
             {% endif %}
-        </div>
-  </form>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
+
 <!-- Modal -->
 <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="DeleteModalLabel">Delete User?</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        <div class="modal-body">
-        <label for="input_password">To delete user you need to confirm your password:</label>
-        </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <form  action="{{ url_for('users.delete_user', user_id=user.id) }}" method="post">
-                    <input class="btn btn-danger" type="submit" value="Delete User">
-                    <input type="password" id="input_password" name="input_password" value="" placeholder="confirm your password to delete user">
-                </form>
-            </div>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #940052; color: #fff;">
+        <h5 class="modal-title" id="DeleteModalLabel">Brisanje korisnika</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="input_password">Da biste obrisali korisnika potrebno je da unesete lozinku:</label>
+      </div>
+      <div class="modal-footer">
+        <form action="{{ url_for('users.delete_user', user_id=user.id) }}" method="post">
+          <input class="form-control form-control-lg" type="password" id="input_password" name="input_password" value="" placeholder="potvrdi lozinkom" style="margin-bottom: 10px;">
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="inv-btn inv-btn--outline" data-dismiss="modal">Zatvori</button>
+            <input class="inv-btn inv-btn--danger" type="submit" value="Obriši">
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
 {% endblock content%}
