@@ -117,9 +117,11 @@
         </fieldset>
         <div class="form-group">
             <a class="btn btn-info" href="{{url_for('users.user_list')}}">&#8678; Nazad</a>
-            {{ form.submit(class="btn btn-outline-info") }}
-            {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
-                <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrišite profil</button>
+            {% if not g.get('license_expired') %}
+              {{ form.submit(class="btn btn-outline-info") }}
+              {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
+                  <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obrišite profil</button>
+              {% endif %}
             {% endif %}
         </div>
   </form>

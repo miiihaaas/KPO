@@ -14,8 +14,12 @@ class RegistrationUserForm(FlaskForm):
     workplace = StringField('Radno mesto', validators=[DataRequired(), Length(min=2, max=20)])
     authorization = SelectField('Nivo autorizacije', validators=[DataRequired()], choices = [('c_user', 'USER'),('c_admin', 'ADMIN')])
     gender = SelectField('Pol', validators=[DataRequired()], choices = [(1, 'MUŠKI'),(2, 'ŽENSKI')])
-    company_id = SelectField('Kompanija', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
+    company_id = SelectField('Kompanija', choices=[])
     submit = SubmitField('Registrujte korisnika')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id, Company.companyname).order_by('companyname').all()]
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
@@ -33,8 +37,12 @@ class UpdateUserForm(FlaskForm):
     workplace = StringField(label='Radno mesto', validators=[DataRequired(), Length(min=2, max=20)])
     authorization = SelectField('Nivo autorizacije', validators=[DataRequired()], choices = [('c_user', 'USER'),('c_admin', 'ADMIN')])
     gender = SelectField('Pol', validators=[DataRequired()], choices=[(1, 'MUŠKI'), (2, 'ŽENSKI')])
-    company_id = SelectField('Kompanija', choices = [(c.id, c.companyname)for c in db.session.query(Company.id, Company.companyname).order_by('companyname').all()])
+    company_id = SelectField('Kompanija', choices=[])
     submit = SubmitField('Ažurirajte podatke')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id, Company.companyname).order_by('companyname').all()]
 
     def reset(self):
         self.__init__()

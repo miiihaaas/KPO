@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, ValidationError
+from wtforms import StringField, SubmitField, DateField
+from wtforms.validators import DataRequired, Length, Email, ValidationError, Optional
 from kpo.models import Company
 
 class RegistrationCompanyForm(FlaskForm):
@@ -17,6 +17,7 @@ class RegistrationCompanyForm(FlaskForm):
     company_mail = StringField('Mejl', validators=[DataRequired(), Email()])
     company_phone = StringField('Broj telefona', validators=[DataRequired(), Length(min=9, max=13)])
     company_logo = "" #na ovom poraditi --->> https://www.youtube.com/watch?v=803Ei2Sq-Zs&list=PL-osiE80TeTs4UjLw5MM6OjgkjFeUxCYH&index=7&ab_channel=CoreySchafer <<--- :)
+    license_expiry = DateField('Datum isteka licence', validators=[Optional()])
     submit = SubmitField('Registrujte kompaniju')
 
     def validate_companyname(self, companyname):
@@ -38,4 +39,5 @@ class EditCompanyForm(FlaskForm):
     company_mail = StringField('Mejl', validators=[DataRequired(), Email()])
     company_phone = StringField('Broj telefona', validators=[DataRequired(), Length(min=9, max=13)])
     company_logo = FileField('Ažuriranje loga', validators=[FileAllowed(['jpg', 'png'])]) #na ovom poraditi --->> https://www.youtube.com/watch?v=803Ei2Sq-Zs&list=PL-osiE80TeTs4UjLw5MM6OjgkjFeUxCYH&index=7&ab_channel=CoreySchafer <<--- :)
+    license_expiry = DateField('Datum isteka licence', validators=[Optional()])
     submit = SubmitField('Ažuriraj podatke')

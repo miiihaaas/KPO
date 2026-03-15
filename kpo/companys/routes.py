@@ -1,6 +1,6 @@
 import secrets, os
 from PIL import Image
-from flask import Blueprint
+from flask import Blueprint, g
 from flask import  render_template, url_for, flash, redirect, request, abort
 from kpo import db, app
 from kpo.companys.forms import RegistrationCompanyForm, EditCompanyForm
@@ -39,7 +39,8 @@ def register_c():
                             company_site=form.company_site.data,
                             company_mail=form.company_mail.data,
                             company_phone=form.company_phone.data,
-                            company_logo='')
+                            company_logo='',
+                            license_expiry=form.license_expiry.data)
         db.session.add(company)
         db.session.commit()
         flash(f'Kompanija: {form.companyname.data} je uspešno kreirana!', 'success')
@@ -74,12 +75,17 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
     elif current_user.user_company.id != company.id and current_user.authorization != 's_admin':
         abort(403)
     form = EditCompanyForm()
+    if g.get('license_expired') and request.method == 'POST':
+        flash('Licenca je istekla. Nije moguće menjati podatke kompanije.', 'danger')
+        return redirect(url_for('companys.company_list'))
     if form.validate_on_submit():
         if form.company_logo.data:
             picture_file = save_picture(form.company_logo.data)
             company.company_logo=picture_file
 
 
+        if current_user.authorization == 's_admin':
+            company.license_expiry = form.license_expiry.data
         company.companyname=form.companyname.data
         company.company_address=form.company_address.data
         company.company_address_number=form.company_address_number.data
@@ -107,6 +113,7 @@ def company_profile(company_id): #ovo je funkcija za editovanje user-a
         form.company_mail.data=company.company_mail
         form.company_phone.data=company.company_phone
         form.company_logo.data=company.company_logo
+        form.license_expiry.data=company.license_expiry
     image_file = url_for('static', filename='company_logos/' + company.company_logo)
     print(image_file)
     return render_template('company.html', title='Uređivanje podataka kompanije', company=company, form=form, legend='Uređivanje podataka kompanije', image_file=image_file)

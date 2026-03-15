@@ -14,10 +14,15 @@ class RegistrationInvoiceForm(FlaskForm):
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
     service = StringField('Opis knjiženja', validators=[Length(min=0, max=500)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])
-    company_id = SelectField('Company ID', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()])
-    user_id = SelectField('User ID', choices=[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
+    company_id = SelectField('Company ID', choices=[])
+    user_id = SelectField('User ID', choices=[])
     international_invoice = BooleanField('Ino faktura')
     submit = SubmitField('Dodaj fakturu')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id, Company.companyname).order_by('companyname').all()]
+        self.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id, User.name, User.surname).order_by('name').all()]
 
     def reset(self):
         self.__init__()
@@ -29,11 +34,16 @@ class UpdateInvoiceForm(FlaskForm):
     customer = StringField('Klijent', validators=[DataRequired(), Length(min=2, max=50)])
     service = StringField('Opis knjiženja', validators=[Length(min=0, max=500)])
     amount = DecimalField('Iznos [din]', validators=[DataRequired()])
-    company_id = SelectField('Company ID', choices=[(c.id, c.companyname) for c in db.session.query(Company.id,Company.companyname).order_by('companyname').all()])
-    user_id = SelectField('User ID', choices=[(u.id, u.name + " " + u.surname) for u in db.session.query(User.id,User.name,User.surname).order_by('name').all()]) #Company.query.all()  vs  [(1, 'Helios'),(2, 'Metalac')]
+    company_id = SelectField('Company ID', choices=[])
+    user_id = SelectField('User ID', choices=[])
     cancelled = BooleanField('Storno')
     international_invoice = BooleanField('Ino faktura')
     submit = SubmitField('Ažuriraj')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.company_id.choices = [(c.id, c.companyname) for c in db.session.query(Company.id, Company.companyname).order_by('companyname').all()]
+        self.user_id.choices = [(u.id, u.name + " " + u.surname) for u in db.session.query(User.id, User.name, User.surname).order_by('name').all()]
 
     def reset(self):
         self.__init__()

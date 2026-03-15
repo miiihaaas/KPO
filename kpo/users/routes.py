@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, g
 from flask import  render_template, url_for, flash, redirect, request, abort
 from kpo import db, bcrypt, mail
 from kpo.padezi import padezi
@@ -30,6 +30,9 @@ def register_u():
     elif current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
         flash('Nemate autorizaciju da pristupite ovoj stranici', 'danger')
         return redirect(url_for('main.home'))
+    if g.get('license_expired'):
+        flash('Licenca je istekla. Nije moguće registrovati nove korisnike.', 'danger')
+        return redirect(url_for('users.user_list'))
     form = RegistrationUserForm()
     form.reset()
     if form.validate_on_submit():
@@ -78,6 +81,10 @@ def user_profile(user_id): #ovo je funkcija za editovanje user-a
 
     form = UpdateUserForm()
     form.reset()
+
+    if g.get('license_expired') and request.method == 'POST':
+        flash('Licenca je istekla. Nije moguće menjati korisničke podatke.', 'danger')
+        return redirect(url_for('users.user_list'))
 
     if form.validate_on_submit():
         user.name = form.name.data
@@ -155,6 +162,9 @@ def logout():
 @users.route("/user/<int:user_id>/delete", methods=['POST'])
 @login_required
 def delete_user(user_id):
+    if g.get('license_expired'):
+        flash('Licenca je istekla. Nije moguće brisati korisnike.', 'danger')
+        return redirect(url_for('users.user_list'))
     user = User.query.get_or_404(user_id)
     if not current_user.is_authenticated:
         flash('Morate da budete ulogovani da biste pristupili ovoj stranici', 'danger')

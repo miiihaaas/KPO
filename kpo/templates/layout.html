@@ -71,6 +71,11 @@
       {% endif %}
       <div class="row">
         <div class="">
+          {% if g.get('license_expired') %}
+            <div class="alert alert-danger" style="font-weight: bold; text-align: center;">
+              Vaša licenca je istekla. Aplikacija je u režimu samo za čitanje. Javite se administratoru za produžetak licence.
+            </div>
+          {% endif %}
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}

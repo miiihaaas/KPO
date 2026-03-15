@@ -115,19 +115,21 @@
         </fieldset>
         <div class="form-group button-group">
             <a class="btn btn-info" href="{{url_for('invoices.invoice_list')}}">&#8678; Nazad</a>
-            {{ form.submit(class="btn btn-outline-info") }}
-            {% if invoice.type == "faktura" %}
-                {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
-                    <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši fakturu</button>
-                {% endif %}
-                <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='odobrenje') }}">Dodavanje knjižnog odobrenja</a>
-                <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='zaduzenje') }}">Dodavanje knjižnog zaduženja</a>
-            {% elif invoice.type == "odobrenje" %}
-                {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
-                    <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši knjižno odobrenje</button>
-                {% endif %}
-            {% elif invoice.type == "zaduženje" %}
-                <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši knjižno zaduženje</button>
+            {% if not g.get('license_expired') %}
+              {{ form.submit(class="btn btn-outline-info") }}
+              {% if invoice.type == "faktura" %}
+                  {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
+                      <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši fakturu</button>
+                  {% endif %}
+                  <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='odobrenje') }}">Dodavanje knjižnog odobrenja</a>
+                  <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('invoices.register_n', invoice_id=invoice.id, type='zaduzenje') }}">Dodavanje knjižnog zaduženja</a>
+              {% elif invoice.type == "odobrenje" %}
+                  {% if current_user.authorization == 's_admin' or current_user.authorization == 'c_admin' %}
+                      <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši knjižno odobrenje</button>
+                  {% endif %}
+              {% elif invoice.type == "zaduženje" %}
+                  <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteModal">Obriši knjižno zaduženje</button>
+              {% endif %}
             {% endif %}
         </div>
     </form>

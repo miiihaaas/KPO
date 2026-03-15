@@ -154,6 +154,10 @@
                 {{ form.company_phone(class="form-control form-control-lg") }}
             {% endif %}
         </div>
+        <div class="form-group">
+            {{ form.license_expiry.label(class="form-control-label") }}
+            {{ form.license_expiry(class="form-control form-control-lg", type="date") }}
+        </div>
     </fieldset>
     <div class="form-group button-group">
         <a class="btn btn-info" href="{{url_for('companys.company_list')}}">&#8678; Nazad</a>

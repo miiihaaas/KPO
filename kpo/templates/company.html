@@ -164,10 +164,18 @@
             {% endfor %}
           {% endif %}
         </div>
+        {% if current_user.authorization == 's_admin' %}
+          <div class="form-group">
+              {{ form.license_expiry.label(class="form-control-label") }}
+              {{ form.license_expiry(class="form-control form-control-lg", type="date") }}
+          </div>
+        {% endif %}
     </fieldset>
     <div class="form-group button-group">
       <a class="btn btn-info" href="{{url_for('companys.company_list')}}">&#8678; Nazad</a>
-      {{ form.submit(class="btn btn-outline-info") }}
+      {% if not g.get('license_expired') %}
+        {{ form.submit(class="btn btn-outline-info") }}
+      {% endif %}
     </div>
   </form>
 </div>

@@ -1,6 +1,6 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from flask import Blueprint
+from flask import Blueprint, g
 from flask import  render_template, url_for, flash, redirect, request, abort, send_file
 from sqlalchemy import func
 from kpo import app, db, bcrypt
@@ -41,6 +41,9 @@ def invoice_list():
 def register_i():
     if current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
         return redirect(url_for('main.home'))
+    if g.get('license_expired'):
+        flash('Licenca je istekla. Nije moguće kreirati nove fakture.', 'danger')
+        return redirect(url_for('invoices.invoice_list'))
 
     data = DashboardData(current_user.user_company.id)
     data.last_input = Invoice.query.filter_by(company_id=current_user.user_company.id).filter_by(type='faktura').order_by(Invoice.id.desc()).first()
@@ -89,6 +92,9 @@ def register_i():
 def register_n(invoice_id, type):
     if current_user.is_authenticated and (current_user.authorization != 'c_admin' and current_user.authorization != 's_admin'):
         return redirect(url_for('main.home'))
+    if g.get('license_expired'):
+        flash('Licenca je istekla. Nije moguće kreirati nove dokumente.', 'danger')
+        return redirect(url_for('invoices.invoice_list'))
     invoice = Invoice.query.get_or_404(invoice_id)
     customer_list = [i.customer for i in db.session.query(Invoice.customer).distinct()]
     print(customer_list)
@@ -160,6 +166,10 @@ def register_n(invoice_id, type):
 def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
     invoice = Invoice.query.get_or_404(invoice_id)
 
+    if g.get('license_expired') and request.method == 'POST':
+        flash('Licenca je istekla. Nije moguće menjati fakture.', 'danger')
+        return redirect(url_for('invoices.invoice_list'))
+
     print(f'{invoice.date=}')
     if not current_user.is_authenticated:
         flash('Morate da budete prijavljeni da biste pristupili ovoj stranici.', 'danger')
@@ -221,6 +231,9 @@ def invoice_profile(invoice_id): #ovo je funkcija za editovanje vozila
 @invoices.route("/invoice/<int:invoice_id>/delete", methods=['POST'])
 @login_required
 def delete_invoice(invoice_id):
+    if g.get('license_expired'):
+        flash('Licenca je istekla. Nije moguće brisati fakture.', 'danger')
+        return redirect(url_for('invoices.invoice_list'))
     invoice = Invoice.query.get_or_404(invoice_id)
     print(f'debug - {request.form.get("input_password")}')
     if not bcrypt.check_password_hash(current_user.password, request.form.get("input_password")):

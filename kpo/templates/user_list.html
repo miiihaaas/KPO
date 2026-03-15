@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% if current_user.authorization != 'c_user' %}
+{% if current_user.authorization != 'c_user' and not g.get('license_expired') %}
 <div>
   <a class="btn btn-info btn-sm m-1" href="{{ url_for('users.register_u') }}">Registracija novog korisnika</a>
   <hr>

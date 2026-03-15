@@ -22,6 +22,7 @@ class Company(db.Model):
     company_mail = db.Column(db.String(120), unique=True, nullable=False)
     company_phone = db.Column(db.String(20), nullable=False)
     company_logo = db.Column(db.String(60), nullable=False)
+    license_expiry = db.Column(db.Date, nullable=True)
     users = db.relationship('User', backref='user_company', lazy=True)
     invoices = db.relationship('Invoice', backref='invoice_company', lazy=True)
 
@@ -84,5 +85,5 @@ class Invoice(db.Model):
 
 
 
-db.create_all()
-db.session.commit()
+with app.app_context():
+    db.create_all()

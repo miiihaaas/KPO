@@ -1,8 +1,9 @@
 import os
-from flask import Flask, render_template
+from datetime import date, timedelta
+from flask import Flask, render_template, g, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_mail import Mail
 from dotenv import load_dotenv
 from flask_migrate import Migrate
@@ -62,6 +63,23 @@ app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer   ////// os.environ.get vs os.getenv
 app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer -- za 2 step verification: https://support.google.com/accounts/answer/185833
 mail = Mail(app)
+
+@app.before_request
+def check_license():
+    g.license_expired = False
+    g.license_warning = False
+    if current_user.is_authenticated and current_user.authorization != 's_admin':
+        company = current_user.user_company
+        if company and company.license_expiry:
+            today = date.today()
+            days_left = (company.license_expiry - today).days
+            if days_left < 0:
+                g.license_expired = True
+            elif days_left <= 7:
+                g.license_warning = True
+                flash(f'Vaša licenca ističe za {days_left} dana ({company.license_expiry.strftime("%d.%m.%Y.")}). '
+                      'Javite se administratoru za produžetak licence.', 'warning')
+
 
 from kpo.companys.routes import companys
 from kpo.invoices.routes import invoices
