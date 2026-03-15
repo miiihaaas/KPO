@@ -25,7 +25,7 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-implicit-deepblue bg-steel "> <!--fixed-top: ipak treba da se podvlači pod navbar-->
         <div class="container">
-          <a href="{{ url_for('main.home') }}"><img class="rounded-circle" src="/static/img/KPO_Favicon.png" width="50" ></a>
+          <a href="{{ url_for('main.home') }}"><img class="rounded-circle nav-logo" src="/static/img/KPO_Favicon.png" width="50" ></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -73,7 +73,7 @@
         <div class="">
           {% if g.get('license_expired') %}
             <div class="alert alert-danger" style="font-weight: bold; text-align: center;">
-              Vaša licenca je istekla. Aplikacija je u režimu samo za čitanje. Javite se administratoru za produžetak licence.
+              Vaša licenca je istekla. Za produženje licence obratite se administratoru putem mejla info@studioimplicit.rs.
             </div>
           {% endif %}
           {% with messages = get_flashed_messages(with_categories=true) %}
